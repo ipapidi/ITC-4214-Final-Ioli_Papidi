@@ -11,4 +11,6 @@ urlpatterns = [
     path('subcategory/<slug:category_slug>/<slug:subcategory_slug>/', views.subcategory_detail, name='subcategory_detail'),
     path('brand/<slug:slug>/', views.brand_detail, name='brand_detail'),
     path('search/', views.search, name='search'),
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
 ] 

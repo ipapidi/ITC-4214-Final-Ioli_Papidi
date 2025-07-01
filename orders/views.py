@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
+from decimal import Decimal
 
 
 @login_required
@@ -49,22 +50,22 @@ def remove_from_cart(request, item_id):
 
 @login_required
 def update_cart_item(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     if request.method == 'POST':
-        cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
         quantity = int(request.POST.get('quantity', 1))
-        
         if quantity > 0:
             cart_item.quantity = quantity
             cart_item.save()
         else:
             cart_item.delete()
-        
-        return JsonResponse({
-            'success': True,
-            'total_price': cart_item.cart.total_price,
-            'total_items': cart_item.cart.total_items
-        })
-    
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'total_price': cart_item.cart.total_price if cart_item.cart else 0,
+                'total_items': cart_item.cart.total_items if cart_item.cart else 0
+            })
+        else:
+            return redirect('orders:cart')
     return JsonResponse({'success': False})
 
 
@@ -81,9 +82,9 @@ def checkout(request):
         order = Order.objects.create(
             user=request.user,
             subtotal=cart.total_price,
-            tax_amount=cart.total_price * 0.08,
-            shipping_cost=10.00,
-            total_amount=cart.total_price_with_tax + 10.00,
+            tax_amount=cart.total_price * Decimal('0.08'),
+            shipping_cost=Decimal('10.00'),
+            total_amount=cart.total_price_with_tax + Decimal('10.00'),
             shipping_address=request.POST.get('shipping_address', ''),
             shipping_city=request.POST.get('shipping_city', ''),
             shipping_state=request.POST.get('shipping_state', ''),

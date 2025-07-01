@@ -1,0 +1,119 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}RevForge - Premium Car Performance Parts{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background-image: url('{% static 'images/homebackground.png' %}');">
+    <div class="container">
+        <div class="row min-vh-100">
+            <div class="col-lg-7 col-md-10 d-flex flex-column justify-content-center">
+                <div class="hero-content text-center text-lg-start">
+                    <h1 class="hero-title">
+                        <span class="accent">REV</span>FORGE
+                    </h1>
+                    <p class="hero-subtitle">
+                        F1-Inspired Performance Parts
+                    </p>
+                    <p class="hero-description">
+                        Premium automotive upgrades designed with Formula 1 precision.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+                            Shop Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Categories</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="category-title">{{ category.name }}</h3>
+                    <p class="category-description">{{ category.description|truncatewords:8 }}</p>
+                    <a href="{% url 'products:category_detail' category.slug %}" class="category-link">
+                        Explore
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section id="featured" class="featured-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Featured Products</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-md-6 col-lg-4">
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.main_image %}
+                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="placeholder-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h4 class="product-name">{{ product.name }}</h4>
+                        <div class="product-brand">{{ product.brand.name }}</div>
+                        <div class="product-price">
+                            {% if product.is_on_sale %}
+                            <span class="original-price">${{ product.price }}</span>
+                            <span class="current-price">${{ product.sale_price }}</span>
+                            {% else %}
+                            <span class="current-price">${{ product.price }}</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="cta-title">Ready to Upgrade Your Vehicle?</h2>
+                <p class="cta-description">
+                    Join thousands of performance enthusiasts who trust RevForge.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

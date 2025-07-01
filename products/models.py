@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.urls import reverse
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -121,11 +122,11 @@ class Product(models.Model):
     # Images
     main_image = models.ImageField(upload_to='products/main/', blank=True, null=True)
     
-    # Performance Metrics (F1-inspired)
+    # Performance Rating Metrics
     performance_rating = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
         default=5,
-        help_text="Performance rating from 1-10"
+        help_text="Rating from 1-5"
     )
     weight_savings = models.CharField(max_length=50, blank=True, help_text="e.g., '2.5kg lighter'")
     power_gain = models.CharField(max_length=50, blank=True, help_text="e.g., '+25 HP'")
@@ -198,6 +199,13 @@ class Product(models.Model):
         else:
             return 'in_stock'
 
+    @property
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings.exists():
+            return round(ratings.aggregate(models.Avg('rating'))['rating__avg'], 1)
+        return None
+
 
 class ProductImage(models.Model):
     """
@@ -241,3 +249,14 @@ class ProductSpecification(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.name}: {self.value} {self.unit}".strip()
+
+
+class ProductRating(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
+    review = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('product', 'user')

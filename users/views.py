@@ -1,20 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
+from .forms import UserRegistrationForm
 from .models import UserProfile, Wishlist, RecentlyViewed
 from products.models import Product
 
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Account created successfully!')
             return redirect('users:login')
     else:
-        form = UserCreationForm()
+        form = UserRegistrationForm()
     
     return render(request, 'users/register.html', {'form': form})
 

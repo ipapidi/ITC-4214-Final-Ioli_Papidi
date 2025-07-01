@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RevForge - Car Performance Parts{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS (load last for override) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-dark text-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-danger navbar-sticky" style="position:fixed;top:0;left:0;right:0;width:100%;z-index:9999;background:#222 !important;">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'products:home' %}">
+                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 40px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:product_list' %}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:contact' %}">Contact</a>
+                    </li>
+                </ul>
+                <!-- Search Form -->
+                <form class="d-flex me-3" method="GET" action="{% url 'products:search' %}">
+                    <input class="form-control me-2 bg-dark text-light border-danger" type="search" name="q" placeholder="Search parts...">
+                    <button class="btn btn-outline-danger" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <!-- User Menu -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu bg-dark border border-danger">
+                            <li><a class="dropdown-item text-light" href="{% url 'users:profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item text-light" href="{% url 'users:wishlist' %}">Wishlist</a></li>
+                            <li><a class="dropdown-item text-light" href="{% url 'orders:order_history' %}">Orders</a></li>
+                            <li><hr class="dropdown-divider border-danger"></li>
+                            <li>
+                              <form method="post" action="{% url 'users:logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-light" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; width: 100%; text-align: left;">Logout</button>
+                              </form>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders:cart' %}">
+                            <i class="fas fa-shopping-cart me-1"></i>
+                            <span class="badge bg-danger">{{ request.user.cart.total_items|default:0 }}</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:register' %}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="navbar-spacer"></div>
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Main Content -->
+    <main class="container-fluid py-4">
+        {% block content %}{% endblock %}
+    </main>
+    <!-- Footer -->
+    <footer class="footer mt-auto py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <a class="navbar-brand" href="{% url 'products:home' %}">
+                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 50px;">
+                    </a>
+                    <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase text-light mb-4">Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'products:home' %}" class="footer-link">Home</a></li>
+                        <li><a href="{% url 'products:product_list' %}" class="footer-link">Products</a></li>
+                        <li><a href="{% url 'products:about' %}" class="footer-link">About</a></li>
+                        <li><a href="{% url 'products:contact' %}" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase text-light mb-4">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><p class="text-light"><i class="fas fa-envelope me-2 text-danger"></i> info@revforge.com</p></li>
+                        <li><p class="text-light"><i class="fas fa-phone me-2 text-danger"></i> +1 (555) 123-4567</p></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="text-uppercase text-light mb-4">Follow Us</h5>
+                    <div class="d-flex">
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: var(--border-color);">
+            <div class="text-center text-light">
+                <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small>
+            </div>
+        </div>
+    </footer>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
