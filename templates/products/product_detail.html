@@ -7,7 +7,7 @@
 <section class="product-detail-section py-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 position-relative">
                 {% if product.main_image %}
                 <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
                 {% else %}
@@ -17,7 +17,27 @@
                 {% endif %}
             </div>
             <div class="col-md-6">
-                <h2 class="mb-3">{{ product.name }}</h2>
+                <h2 class="mb-3 d-flex align-items-center justify-content-between">
+                    {{ product.name }}
+                    <span class="ms-3 wishlist-heart">
+                        {% if user.is_authenticated %}
+                            <button type="button"
+                                class="btn {% if is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
+                                title="{% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
+                                onclick="toggleWishlist({{ product.id }}, {{ is_in_wishlist|yesno:'true,false' }}, this)">
+                                {% if is_in_wishlist %}
+                                    <i class="fas fa-heart"></i>
+                                {% else %}
+                                    <i class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                        {% else %}
+                            <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-danger rounded-circle" title="Login to add to Wishlist">
+                                <i class="far fa-heart"></i>
+                            </a>
+                        {% endif %}
+                    </span>
+                </h2>
                 <div class="mb-2 #ffffff">Brand: <strong>{{ product.brand.name }}</strong></div>
                 <div class="mb-3">
                     {% if product.is_on_sale %}
@@ -120,5 +140,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // On page load, fill stars if user has a rating
     fillStars(selected);
 });
+
+function toggleWishlist(productId, isInWishlist, btn) {
+    const url = isInWishlist
+        ? `/users/wishlist/remove/${productId}/`
+        : `/users/wishlist/add/${productId}/`;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'added') {
+            btn.classList.remove('btn-outline-danger');
+            btn.classList.add('btn-danger');
+            btn.innerHTML = '<i class="fas fa-heart"></i>';
+            btn.setAttribute('title', 'Remove from Wishlist');
+            btn.setAttribute('onclick', `toggleWishlist(${productId}, true, this)`);
+        } else if (data.status === 'removed') {
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-outline-danger');
+            btn.innerHTML = '<i class=\'far fa-heart\'></i>';
+            btn.setAttribute('title', 'Add to Wishlist');
+            btn.setAttribute('onclick', `toggleWishlist(${productId}, false, this)`);
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 {% endblock %} 

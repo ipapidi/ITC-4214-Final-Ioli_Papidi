@@ -5,12 +5,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Category, SubCategory, Brand, ProductRating
 from .forms import ProductRatingForm
+from users.models import Wishlist
 
 
 def home(request):
     featured_products = Product.objects.filter(is_featured=True, is_active=True)[:6]
     bestsellers = Product.objects.filter(is_bestseller=True, is_active=True)[:6]
     categories = Category.objects.filter(is_active=True)[:8]
+    
+    # Add wishlist status for featured products
+    for product in featured_products:
+        if request.user.is_authenticated:
+            product.is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+        else:
+            product.is_in_wishlist = False
     
     context = {
         'featured_products': featured_products,
@@ -64,6 +72,11 @@ def product_list(request):
     # Add star_rating property for each product (0-5 stars)
     for product in page_obj:
         product.star_rating = min(round(product.performance_rating * 2 / 10 * 5), 5)
+        # Add wishlist status for authenticated users
+        if request.user.is_authenticated:
+            product.is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+        else:
+            product.is_in_wishlist = False
 
     context = {
         'products': page_obj,
@@ -84,8 +97,11 @@ def product_list(request):
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     user_rating = None
+    is_in_wishlist = False
+    
     if request.user.is_authenticated:
         user_rating = ProductRating.objects.filter(product=product, user=request.user).first()
+        is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
         if request.method == 'POST':
             form = ProductRatingForm(request.POST, instance=user_rating)
             if form.is_valid():
@@ -99,6 +115,7 @@ def product_detail(request, slug):
             form = ProductRatingForm(instance=user_rating)
     else:
         form = None
+    
     context = {
         'product': product,
         'related_products': Product.objects.filter(
@@ -107,6 +124,7 @@ def product_detail(request, slug):
         ).exclude(id=product.id)[:4],
         'form': form,
         'user_rating': user_rating,
+        'is_in_wishlist': is_in_wishlist,
     }
     return render(request, 'products/product_detail.html', context)
 

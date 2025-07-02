@@ -1,0 +1,134 @@
+{# Usage: include with product=product #}
+<div class="product-card" data-product-url="{% url 'products:product_detail' product.slug %}">
+    <div class="product-image position-relative">
+        {% if product.main_image %}
+        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
+        {% else %}
+        <div class="placeholder-image">
+            <i class="fas fa-image fa-3x"></i>
+        </div>
+        {% endif %}
+        <!-- Wishlist Heart Icon (toggle) -->
+        <div class="wishlist-heart position-absolute top-0 end-0 m-2">
+            {% if user.is_authenticated %}
+                <button type="button"
+                    class="btn {% if product.is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
+                    title="{% if product.is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
+                    onclick="toggleWishlist({{ product.id }}, {{ product.is_in_wishlist|yesno:'true,false' }}, this)">
+                    {% if product.is_in_wishlist %}
+                        <i class="fas fa-heart"></i>
+                    {% else %}
+                        <i class="far fa-heart"></i>
+                    {% endif %}
+                </button>
+            {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" 
+                   class="btn btn-outline-danger rounded-circle"
+                   title="Login to add to Wishlist">
+                    <i class="far fa-heart"></i>
+                </a>
+            {% endif %}
+        </div>
+        {% if product.is_on_sale %}
+        <div class="sale-badge text-danger">SALE</div>
+        {% endif %}
+    </div>
+    <div class="product-info">
+        <h4 class="product-name">{{ product.name }}</h4>
+        <div class="product-brand">{{ product.brand.name }}</div>
+        <div class="product-category">{{ product.category.name }}</div>
+        <div class="product-rating">
+            <span class="stars">
+                {% if product.average_rating %}
+                    {% with avg=product.average_rating|default:0 %}
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg|floatformat:0|add:'0' %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% else %}
+                                <i class="far fa-star text-muted"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="rating-text">({{ avg|floatformat:1 }}/5)</span>
+                    {% endwith %}
+                {% else %}
+                    <span class="text-danger">No ratings yet.</span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="product-price">
+            {% if product.is_on_sale %}
+            <span class="original-price">${{ product.price }}</span>
+            <span class="current-price text-danger fw-bold">${{ product.sale_price }}</span>
+            {% else %}
+            <span class="current-price">${{ product.price }}</span>
+            {% endif %}
+        </div>
+        <div class="product-stock">
+            {% if product.stock_quantity > 0 %}
+            <span class="text-success">In Stock ({{ product.stock_quantity }})</span>
+            {% else %}
+            <span class="text-danger">Out of Stock</span>
+            {% endif %}
+        </div>
+        <div class="non-clickable">
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-primary w-100 mt-2">
+                View Details
+            </a>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                    Add to Cart
+                </button>
+            </form>
+            {% else %}
+            <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-danger w-100 mt-2">Add to Cart</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleWishlist(productId, isInWishlist, btn) {
+    const url = isInWishlist
+        ? `/users/wishlist/remove/${productId}/`
+        : `/users/wishlist/add/${productId}/`;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'added') {
+            btn.classList.remove('btn-outline-danger');
+            btn.classList.add('btn-danger');
+            btn.innerHTML = '<i class="fas fa-heart"></i>';
+            btn.setAttribute('title', 'Remove from Wishlist');
+            btn.setAttribute('onclick', `toggleWishlist(${productId}, true, this)`);
+        } else if (data.status === 'removed') {
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-outline-danger');
+            btn.innerHTML = '<i class=\'far fa-heart\'></i>';
+            btn.setAttribute('title', 'Add to Wishlist');
+            btn.setAttribute('onclick', `toggleWishlist(${productId}, false, this)`);
+        }
+    });
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script> 

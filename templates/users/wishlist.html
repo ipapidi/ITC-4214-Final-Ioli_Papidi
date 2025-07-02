@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="text-danger">
+                    <i class="fas fa-heart me-2"></i>My Wishlist
+                </h1>
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline-danger">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+            
+            {% if wishlist_items %}
+                <div class="row g-4">
+                    {% for wishlist_item in wishlist_items %}
+                    <div class="col-md-6 col-lg-4">
+                        {% include 'products/_product_card.html' with product=wishlist_item.product %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-heart fa-4x text-light mb-4"></i>
+                    <h3 class="text-light mb-3">Your wishlist is empty</h3>
+                    <p class="text-light mb-4">Start adding products to your wishlist to save them for later!</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-danger">
+                        <i class="fas fa-shopping-bag me-2"></i>Browse Products
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function handleProductCardClick(event, element) {
+    // Check if the clicked element or its parent is a button or form
+    let target = event.target;
+    while (target && target !== element) {
+        if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.tagName === 'FORM' || 
+            target.classList.contains('btn') || target.classList.contains('non-clickable')) {
+            return; // Don't navigate if clicking on interactive elements
+        }
+        target = target.parentElement;
+    }
+    
+    // If we get here, it's a safe click on the card
+    const productCard = element.closest('.product-card');
+    const productUrl = productCard.getAttribute('data-product-url');
+    if (productUrl) {
+        window.location.href = productUrl;
+    }
+}
+
+function removeFromWishlist(productId) {
+    if (confirm('Are you sure you want to remove this item from your wishlist?')) {
+        window.location.href = `/users/wishlist/remove/${productId}/`;
+    }
+}
+</script>
+{% endblock %} 

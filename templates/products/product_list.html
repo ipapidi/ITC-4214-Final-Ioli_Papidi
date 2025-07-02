@@ -55,6 +55,25 @@
     color: #fff;
     text-decoration: none;
 }
+
+/* Product card clickable styling */
+.product-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.product-card .clickable-area {
+    cursor: pointer;
+}
+
+.product-card .non-clickable {
+    cursor: default;
+}
+
+.product-card .btn {
+    position: relative;
+    z-index: 10;
+}
 </style>
 {% endblock %}
 
@@ -104,71 +123,7 @@
         <div class="row g-4">
             {% for product in products %}
             <div class="col-md-6 col-lg-4">
-                <div class="product-card">
-                    <div class="product-image">
-                        {% if product.main_image %}
-                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
-                        {% else %}
-                        <div class="placeholder-image">
-                            <i class="fas fa-image fa-3x"></i>
-                        </div>
-                        {% endif %}
-                        {% if product.is_on_sale %}
-                        <div class="sale-badge text-danger">SALE</div>
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <h4 class="product-name">{{ product.name }}</h4>
-                        <div class="product-brand">{{ product.brand.name }}</div>
-                        <div class="product-category">{{ product.category.name }}</div>
-                        <div class="product-rating">
-                            <span class="stars">
-                                {% if product.average_rating %}
-                                    {% with avg=product.average_rating|default:0 %}
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= avg|floatformat:0|add:'0' %}
-                                                <i class="fas fa-star text-warning"></i>
-                                            {% else %}
-                                                <i class="far fa-star text-muted"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <span class="rating-text">({{ avg|floatformat:1 }}/5)</span>
-                                    {% endwith %}
-                                {% else %}
-                                    <span class="text-danger">No ratings yet.</span>
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="product-price">
-                            {% if product.is_on_sale %}
-                            <span class="original-price">${{ product.price }}</span>
-                            <span class="current-price text-danger fw-bold">${{ product.sale_price }}</span>
-                            {% else %}
-                            <span class="current-price">${{ product.price }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="product-stock">
-                            {% if product.stock_quantity > 0 %}
-                            <span class="text-success">In Stock ({{ product.stock_quantity }})</span>
-                            {% else %}
-                            <span class="text-danger">Out of Stock</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-primary w-100 mt-2">
-                            View Details
-                        </a>
-                        {% if user.is_authenticated %}
-                        <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mt-2">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
-                                Add to Cart
-                            </button>
-                        </form>
-                        {% else %}
-                        <a href="{% url 'users:login' %}?next={% url 'products:product_list' %}" class="btn btn-danger w-100 mt-2">Add to Cart</a>
-                        {% endif %}
-                    </div>
-                </div>
+                {% include 'products/_product_card.html' with product=product show_remove=False %}
             </div>
             {% empty %}
             <div class="col-12">
@@ -242,6 +197,35 @@ function updateSubcategories() {
                 subcatSelect.appendChild(option);
             });
         });
+}
+
+function handleProductCardClick(event, element) {
+    // Check if the clicked element or its parent is a button or form
+    let target = event.target;
+    while (target && target !== element) {
+        if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.tagName === 'FORM' || 
+            target.classList.contains('btn') || target.classList.contains('non-clickable')) {
+            return; // Don't navigate if clicking on interactive elements
+        }
+        target = target.parentElement;
+    }
+    
+    // If we get here, it's a safe click on the card
+    const productCard = element.closest('.product-card');
+    const productUrl = productCard.getAttribute('data-product-url');
+    if (productUrl) {
+        window.location.href = productUrl;
+    }
+}
+
+function addToWishlist(productId) {
+    window.location.href = `/users/wishlist/add/${productId}/`;
+}
+
+function removeFromWishlist(productId) {
+    if (confirm('Are you sure you want to remove this item from your wishlist?')) {
+        window.location.href = `/users/wishlist/remove/${productId}/`;
+    }
 }
 </script>
 {% endblock %} 
