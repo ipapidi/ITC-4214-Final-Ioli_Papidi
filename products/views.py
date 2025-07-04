@@ -11,7 +11,7 @@ from users.models import Wishlist
 def home(request):
     featured_products = Product.objects.filter(is_featured=True, is_active=True)[:6]
     bestsellers = Product.objects.filter(is_bestseller=True, is_active=True)[:6]
-    categories = Category.objects.filter(is_active=True)[:8]
+    categories = Category.objects.filter(is_active=True)[:9]
     
     # Add wishlist status for featured products
     for product in featured_products:
@@ -19,7 +19,16 @@ def home(request):
             product.is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
         else:
             product.is_in_wishlist = False
-    
+
+    # Dynamically set icon_url for each category
+    for category in categories:
+        if category.image:
+            category.icon_url = category.image.url
+        else:
+            # Assume icon filename matches the category name (capitalized, no spaces, .png)
+            icon_filename = f"{category.name.replace(' ', '')}.png"
+            category.icon_url = f"/media/categories/{icon_filename}"
+
     context = {
         'featured_products': featured_products,
         'bestsellers': bestsellers,
@@ -207,7 +216,5 @@ def about(request):
 
 
 def contact(request):
-    """
-    Renders the Contact Us page with a contact form, Google Maps widget, and FAQ section.
-    """
+    # Contact page
     return render(request, 'products/contact.html')

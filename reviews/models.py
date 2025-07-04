@@ -5,10 +5,7 @@ from django.db.models import Avg
 
 
 class Review(models.Model):
-    """
-    Product reviews and ratings system.
-    Allows users to rate and review products they've purchased.
-    """
+    # Product reviews
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='reviews')
     
@@ -60,26 +57,24 @@ class Review(models.Model):
 
     @property
     def rating_stars(self):
-        """Return rating as stars (★★★★☆)"""
+        # Return rating as stars
         filled_stars = '★' * self.rating
         empty_stars = '☆' * (5 - self.rating)
         return filled_stars + empty_stars
 
     @property
     def helpful_count(self):
-        """Get number of helpful votes"""
+        # Get number of helpful votes
         return self.helpful_votes.count()
 
     @property
     def unhelpful_count(self):
-        """Get number of unhelpful votes"""
+        # Get number of unhelpful votes
         return self.unhelpful_votes.count()
 
 
 class ReviewImage(models.Model):
-    """
-    Images attached to reviews.
-    """
+    # Review images
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='review_images')
     image = models.ImageField(upload_to='reviews/')
     caption = models.CharField(max_length=200, blank=True)
@@ -90,9 +85,7 @@ class ReviewImage(models.Model):
 
 
 class ReviewVote(models.Model):
-    """
-    Helpful/unhelpful votes on reviews.
-    """
+    # Review votes
     VOTE_CHOICES = [
         ('helpful', 'Helpful'),
         ('unhelpful', 'Unhelpful'),
@@ -111,9 +104,7 @@ class ReviewVote(models.Model):
 
 
 class ProductRating(models.Model):
-    """
-    Aggregated product ratings for quick access.
-    """
+    # Product rating summary
     product = models.OneToOneField('products.Product', on_delete=models.CASCADE, related_name='rating_summary')
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
     total_reviews = models.PositiveIntegerField(default=0)
@@ -128,7 +119,7 @@ class ProductRating(models.Model):
         return f"Rating summary for {self.product.name}"
 
     def update_ratings(self):
-        """Update aggregated ratings from reviews"""
+        # Update aggregated ratings from reviews
         reviews = self.product.reviews.filter(is_approved=True)
         
         if reviews.exists():
@@ -156,7 +147,7 @@ class ProductRating(models.Model):
 
     @property
     def rating_percentage(self):
-        """Get percentage of positive reviews (4+ stars)"""
+        # Get percentage of positive reviews
         if self.total_reviews > 0:
             positive_reviews = self.four_star_count + self.five_star_count
             return round((positive_reviews / self.total_reviews) * 100, 1)
@@ -164,7 +155,7 @@ class ProductRating(models.Model):
 
     @property
     def rating_stars(self):
-        """Return average rating as stars (★★★★☆)"""
+        # Return average rating as stars
         avg = int(self.average_rating)
         filled_stars = '★' * avg
         empty_stars = '☆' * (5 - avg)
@@ -172,9 +163,7 @@ class ProductRating(models.Model):
 
 
 class ReviewReport(models.Model):
-    """
-    Report inappropriate reviews.
-    """
+    # Review reports
     REPORT_REASONS = [
         ('inappropriate', 'Inappropriate Content'),
         ('spam', 'Spam'),
@@ -212,7 +201,7 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender=Review)
 def update_product_rating(sender, instance, created, **kwargs):
-    """Update product rating when review is saved"""
+    # Update product rating when review is saved
     product = instance.product
     rating_summary, created = ProductRating.objects.get_or_create(product=product)
     rating_summary.update_ratings()
@@ -220,7 +209,7 @@ def update_product_rating(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Review)
 def update_product_rating_on_delete(sender, instance, **kwargs):
-    """Update product rating when review is deleted"""
+    # Update product rating when review is deleted
     product = instance.product
     try:
         rating_summary = ProductRating.objects.get(product=product)

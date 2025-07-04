@@ -40,11 +40,7 @@ def profile(request):
 
 @login_required
 def edit_profile(request):
-    """
-    Handle profile editing for authenticated users.
-    Updates both User model fields and UserProfile model fields.
-    Username cannot be changed for security reasons.
-    """
+    # Handle profile editing
     if request.method == 'POST':
         # Validate phone number and car year
         phone_number = request.POST.get('phone_number', '')
@@ -77,10 +73,7 @@ def edit_profile(request):
 
 @login_required
 def change_password(request):
-    """
-    Handle password change for authenticated users.
-    Uses Django's built-in PasswordChangeForm for security.
-    """
+    # Handle password change
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():

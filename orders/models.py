@@ -5,10 +5,7 @@ from decimal import Decimal
 
 
 class Cart(models.Model):
-    """
-    Shopping cart for users.
-    Stores items before checkout.
-    """
+    # Shopping cart
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -18,25 +15,23 @@ class Cart(models.Model):
 
     @property
     def total_items(self):
-        """Get total number of items in cart"""
+        # Get total number of items in cart
         return sum(item.quantity for item in self.items.all())
 
     @property
     def total_price(self):
-        """Calculate total price of all items in cart"""
+        # Calculate total price
         return sum(item.total_price for item in self.items.all())
 
     @property
     def total_price_with_tax(self):
-        """Calculate total price including tax"""
+        # Calculate total price with tax
         tax_rate = Decimal('0.08')  # 8% tax rate
         return self.total_price + (self.total_price * tax_rate)
 
 
 class CartItem(models.Model):
-    """
-    Individual items in the shopping cart.
-    """
+    # Cart items
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
@@ -51,7 +46,7 @@ class CartItem(models.Model):
 
     @property
     def total_price(self):
-        """Calculate total price for this item"""
+        # Calculate total price for this item
         return self.product.current_price * self.quantity
 
     def save(self, *args, **kwargs):
@@ -62,9 +57,7 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
-    """
-    Main order model for completed purchases.
-    """
+    # Order model
     ORDER_STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -144,16 +137,16 @@ class Order(models.Model):
 
     @property
     def is_paid(self):
-        """Check if order is paid"""
+        # Check if order is paid
         return self.payment_status == 'paid'
 
     @property
     def can_cancel(self):
-        """Check if order can be cancelled"""
+        # Check if order can be cancelled
         return self.order_status in ['pending', 'confirmed']
 
     def calculate_totals(self):
-        """Calculate order totals"""
+        # Calculate order totals
         subtotal = sum(item.total_price for item in self.items.all())
         tax_amount = subtotal * Decimal('0.08')  # 8% tax
         total = subtotal + tax_amount + self.shipping_cost - self.discount_amount
@@ -165,9 +158,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    """
-    Individual items in an order.
-    """
+    # Order items
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     product_name = models.CharField(max_length=200)  # Snapshot of product name
@@ -205,9 +196,7 @@ class OrderItem(models.Model):
 
 
 class OrderStatusHistory(models.Model):
-    """
-    Track order status changes for audit trail.
-    """
+    # Order status history
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_history')
     status = models.CharField(max_length=20, choices=Order.ORDER_STATUS_CHOICES)
     notes = models.TextField(blank=True)
@@ -222,9 +211,7 @@ class OrderStatusHistory(models.Model):
 
 
 class ShippingMethod(models.Model):
-    """
-    Available shipping methods.
-    """
+    # Shipping methods
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2)

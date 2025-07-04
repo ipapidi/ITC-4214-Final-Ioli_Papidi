@@ -6,10 +6,7 @@ from django.conf import settings
 
 
 class Category(models.Model):
-    """
-    Main product categories for car performance parts.
-    F1-inspired categories like Engine, Aerodynamics, etc.
-    """
+    # Product categories
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField(blank=True)
@@ -36,10 +33,7 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    """
-    Sub-categories within main categories.
-    Example: Engine -> Turbochargers, Exhaust Systems, etc.
-    """
+    # Subcategories
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
@@ -65,10 +59,7 @@ class SubCategory(models.Model):
 
 
 class Brand(models.Model):
-    """
-    Car parts brands/manufacturers.
-    Includes both F1 teams and aftermarket brands.
-    """
+    # Car parts brands
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     logo = models.ImageField(upload_to='brands/', blank=True, null=True)
@@ -91,10 +82,7 @@ class Brand(models.Model):
 
 
 class Product(models.Model):
-    """
-    Main product model for car performance parts.
-    Includes comprehensive details for F1-inspired parts.
-    """
+    # Main product model
     # Basic Information
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, blank=True)
@@ -174,24 +162,24 @@ class Product(models.Model):
 
     @property
     def is_on_sale(self):
-        """Check if product is on sale"""
+        # Check if product is on sale
         return self.sale_price is not None and self.sale_price < self.price
 
     @property
     def current_price(self):
-        """Get current price (sale price if available, otherwise regular price)"""
+        # Get current price
         return self.sale_price if self.is_on_sale else self.price
 
     @property
     def discount_percentage(self):
-        """Calculate discount percentage if on sale"""
+        # Calculate discount percentage
         if self.is_on_sale:
             return int(((self.price - self.sale_price) / self.price) * 100)
         return 0
 
     @property
     def stock_status(self):
-        """Get stock status for display"""
+        # Get stock status
         if self.stock_quantity == 0:
             return 'out_of_stock'
         elif self.stock_quantity <= self.min_stock_level:
@@ -201,6 +189,7 @@ class Product(models.Model):
 
     @property
     def average_rating(self):
+        # Get average rating
         ratings = self.ratings.all()
         if ratings.exists():
             return round(ratings.aggregate(models.Avg('rating'))['rating__avg'], 1)
@@ -208,10 +197,7 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    """
-    Additional images for products.
-    Allows multiple images per product for detailed views.
-    """
+    # Additional product images
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/additional/')
     alt_text = models.CharField(max_length=200, blank=True)
@@ -233,10 +219,7 @@ class ProductImage(models.Model):
 
 
 class ProductSpecification(models.Model):
-    """
-    Detailed specifications for products.
-    Allows flexible specification structure for different product types.
-    """
+    # Product specifications
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_specifications')
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=200)

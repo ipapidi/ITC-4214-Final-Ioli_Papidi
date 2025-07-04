@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Cart, CartItem, Order, OrderItem
+from django.utils import timezone
+from .models import Cart, CartItem, Order, OrderItem, OrderStatusHistory
 from products.models import Product
 from decimal import Decimal
 
@@ -79,32 +80,49 @@ def checkout(request):
         return redirect('orders:cart')
     
     if request.method == 'POST':
-        order = Order.objects.create(
-            user=request.user,
-            subtotal=cart.total_price,
-            tax_amount=cart.total_price * Decimal('0.08'),
-            shipping_cost=Decimal('10.00'),
-            total_amount=cart.total_price_with_tax + Decimal('10.00'),
-            shipping_address=request.POST.get('shipping_address', ''),
-            shipping_city=request.POST.get('shipping_city', ''),
-            shipping_state=request.POST.get('shipping_state', ''),
-            shipping_postal_code=request.POST.get('shipping_postal_code', ''),
-            shipping_country=request.POST.get('shipping_country', ''),
-            shipping_phone=request.POST.get('shipping_phone', ''),
-        )
-        
-        for cart_item in cart_items:
-            OrderItem.objects.create(
-                order=order,
-                product=cart_item.product,
-                quantity=cart_item.quantity,
-                unit_price=cart_item.product.current_price,
-                total_price=cart_item.total_price
+        try:
+            order = Order.objects.create(
+                user=request.user,
+                subtotal=cart.total_price,
+                tax_amount=cart.total_price * Decimal('0.08'),
+                shipping_cost=Decimal('10.00'),
+                total_amount=cart.total_price_with_tax + Decimal('10.00'),
+                shipping_address=request.POST.get('shipping_address', ''),
+                shipping_city=request.POST.get('shipping_city', ''),
+                shipping_state=request.POST.get('shipping_state', ''),
+                shipping_postal_code=request.POST.get('shipping_postal_code', ''),
+                shipping_country=request.POST.get('shipping_country', ''),
+                shipping_phone=request.POST.get('shipping_phone', ''),
+                customer_notes=request.POST.get('customer_notes', ''),
             )
-        
-        cart.items.all().delete()
-        messages.success(request, f'Order {order.order_number} placed successfully!')
-        return redirect('orders:order_detail', order_number=order.order_number)
+            
+            # Create order items
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    unit_price=cart_item.product.current_price,
+                    total_price=cart_item.total_price
+                )
+            
+            # Create initial status history
+            OrderStatusHistory.objects.create(
+                order=order,
+                status='pending',
+                notes='Order placed successfully',
+                changed_by=request.user
+            )
+            
+            # Clear cart
+            cart.items.all().delete()
+            
+            messages.success(request, f'Order {order.order_number} placed successfully!')
+            return redirect('orders:order_detail', order_number=order.order_number)
+            
+        except Exception as e:
+            messages.error(request, f'Error creating order: {str(e)}')
+            return redirect('orders:cart')
     
     context = {
         'cart': cart,
@@ -117,8 +135,12 @@ def checkout(request):
 def order_detail(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
     
+    # Get status history for this order
+    status_history = order.status_history.all()
+    
     context = {
         'order': order,
+        'status_history': status_history,
     }
     return render(request, 'orders/order_detail.html', context)
 
@@ -127,7 +149,79 @@ def order_detail(request, order_number):
 def order_history(request):
     orders = request.user.orders.all()
     
+    # Add some sample orders for demonstration if user has no orders
+    if not orders.exists():
+        # This is just for demonstration - in a real app, you'd have actual orders
+        pass
+    
     context = {
         'orders': orders,
     }
     return render(request, 'orders/order_history.html', context)
+
+
+@login_required
+def cancel_order(request, order_number):
+    """Cancel an order if it's still cancellable"""
+    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    
+    if not order.can_cancel:
+        messages.error(request, 'This order cannot be cancelled.')
+        return redirect('orders:order_detail', order_number=order_number)
+    
+    if request.method == 'POST':
+        try:
+            # Update order status
+            order.order_status = 'cancelled'
+            order.save()
+            
+            # Create status history entry
+            OrderStatusHistory.objects.create(
+                order=order,
+                status='cancelled',
+                notes=f'Order cancelled by customer: {request.POST.get("cancellation_reason", "No reason provided")}',
+                changed_by=request.user
+            )
+            
+            messages.success(request, f'Order {order.order_number} has been cancelled successfully.')
+            return redirect('orders:order_history')
+            
+        except Exception as e:
+            messages.error(request, f'Error cancelling order: {str(e)}')
+    
+    context = {
+        'order': order,
+    }
+    return render(request, 'orders/cancel_order.html', context)
+
+
+@login_required
+def download_invoice(request, order_number):
+    """Download order invoice (placeholder for future implementation)"""
+    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    
+    # This would typically generate a PDF invoice
+    # For now, just show a message
+    messages.info(request, 'Invoice download feature will be implemented soon!')
+    return redirect('orders:order_detail', order_number=order_number)
+
+
+@login_required
+def track_order(request, order_number):
+    """AJAX endpoint for real-time order tracking"""
+    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'order_number': order.order_number,
+            'status': order.order_status,
+            'status_display': order.get_order_status_display(),
+            'payment_status': order.payment_status,
+            'payment_status_display': order.get_payment_status_display(),
+            'created_at': order.created_at.isoformat(),
+            'shipped_at': order.shipped_at.isoformat() if order.shipped_at else None,
+            'delivered_at': order.delivered_at.isoformat() if order.delivered_at else None,
+            'can_cancel': order.can_cancel,
+        })
+    
+    return redirect('orders:order_detail', order_number=order_number)

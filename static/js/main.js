@@ -10,43 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // Simple counter animation for stats
-    function animateCounter(element, target, duration = 2000) {
-        let start = 0;
-        const increment = target / (duration / 16);
-        
-        function updateCounter() {
-            start += increment;
-            if (start < target) {
-                element.textContent = Math.floor(start);
-                requestAnimationFrame(updateCounter);
-            } else {
-                element.textContent = target;
-            }
-        }
-        updateCounter();
-    }
-
-    // Animate stats when they come into view
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statNumbers = entry.target.querySelectorAll('.stat-number');
-                statNumbers.forEach(stat => {
-                    const target = parseInt(stat.getAttribute('data-target'));
-                    animateCounter(stat, target);
-                });
-                statsObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
-
-    // Observe stats section
-    const statsSection = document.querySelector('.stats-section');
-    if (statsSection) {
-        statsObserver.observe(statsSection);
-    }
-
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {

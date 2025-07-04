@@ -42,11 +42,15 @@
             <div class="col-md-6 col-lg-4">
                 <div class="category-card">
                     <div class="category-icon">
-                        <i class="fas fa-cog"></i>
+                        {% if category.icon_url %}
+                            <img src="{{ category.icon_url }}" alt="{{ category.name }} icon" style="width:64px;height:64px;object-fit:contain;border-radius:16px;box-shadow:0 2px 8px rgba(220,53,69,0.12);background:#181a1b;">
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
                     </div>
                     <h3 class="category-title">{{ category.name }}</h3>
                     <p class="category-description">{{ category.description|truncatewords:8 }}</p>
-                    <a href="{% url 'products:category_detail' category.slug %}" class="category-link">
+                    <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link">
                         Explore
                     </a>
                 </div>

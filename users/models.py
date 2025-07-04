@@ -6,10 +6,7 @@ from django.utils.text import slugify
 
 
 class UserProfile(models.Model):
-    """
-    Extended user profile for RevForge customers.
-    Includes F1-inspired preferences and car information.
-    """
+    # User profile
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
     # Personal Information
@@ -69,11 +66,11 @@ class UserProfile(models.Model):
         return f"Profile for {self.user.username}"
 
     def get_full_name(self):
-        """Get user's full name"""
+        # Get user's full name
         return f"{self.user.first_name} {self.user.last_name}".strip() or self.user.username
 
     def get_car_info(self):
-        """Get formatted car information"""
+        # Get formatted car information
         if self.primary_car_make and self.primary_car_model:
             year = f" {self.primary_car_year}" if self.primary_car_year else ""
             return f"{self.primary_car_make} {self.primary_car_model}{year}"
@@ -81,10 +78,7 @@ class UserProfile(models.Model):
 
 
 class Wishlist(models.Model):
-    """
-    User wishlist for products.
-    Allows users to save products for later purchase.
-    """
+    # User wishlist
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='wishlisted_by')
     added_at = models.DateTimeField(auto_now_add=True)
@@ -99,9 +93,7 @@ class Wishlist(models.Model):
 
 
 class RecentlyViewed(models.Model):
-    """
-    Track recently viewed products for recommendations.
-    """
+    # Recently viewed products
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recently_viewed')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='viewed_by')
     viewed_at = models.DateTimeField(auto_now_add=True)
@@ -116,9 +108,7 @@ class RecentlyViewed(models.Model):
 
 
 class UserPreference(models.Model):
-    """
-    User preferences for personalized experience.
-    """
+    # User preferences
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences')
     
     # Display Preferences
@@ -171,7 +161,7 @@ class UserPreference(models.Model):
 # Signal to create user profile automatically
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Create user profile when a new user is created"""
+    # Create user profile when a new user is created
     if created:
         UserProfile.objects.create(user=instance)
         UserPreference.objects.create(user=instance)
@@ -179,7 +169,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    """Save user profile when user is saved"""
+    # Save user profile when user is saved
     if hasattr(instance, 'profile'):
         instance.profile.save()
     if hasattr(instance, 'preferences'):

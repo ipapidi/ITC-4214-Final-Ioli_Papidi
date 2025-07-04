@@ -7,10 +7,7 @@ from .models import Category, SubCategory, Brand, Product, ProductImage, Product
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    """
-    Admin interface for product categories.
-    F1-inspired category management.
-    """
+    # Admin for categories
     list_display = ['name', 'slug', 'product_count', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['name', 'description']
@@ -34,7 +31,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
     def product_count(self, obj):
-        """Display number of products in category"""
+        # Display number of products in category
         count = obj.products.count()
         return format_html('<span style="color: #e74c3c; font-weight: bold;">{}</span>', count)
     product_count.short_description = 'Products'
@@ -42,9 +39,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
-    """
-    Admin interface for product subcategories.
-    """
+    # Admin for subcategories
     list_display = ['name', 'category', 'product_count', 'is_active', 'created_at']
     list_filter = ['category', 'is_active', 'created_at']
     search_fields = ['name', 'description', 'category__name']
@@ -52,7 +47,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at']
 
     def product_count(self, obj):
-        """Display number of products in subcategory"""
+        # Display number of products in subcategory
         count = obj.products.count()
         return format_html('<span style="color: #e74c3c; font-weight: bold;">{}</span>', count)
     product_count.short_description = 'Products'
@@ -60,10 +55,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    """
-    Admin interface for car part brands.
-    Includes F1 team branding options.
-    """
+    # Admin for brands
     list_display = ['name', 'logo_display', 'is_f1_team', 'product_count', 'is_active', 'created_at']
     list_filter = ['is_f1_team', 'is_active', 'created_at']
     search_fields = ['name', 'description']
@@ -87,32 +79,28 @@ class BrandAdmin(admin.ModelAdmin):
     )
 
     def logo_display(self, obj):
-        """Display brand logo in admin list"""
+        # Display brand logo in admin list
         if obj.logo:
             return format_html('<img src="{}" style="max-height: 30px; max-width: 50px;" />', obj.logo.url)
         return "No Logo"
     logo_display.short_description = 'Logo'
 
     def product_count(self, obj):
-        """Display number of products by brand"""
+        # Display number of products by brand
         count = obj.products.count()
         return format_html('<span style="color: #e74c3c; font-weight: bold;">{}</span>', count)
     product_count.short_description = 'Products'
 
 
 class ProductImageInline(admin.TabularInline):
-    """
-    Inline admin for product images.
-    """
+    # Inline admin for images
     model = ProductImage
     extra = 1
     fields = ['image', 'alt_text', 'is_primary', 'order']
 
 
 class ProductSpecificationInline(admin.TabularInline):
-    """
-    Inline admin for product specifications.
-    """
+    # Inline admin for specifications
     model = ProductSpecification
     extra = 1
     fields = ['name', 'value', 'unit', 'order']
@@ -120,10 +108,7 @@ class ProductSpecificationInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    """
-    Admin interface for products.
-    Comprehensive F1-inspired product management.
-    """
+    # Admin for products
     list_display = [
         'name', 'brand', 'category', 'price_display', 'stock_status_display', 
         'performance_rating', 'is_featured', 'is_active', 'created_at'
@@ -153,7 +138,7 @@ class ProductAdmin(admin.ModelAdmin):
         }),
         ('Performance Metrics', {
             'fields': ('performance_rating', 'weight_savings', 'power_gain'),
-            'description': 'F1-inspired performance metrics'
+            'description': 'Performance metrics'
         }),
         ('Compatibility', {
             'fields': ('compatible_cars', 'installation_difficulty')
@@ -240,9 +225,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    """
-    Admin interface for product images.
-    """
+    # Admin for images
     list_display = ['product', 'image_display', 'is_primary', 'order', 'created_at']
     list_filter = ['is_primary', 'created_at']
     search_fields = ['product__name', 'alt_text']
@@ -258,9 +241,7 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(ProductSpecification)
 class ProductSpecificationAdmin(admin.ModelAdmin):
-    """
-    Admin interface for product specifications.
-    """
+    # Admin for specifications
     list_display = ['product', 'name', 'value', 'unit', 'order']
     list_filter = ['order']
     search_fields = ['product__name', 'name', 'value']
