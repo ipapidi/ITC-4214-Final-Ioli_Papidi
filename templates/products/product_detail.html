@@ -47,6 +47,15 @@
                     <span class="current-price h4">${{ product.price }}</span>
                     {% endif %}
                 </div>
+                <div class="mb-3">
+                    {% if product.stock_status == 'out_of_stock' %}
+                        <span class="badge bg-danger" style="font-size:1rem;">Out of Stock</span>
+                    {% elif product.stock_status == 'low_stock' %}
+                        <span class="badge bg-warning text-dark" style="font-size:1rem;">Low Stock ({{ product.stock_quantity }})</span>
+                    {% else %}
+                        <span class="badge bg-success" style="font-size:1rem;">In Stock ({{ product.stock_quantity }})</span>
+                    {% endif %}
+                </div>
                 {% if user.is_authenticated %}
                     <div class="user-rating-form mb-4">
                         <h5>{% if user_rating %}Update Your Rating{% else %}Rate this Product{% endif %}</h5>
@@ -81,10 +90,14 @@
                 {% if user.is_authenticated %}
                 <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mb-3">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger w-100">Add to Cart</button>
+                    <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                        {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                    </button>
                 </form>
                 {% else %}
-                <a href="{% url 'users:login' %}?next={% url 'products:product_detail' product.slug %}" class="btn btn-danger w-100 mb-3">Add to Cart</a>
+                <a href="{% url 'users:login' %}?next={% url 'products:product_detail' product.slug %}" class="btn btn-danger w-100 mb-3 {% if product.stock_quantity == 0 %}disabled{% endif %}">
+                    {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                </a>
                 {% endif %}
                 <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary mt-3">&larr; Back to Products</a>
             </div>
@@ -163,7 +176,7 @@ function toggleWishlist(productId, isInWishlist, btn) {
         } else if (data.status === 'removed') {
             btn.classList.remove('btn-danger');
             btn.classList.add('btn-outline-danger');
-            btn.innerHTML = '<i class=\'far fa-heart\'></i>';
+            btn.innerHTML = '<i=\'far fa-heart\'></i>';
             btn.setAttribute('title', 'Add to Wishlist');
             btn.setAttribute('onclick', `toggleWishlist(${productId}, false, this)`);
         }

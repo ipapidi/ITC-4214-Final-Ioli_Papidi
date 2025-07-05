@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import Cart, CartItem, Order, OrderItem, OrderStatusHistory
+from .models import Cart, CartItem, Order, OrderItem, OrderStatusHistory, ShippingMethod, PaymentMethod
 from products.models import Product
 from decimal import Decimal
 
@@ -74,19 +74,31 @@ def update_cart_item(request, item_id):
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.items.all()
-    
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
+    shipping_methods = ShippingMethod.objects.filter(is_active=True)
+
     if not cart_items.exists():
         messages.warning(request, 'Your cart is empty!')
         return redirect('orders:cart')
-    
+
     if request.method == 'POST':
         try:
+            selected_payment_method_id = request.POST.get('payment_method')
+            selected_shipping_method_id = request.POST.get('shipping_method')
+            payment_method = PaymentMethod.objects.get(id=selected_payment_method_id) if selected_payment_method_id else None
+            shipping_method = ShippingMethod.objects.get(id=selected_shipping_method_id) if selected_shipping_method_id else None
+            shipping_cost = shipping_method.cost if shipping_method else 0
+            subtotal = cart.total_price
+            tax_amount = subtotal * Decimal('0.08')
+            total_with_tax = subtotal + tax_amount
+            total_amount = total_with_tax + shipping_cost
+
             order = Order.objects.create(
                 user=request.user,
-                subtotal=cart.total_price,
-                tax_amount=cart.total_price * Decimal('0.08'),
-                shipping_cost=Decimal('10.00'),
-                total_amount=cart.total_price_with_tax + Decimal('10.00'),
+                subtotal=subtotal,
+                tax_amount=tax_amount,
+                shipping_cost=shipping_cost,
+                total_amount=total_amount,
                 shipping_address=request.POST.get('shipping_address', ''),
                 shipping_city=request.POST.get('shipping_city', ''),
                 shipping_state=request.POST.get('shipping_state', ''),
@@ -94,8 +106,13 @@ def checkout(request):
                 shipping_country=request.POST.get('shipping_country', ''),
                 shipping_phone=request.POST.get('shipping_phone', ''),
                 customer_notes=request.POST.get('customer_notes', ''),
+                payment_method=payment_method.name if payment_method else '',
+                # Optionally save card info or transaction id here
             )
-            
+            # Optionally, you can save the shipping method name in a new field if you want
+            # order.shipping_method = shipping_method.name if shipping_method else ''
+            # order.save()
+
             # Create order items
             for cart_item in cart_items:
                 OrderItem.objects.create(
@@ -105,7 +122,10 @@ def checkout(request):
                     unit_price=cart_item.product.current_price,
                     total_price=cart_item.total_price
                 )
-            
+                # Decrement product stock
+                cart_item.product.stock_quantity = max(0, cart_item.product.stock_quantity - cart_item.quantity)
+                cart_item.product.save()
+
             # Create initial status history
             OrderStatusHistory.objects.create(
                 order=order,
@@ -113,20 +133,22 @@ def checkout(request):
                 notes='Order placed successfully',
                 changed_by=request.user
             )
-            
+
             # Clear cart
             cart.items.all().delete()
-            
+
             messages.success(request, f'Order {order.order_number} placed successfully!')
             return redirect('orders:order_detail', order_number=order.order_number)
-            
+
         except Exception as e:
             messages.error(request, f'Error creating order: {str(e)}')
             return redirect('orders:cart')
-    
+
     context = {
         'cart': cart,
         'cart_items': cart_items,
+        'payment_methods': payment_methods,
+        'shipping_methods': shipping_methods,
     }
     return render(request, 'orders/checkout.html', context)
 
@@ -149,9 +171,9 @@ def order_detail(request, order_number):
 def order_history(request):
     orders = request.user.orders.all()
     
-    # Add some sample orders for demonstration if user has no orders
+    # Sample orders for demonstration if user has no orders
     if not orders.exists():
-        # This is just for demonstration - in a real app, you'd have actual orders
+        # This is just for demonstration
         pass
     
     context = {
@@ -197,13 +219,8 @@ def cancel_order(request, order_number):
 
 @login_required
 def download_invoice(request, order_number):
-    """Download order invoice (placeholder for future implementation)"""
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
-    
-    # This would typically generate a PDF invoice
-    # For now, just show a message
-    messages.info(request, 'Invoice download feature will be implemented soon!')
-    return redirect('orders:order_detail', order_number=order_number)
+    return render(request, 'orders/invoice.html', {'order': order})
 
 
 @login_required

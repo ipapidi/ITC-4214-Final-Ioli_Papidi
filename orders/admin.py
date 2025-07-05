@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Cart, CartItem, Order, OrderItem, OrderStatusHistory, ShippingMethod
+from .models import Cart, CartItem, Order, OrderItem, OrderStatusHistory, ShippingMethod, PaymentMethod
 
 
 class CartItemInline(admin.TabularInline):
@@ -209,5 +209,13 @@ class ShippingMethodAdmin(admin.ModelAdmin):
     """
     list_display = ['name', 'cost', 'estimated_days', 'is_active']
     list_filter = ['is_active', 'estimated_days']
+    search_fields = ['name', 'description']
+    ordering = ['name']
+
+
+@admin.register(PaymentMethod)
+class PaymentMethodAdmin(admin.ModelAdmin):
+    list_display = ['name', 'is_active', 'requires_card_info']
+    list_filter = ['is_active', 'requires_card_info']
     search_fields = ['name', 'description']
     ordering = ['name']

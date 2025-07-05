@@ -63,11 +63,13 @@
             <span class="current-price">${{ product.price }}</span>
             {% endif %}
         </div>
-        <div class="product-stock">
-            {% if product.stock_quantity > 0 %}
-            <span class="text-success">In Stock ({{ product.stock_quantity }})</span>
+        <div class="product-stock mb-2">
+            {% if product.stock_status == 'out_of_stock' %}
+                <span class="text-danger" style="font-weight:bold;">Out of Stock</span>
+            {% elif product.stock_status == 'low_stock' %}
+                <span style="color:#ffc107; font-weight:bold;">Low Stock ({{ product.stock_quantity }})</span>
             {% else %}
-            <span class="text-danger">Out of Stock</span>
+                <span class="text-success" style="font-weight:bold;">In Stock ({{ product.stock_quantity }})</span>
             {% endif %}
         </div>
         <div class="non-clickable">
@@ -111,7 +113,7 @@ function toggleWishlist(productId, isInWishlist, btn) {
         } else if (data.status === 'removed') {
             btn.classList.remove('btn-danger');
             btn.classList.add('btn-outline-danger');
-            btn.innerHTML = '<i class=\'far fa-heart\'></i>';
+            btn.innerHTML = '<i class="far fa-heart"></i>';
             btn.setAttribute('title', 'Add to Wishlist');
             btn.setAttribute('onclick', `toggleWishlist(${productId}, false, this)`);
         }

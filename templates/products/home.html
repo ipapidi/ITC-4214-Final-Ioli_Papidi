@@ -88,23 +88,11 @@
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg">
-                    Get Started
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+                    Shop Now
                 </a>
             </div>
         </div>
     </div>
 </section>
-
-<script>
-function addToWishlist(productId) {
-    window.location.href = `/users/wishlist/add/${productId}/`;
-}
-
-function removeFromWishlist(productId) {
-    if (confirm('Are you sure you want to remove this item from your wishlist?')) {
-        window.location.href = `/users/wishlist/remove/${productId}/`;
-    }
-}
-</script>
 {% endblock %} 

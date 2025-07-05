@@ -321,7 +321,7 @@
                     <a href="{% url 'orders:download_invoice' order_number=order.order_number %}" class="btn btn-outline-info">
                         <i class="fas fa-download me-2"></i>Download Invoice
                     </a>
-                    <button class="btn btn-outline-success" onclick="contactSupport('{{ order.order_number }}')">
+                    <button class="btn btn-outline-success" onclick="openSupportModal()">
                         <i class="fas fa-headset me-2"></i>Contact Support
                     </button>
                 </div>
@@ -329,13 +329,38 @@
         </div>
     </div>
 </div>
+
+<!-- Support Modal -->
+<div id="supportModal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+    <div style="background:#23272b; color:#fff; border-radius:12px; max-width:350px; margin:auto; padding:32px 24px; box-shadow:0 2px 16px rgba(0,0,0,0.15); position:relative;">
+        <button onclick="closeSupportModal()" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <div style="text-align:center;">
+            <i class="fas fa-headset" style="font-size:2.5rem; color:#27ae60;"></i>
+            <h4 class="mt-3 mb-2">Customer Support</h4>
+            <p class="mb-2">Call us anytime for help with your order:</p>
+            <div style="font-size:1.2rem; font-weight:bold; color:#27ae60; margin-bottom:8px;">
+                <i class="fas fa-phone-alt me-2"></i>+30 697 400 0000
+            </div>
+            <div style="font-size:1rem; color:#aaa;">We're here for you 24/7!</div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function contactSupport(orderNumber) {
-    // Here you would typically open a support chat or form
-    alert('Support contact feature will be implemented soon!');
+function openSupportModal() {
+    document.getElementById('supportModal').style.display = 'flex';
 }
+function closeSupportModal() {
+    document.getElementById('supportModal').style.display = 'none';
+}
+// Optional: Close modal on background click
+window.addEventListener('click', function(event) {
+    var modal = document.getElementById('supportModal');
+    if (event.target === modal) {
+        closeSupportModal();
+    }
+});
 </script>
 {% endblock %} 

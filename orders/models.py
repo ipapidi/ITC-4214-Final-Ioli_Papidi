@@ -220,3 +220,13 @@ class ShippingMethod(models.Model):
 
     def __str__(self):
         return f"{self.name} - ${self.cost} ({self.estimated_days} days)"
+
+
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    requires_card_info = models.BooleanField(default=False, help_text="Does this method require card details?")
+
+    def __str__(self):
+        return self.name
