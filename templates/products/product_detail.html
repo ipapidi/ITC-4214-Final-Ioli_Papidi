@@ -104,6 +104,23 @@
         </div>
     </div>
 </section>
+<div id="recently-viewed-container"></div>
+
+{% if recommended_products %}
+<div class="recommended-section mt-5">
+    <div class="container">
+        <h3 class="text-center mb-4">Recommended for You</h3>
+        <div class="row g-4">
+            {% for product in recommended_products %}
+            <div class="col-md-6 col-lg-4">
+                {% include 'products/_product_card.html' with product=product hide_add_to_cart=True only %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <style>
 .star-rating {
     font-size: 2rem;
@@ -197,5 +214,40 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+function setRecentlyViewed(productId) {
+    let viewed = JSON.parse(localStorage.getItem('recently_viewed') || '[]');
+    viewed = viewed.filter(id => id !== productId);
+    viewed.unshift(productId);
+    viewed = viewed.slice(0, 4); // Keep 4 to allow for exclusion
+    localStorage.setItem('recently_viewed', JSON.stringify(viewed));
+}
+
+function fetchRecentlyViewed(currentProductId) {
+    let viewed = JSON.parse(localStorage.getItem('recently_viewed') || '[]');
+    viewed = viewed.filter(id => id !== currentProductId);
+    viewed = viewed.slice(0, 3);
+    if (viewed.length > 0) {
+        fetch("{% url 'products:recently_viewed' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ viewed: viewed })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.products_html) {
+                document.getElementById('recently-viewed-container').innerHTML = data.products_html;
+            }
+        });
+    } else {
+        document.getElementById('recently-viewed-container').innerHTML = '';
+    }
+}
+
+setRecentlyViewed('{{ product.id }}');
+fetchRecentlyViewed('{{ product.id }}');
 </script>
 {% endblock %} 

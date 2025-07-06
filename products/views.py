@@ -1,11 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Category, SubCategory, Brand, ProductRating
 from .forms import ProductRatingForm
 from users.models import Wishlist
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
 
 
 def home(request):
@@ -125,6 +129,20 @@ def product_detail(request, slug):
     else:
         form = None
     
+    # Content-based recommender: prioritize same category and brand, then category, then any
+    recommended_qs = Product.objects.filter(
+        is_active=True
+    ).exclude(id=product.id)
+    same_cat_brand = recommended_qs.filter(category=product.category, brand=product.brand)
+    recommended_products = list(same_cat_brand.annotate(annotated_avg_rating=Avg('ratings__rating')).order_by('-annotated_avg_rating')[:3])
+    if len(recommended_products) < 3:
+        needed = 3 - len(recommended_products)
+        same_cat = recommended_qs.filter(category=product.category).exclude(id__in=[p.id for p in recommended_products])
+        recommended_products += list(same_cat.annotate(annotated_avg_rating=Avg('ratings__rating')).order_by('-annotated_avg_rating')[:needed])
+    if len(recommended_products) < 3:
+        needed = 3 - len(recommended_products)
+        any_products = recommended_qs.exclude(id__in=[p.id for p in recommended_products])
+        recommended_products += list(any_products.annotate(annotated_avg_rating=Avg('ratings__rating')).order_by('-annotated_avg_rating')[:needed])
     context = {
         'product': product,
         'related_products': Product.objects.filter(
@@ -134,6 +152,7 @@ def product_detail(request, slug):
         'form': form,
         'user_rating': user_rating,
         'is_in_wishlist': is_in_wishlist,
+        'recommended_products': recommended_products,
     }
     return render(request, 'products/product_detail.html', context)
 
@@ -189,24 +208,41 @@ def brand_detail(request, slug):
 
 
 def search(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
     products = Product.objects.filter(is_active=True)
-    
+
+    # Keywords that should redirect to contact page
+    contact_keywords = [
+        'contact', 'phone', 'email', 'support', 'help', 'map', 'location', 'address', 'customer service', 'call', 'find us', 'where', 'reach us', 'get in touch'
+    ]
+    if query.lower() in contact_keywords:
+        return redirect('products:contact')
+
     if query:
         products = products.filter(
-            Q(name__icontains=query) | 
+            Q(name__icontains=query) |
             Q(description__icontains=query) |
             Q(brand__name__icontains=query) |
-            Q(category__name__icontains=query)
-        )
-    
+            Q(category__name__icontains=query) |
+            Q(subcategory__name__icontains=query) |
+            Q(keywords__icontains=query)
+        ).distinct()
+
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
+    # For advanced search bar (dropdowns, etc.)
+    categories = Category.objects.filter(is_active=True)
+    brands = Brand.objects.filter(is_active=True)
+    subcategories = SubCategory.objects.filter(is_active=True)
+
     context = {
         'products': page_obj,
         'query': query,
+        'categories': categories,
+        'brands': brands,
+        'subcategories': subcategories,
     }
     return render(request, 'products/search_results.html', context)
 
@@ -218,3 +254,16 @@ def about(request):
 def contact(request):
     # Contact page
     return render(request, 'products/contact.html')
+
+
+@csrf_exempt
+def recently_viewed(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        ids = data.get('viewed', [])[:3]
+        products_qs = Product.objects.filter(id__in=ids)
+        products_dict = {str(p.id): p for p in products_qs}
+        products = [products_dict[str(i)] for i in ids if str(i) in products_dict]
+        products_html = render_to_string('products/_recently_viewed.html', {'products': products})
+        return JsonResponse({'products_html': products_html})
+    return JsonResponse({'products_html': ''})

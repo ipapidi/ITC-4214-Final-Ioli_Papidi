@@ -889,7 +889,7 @@ nav .dropdown-menu.bg-dark.border-danger .dropdown-item:active:hover {
 /* --- Navbar Search Bar Alignment Fix --- */
 .navbar form.d-flex input[type="search"],
 .navbar form.d-flex button[type="submit"] {
-    height: 42px !important; /* Match the input height from inspector */
+    height: 42px !important;
     min-height: 42px !important;
     max-height: 42px !important;
     box-sizing: border-box !important;

@@ -1,0 +1,8 @@
+{% for i in "12345" %}
+    {% if forloop.counter <= avg|floatformat:0|add:'0' %}
+        <i class="fas fa-star text-warning"></i>
+    {% else %}
+        <i class="far fa-star text-muted"></i>
+    {% endif %}
+{% endfor %}
+<span class="rating-text">({{ avg|floatformat:1 }}/5)</span> 
