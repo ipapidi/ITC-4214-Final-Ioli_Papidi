@@ -3,6 +3,22 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.urls import reverse
 from django.conf import settings
+from django.core.exceptions import ValidationError
+import os
+
+
+def validate_file_size(value):
+    #Validate file size (max 5MB)
+    filesize = value.size
+    if filesize > 5 * 1024 * 1024:  # 5MB limit
+        raise ValidationError("File size cannot exceed 5MB")
+
+def validate_file_type(value):
+    #Validate file type (images only)
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('Only image files are allowed.')
 
 
 class Category(models.Model):
@@ -10,7 +26,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
     icon_class = models.CharField(max_length=50, blank=True, help_text="CSS class for category icon")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -62,7 +78,7 @@ class Brand(models.Model):
     # Car parts brands
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    logo = models.ImageField(upload_to='brands/', blank=True, null=True)
+    logo = models.ImageField(upload_to='brands/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
     description = models.TextField(blank=True)
     website = models.URLField(blank=True)
     is_f1_team = models.BooleanField(default=False, help_text="Is this an F1 team brand?")
@@ -108,7 +124,7 @@ class Product(models.Model):
     features = models.TextField(blank=True, help_text="Key features and benefits")
     
     # Images
-    main_image = models.ImageField(upload_to='products/main/', blank=True, null=True)
+    main_image = models.ImageField(upload_to='products/main/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
     
     # Performance Rating Metrics
     performance_rating = models.PositiveIntegerField(
@@ -199,7 +215,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     # Additional product images
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/additional/')
+    image = models.ImageField(upload_to='products/additional/', validators=[validate_file_size, validate_file_type])
     alt_text = models.CharField(max_length=200, blank=True)
     is_primary = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)

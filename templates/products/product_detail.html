@@ -24,7 +24,7 @@
                             <button type="button"
                                 class="btn {% if is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
                                 title="{% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
-                                onclick="toggleWishlist({{ product.id }}, {{ is_in_wishlist|yesno:'true,false' }}, this)">
+                                onclick="toggleWishlist({{ product.id|escapejs }}, {{ is_in_wishlist|yesno:'true,false' }}, this)">
                                 {% if is_in_wishlist %}
                                     <i class="fas fa-heart"></i>
                                 {% else %}
@@ -104,7 +104,10 @@
         </div>
     </div>
 </section>
-<div id="recently-viewed-container"></div>
+<div id="recently-viewed-container" 
+     data-recently-viewed-url="{% url 'products:recently_viewed' %}"
+     data-product-id="{{ product.id|escapejs }}"
+     data-csrf-token="{{ csrf_token|escapejs }}"></div>
 
 {% if recommended_products %}
 <div class="recommended-section mt-5">
@@ -137,117 +140,7 @@
     color: #ffc107;
 }
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('#star-rating .star');
-    const ratingInput = document.querySelector('input[name="rating"]');
-    let selected = parseInt(ratingInput.value) || 0;
-
-    function fillStars(upto) {
-        stars.forEach((star, idx) => {
-            if (idx < upto) {
-                star.classList.add('filled');
-            } else {
-                star.classList.remove('filled');
-            }
-        });
-    }
-
-    stars.forEach((star, idx) => {
-        star.addEventListener('mouseenter', function() {
-            fillStars(idx + 1);
-        });
-        star.addEventListener('mouseleave', function() {
-            fillStars(selected);
-        });
-        star.addEventListener('click', function() {
-            selected = idx + 1;
-            ratingInput.value = selected;
-            fillStars(selected);
-        });
-    });
-
-    // On page load, fill stars if user has a rating
-    fillStars(selected);
-});
-
-function toggleWishlist(productId, isInWishlist, btn) {
-    const url = isInWishlist
-        ? `/users/wishlist/remove/${productId}/`
-        : `/users/wishlist/add/${productId}/`;
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'added') {
-            btn.classList.remove('btn-outline-danger');
-            btn.classList.add('btn-danger');
-            btn.innerHTML = '<i class="fas fa-heart"></i>';
-            btn.setAttribute('title', 'Remove from Wishlist');
-            btn.setAttribute('onclick', `toggleWishlist(${productId}, true, this)`);
-        } else if (data.status === 'removed') {
-            btn.classList.remove('btn-danger');
-            btn.classList.add('btn-outline-danger');
-            btn.innerHTML = '<i=\'far fa-heart\'></i>';
-            btn.setAttribute('title', 'Add to Wishlist');
-            btn.setAttribute('onclick', `toggleWishlist(${productId}, false, this)`);
-        }
-    });
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function setRecentlyViewed(productId) {
-    let viewed = JSON.parse(localStorage.getItem('recently_viewed') || '[]');
-    viewed = viewed.filter(id => id !== productId);
-    viewed.unshift(productId);
-    viewed = viewed.slice(0, 4); // Keep 4 to allow for exclusion
-    localStorage.setItem('recently_viewed', JSON.stringify(viewed));
-}
-
-function fetchRecentlyViewed(currentProductId) {
-    let viewed = JSON.parse(localStorage.getItem('recently_viewed') || '[]');
-    viewed = viewed.filter(id => id !== currentProductId);
-    viewed = viewed.slice(0, 3);
-    if (viewed.length > 0) {
-        fetch("{% url 'products:recently_viewed' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: JSON.stringify({ viewed: viewed })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.products_html) {
-                document.getElementById('recently-viewed-container').innerHTML = data.products_html;
-            }
-        });
-    } else {
-        document.getElementById('recently-viewed-container').innerHTML = '';
-    }
-}
-
-setRecentlyViewed('{{ product.id }}');
-fetchRecentlyViewed('{{ product.id }}');
-</script>
+{% block extra_js %}
+<script src="{% static 'js/products_product_detail.js' %}?v=1" defer></script>
+{% endblock %}
 {% endblock %} 

@@ -3,6 +3,22 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
+import os
+
+
+def validate_file_size(value):
+    """Validate file size (max 5MB)"""
+    filesize = value.size
+    if filesize > 5 * 1024 * 1024:  # 5MB limit
+        raise ValidationError("File size cannot exceed 5MB")
+
+def validate_file_type(value):
+    """Validate file type (images only)"""
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('Only image files are allowed.')
 
 
 class UserProfile(models.Model):
@@ -12,7 +28,7 @@ class UserProfile(models.Model):
     # Personal Information
     phone_number = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
     
     # Address Information
     address_line1 = models.CharField(max_length=255, blank=True)
@@ -22,7 +38,7 @@ class UserProfile(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=100, blank=True)
     
-    # Car Information (F1-inspired)
+    # Car Information
     primary_car_make = models.CharField(max_length=100, blank=True, help_text="e.g., Ferrari, Mercedes, BMW")
     primary_car_model = models.CharField(max_length=100, blank=True, help_text="e.g., F8 Tributo, AMG GT, M3")
     primary_car_year = models.PositiveIntegerField(blank=True, null=True)
@@ -158,10 +174,9 @@ class UserPreference(models.Model):
         return f"Preferences for {self.user.username}"
 
 
-# Signal to create user profile automatically
+# Signal to create profile when user is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    # Create user profile when a new user is created
     if created:
         UserProfile.objects.create(user=instance)
         UserPreference.objects.create(user=instance)
@@ -169,8 +184,5 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    # Save user profile when user is saved
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
-    if hasattr(instance, 'preferences'):
-        instance.preferences.save()
+    instance.profile.save()
+    instance.preferences.save()
