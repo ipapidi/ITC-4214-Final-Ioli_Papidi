@@ -1,14 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Review, ReviewVote, ProductRating
+from .models import Review, ProductRating
 from products.models import Product
 
 
 def product_reviews(request, product_id):
+    """Display all reviews for a product"""
     product = get_object_or_404(Product, id=product_id)
-    reviews = product.reviews.filter(is_approved=True)
+    reviews = product.reviews.all()
     
     context = {
         'product': product,
@@ -19,36 +20,30 @@ def product_reviews(request, product_id):
 
 @login_required
 def add_review(request, product_id):
+    """Add a rating for a product"""
     product = get_object_or_404(Product, id=product_id)
     
     if request.method == 'POST':
         rating = int(request.POST.get('rating', 5))
-        title = request.POST.get('title', '')
-        content = request.POST.get('content', '')
-        pros = request.POST.get('pros', '')
-        cons = request.POST.get('cons', '')
         
+        # Validate rating
+        if rating < 1 or rating > 5:
+            messages.error(request, 'Rating must be between 1 and 5.')
+            return redirect('products:product_detail', slug=product.slug)
+        
+        # Create or update rating
         review, created = Review.objects.get_or_create(
             user=request.user,
             product=product,
-            defaults={
-                'rating': rating,
-                'title': title,
-                'content': content,
-                'pros': pros,
-                'cons': cons,
-            }
+            defaults={'rating': rating}
         )
         
         if not created:
+            # Update existing rating
             review.rating = rating
-            review.title = title
-            review.content = content
-            review.pros = pros
-            review.cons = cons
             review.save()
         
-        messages.success(request, 'Review submitted successfully!')
+        messages.success(request, 'Rating submitted successfully!')
         return redirect('products:product_detail', slug=product.slug)
     
     return render(request, 'reviews/add_review.html', {'product': product})
@@ -56,17 +51,21 @@ def add_review(request, product_id):
 
 @login_required
 def edit_review(request, review_id):
+    """Edit a rating"""
     review = get_object_or_404(Review, id=review_id, user=request.user)
     
     if request.method == 'POST':
-        review.rating = int(request.POST.get('rating', 5))
-        review.title = request.POST.get('title', '')
-        review.content = request.POST.get('content', '')
-        review.pros = request.POST.get('pros', '')
-        review.cons = request.POST.get('cons', '')
+        rating = int(request.POST.get('rating', 5))
+        
+        # Validate rating
+        if rating < 1 or rating > 5:
+            messages.error(request, 'Rating must be between 1 and 5.')
+            return redirect('products:product_detail', slug=review.product.slug)
+        
+        review.rating = rating
         review.save()
         
-        messages.success(request, 'Review updated successfully!')
+        messages.success(request, 'Rating updated successfully!')
         return redirect('products:product_detail', slug=review.product.slug)
     
     return render(request, 'reviews/edit_review.html', {'review': review})
@@ -74,62 +73,10 @@ def edit_review(request, review_id):
 
 @login_required
 def delete_review(request, review_id):
+    """Delete a rating"""
     review = get_object_or_404(Review, id=review_id, user=request.user)
     product_slug = review.product.slug
     review.delete()
     
-    messages.success(request, 'Review deleted successfully!')
+    messages.success(request, 'Rating deleted successfully!')
     return redirect('products:product_detail', slug=product_slug)
-
-
-@login_required
-def vote_review(request, review_id):
-    if request.method == 'POST':
-        review = get_object_or_404(Review, id=review_id)
-        vote_type = request.POST.get('vote_type')
-        
-        if vote_type in ['helpful', 'unhelpful']:
-            vote, created = ReviewVote.objects.get_or_create(
-                review=review,
-                user=request.user,
-                defaults={'vote_type': vote_type}
-            )
-            
-            if not created:
-                vote.vote_type = vote_type
-                vote.save()
-            
-            return JsonResponse({
-                'success': True,
-                'helpful_count': review.helpful_votes.count(),
-                'unhelpful_count': review.unhelpful_votes.count()
-            })
-    
-    return JsonResponse({'success': False})
-
-
-@login_required
-def report_review(request, review_id):
-    if request.method == 'POST':
-        review = get_object_or_404(Review, id=review_id)
-        reason = request.POST.get('reason', '')
-        description = request.POST.get('description', '')
-        
-        from .models import ReviewReport
-        report, created = ReviewReport.objects.get_or_create(
-            review=review,
-            reporter=request.user,
-            defaults={
-                'reason': reason,
-                'description': description
-            }
-        )
-        
-        if created:
-            messages.success(request, 'Review reported successfully!')
-        else:
-            messages.info(request, 'You have already reported this review!')
-        
-        return redirect('products:product_detail', slug=review.product.slug)
-    
-    return render(request, 'reviews/report_review.html', {'review': review})

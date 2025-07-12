@@ -45,18 +45,38 @@
                             <span class="info-label">Phone Number:</span>
                             <span class="info-value">{{ user.profile.phone_number|default:'Not provided' }}</span>
                         </div>
-                        <div class="info-row">
-                            <span class="info-label">My Car:</span>
-                            <span class="info-value">
-                                {% if user.profile.primary_car_make or user.profile.primary_car_model or user.profile.primary_car_year %}
-                                    {{ user.profile.primary_car_make|default_if_none:'' }} {{ user.profile.primary_car_model|default_if_none:'' }}{% if user.profile.primary_car_year %} ({{ user.profile.primary_car_year }}){% endif %}
-                                {% else %}
-                                    Not specified
-                                {% endif %}
-                            </span>
-                        </div>
                     </div>
                     <!-- Action Buttons -->
+                    <!-- Vendor Status -->
+                    {% if user.profile.is_vendor %}
+                        <div class="mb-3">
+                            <div class="info-row">
+                                <span class="info-label">Vendor Status:</span>
+                                <span class="info-value">
+                                    {% if user.profile.is_verified_vendor %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Verified Vendor
+                                        </span>
+                                    {% elif user.profile.vendor_status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Pending Approval
+                                        </span>
+                                    {% elif user.profile.vendor_status == 'rejected' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle me-1"></i>Rejected
+                                        </span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% if user.profile.vendor_team %}
+                                <div class="info-row">
+                                    <span class="info-label">F1 Team:</span>
+                                    <span class="info-value">{{ user.profile.vendor_team }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
                     <div class="d-flex gap-3 flex-wrap">
                         <button type="button" class="btn-custom" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                             <i class="fas fa-edit me-2"></i>Edit Profile
@@ -64,6 +84,11 @@
                         <button type="button" class="btn-custom" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                             <i class="fas fa-key me-2"></i>Change Password
                         </button>
+                        {% if user.profile.is_verified_vendor %}
+                            <button type="button" class="btn-custom" onclick="window.location.href='{% url 'users:vendor_dashboard' %}'">
+                                <i class="fas fa-store me-2"></i>Vendor Dashboard
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -118,20 +143,6 @@
                     <div class="mb-3">
                         <label for="phone_number" class="form-label text-danger">Phone Number</label>
                         <input type="number" class="form-control bg-dark text-light border-danger" id="phone_number" name="phone_number" value="{{ user.profile.phone_number }}" placeholder="e.g. 1234567890">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="primary_car_make" class="form-label text-danger">Car Make</label>
-                            <input type="text" class="form-control bg-dark text-light border-danger" id="primary_car_make" name="primary_car_make" value="{{ user.profile.primary_car_make }}">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="primary_car_model" class="form-label text-danger">Car Model</label>
-                            <input type="text" class="form-control bg-dark text-light border-danger" id="primary_car_model" name="primary_car_model" value="{{ user.profile.primary_car_model }}">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="primary_car_year" class="form-label text-danger">Car Year</label>
-                            <input type="number" class="form-control bg-dark text-light border-danger" id="primary_car_year" name="primary_car_year" value="{{ user.profile.primary_car_year }}" min="1886" max="2100" step="1" placeholder="e.g. 2020">
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-danger">

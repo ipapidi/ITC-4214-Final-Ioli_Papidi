@@ -144,7 +144,7 @@
                     <ul class="pagination">
                         {% if products.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?{% for key, value in current_filters.items %}{{ key }}={{ value }}&{% endfor %}page={{ products.previous_page_number }}" aria-label="Previous">
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.previous_page_number }}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -160,13 +160,13 @@
                         </li>
                         {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
                         <li class="page-item">
-                            <a class="page-link" href="?{% for key, value in current_filters.items %}{{ key }}={{ value }}&{% endfor %}page={{ num }}">{{ num }}</a>
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ num }}">{{ num }}</a>
                         </li>
                         {% endif %}
                         {% endfor %}
                         {% if products.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?{% for key, value in current_filters.items %}{{ key }}={{ value }}&{% endfor %}page={{ products.next_page_number }}" aria-label="Next">
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.next_page_number }}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>

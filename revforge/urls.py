@@ -24,7 +24,7 @@ urlpatterns = [
     path('', include('products.urls')),
     path('users/', include('users.urls')),
     path('orders/', include('orders.urls')),
-    path('reviews/', include('reviews.urls')),
+    # path('reviews/', include('reviews.urls')),  # not in use
 ]
 
 if settings.DEBUG:

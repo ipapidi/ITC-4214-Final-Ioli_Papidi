@@ -1,27 +1,67 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% block title %}Register | RevForge{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/users_vendor_registration.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;">
     <div class="col-md-6 col-lg-5">
         <form method="post" novalidate class="contact-form p-4 rounded-4 shadow">
             <h2 class="mb-4 text-center text-light">Create Account</h2>
             {% csrf_token %}
+            
+            <!-- Regular registration fields -->
             {% for field in form %}
+                {% if field.name not in 'is_vendor,vendor_team' %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Vendor registration section -->
+            <div class="vendor-section">
+                <h5 class="text-light mb-3">Vendor Registration (Optional)</h5>
                 <div class="mb-3">
-                    <label class="form-label" style="color: var(--accent-color); font-weight: 600;">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}<div class="form-text" style="color: #e0e0e0; margin-top: 0.25rem;">{{ field.help_text|safe }}</div>{% endif %}
-                    {% for error in field.errors %}
+                    <div class="form-check">
+                        {{ form.is_vendor }}
+                        <label class="form-check-label text-light" for="{{ form.is_vendor.id_for_label }}">
+                            {{ form.is_vendor.label }}
+                        </label>
+                        <div class="form-text">
+                            Register as an F1 team vendor to sell authentic parts
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3" id="vendor_team_container">
+                    <label class="form-label">{{ form.vendor_team.label }}</label>
+                    {{ form.vendor_team }}
+                    {% if form.vendor_team.help_text %}<div class="form-text">{{ form.vendor_team.help_text|safe }}</div>{% endif %}
+                    {% for error in form.vendor_team.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2" style="font-size:1.15rem;">Register</button>
-            <div class="mt-4 text-center">
-                <span class="form-text" style="color: #e0e0e0">Already have an account?</span>
-                <a href="{% url 'users:login' %}" class="text-danger fw-semibold ms-1">Log in</a>
+            </div>
+            
+            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2 btn-register">Register</button>
+            <div class="mt-4 text-center login-link">
+                <span class="form-text">Already have an account?</span>
+                <a href="{% url 'users:login' %}" class="fw-semibold ms-1">Log in</a>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/users_vendor_registration.js' %}"></script>
 {% endblock %} 

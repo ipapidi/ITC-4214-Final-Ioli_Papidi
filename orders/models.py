@@ -148,7 +148,7 @@ class Order(models.Model):
     def calculate_totals(self):
         # Calculate order totals
         subtotal = sum(item.total_price for item in self.items.all())
-        tax_amount = subtotal * Decimal('0.08')  # 8% tax
+        tax_amount = subtotal * Decimal('0.24')  # 24% tax - if the government changes this, change it here
         total = subtotal + tax_amount + self.shipping_cost - self.discount_amount
         
         self.subtotal = subtotal
@@ -167,9 +167,6 @@ class OrderItem(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     
-    # Product snapshot (in case product is deleted)
-    product_snapshot = models.JSONField(default=dict, blank=True)
-
     def __str__(self):
         return f"{self.quantity}x {self.product_name} in Order {self.order.order_number}"
 
@@ -182,15 +179,6 @@ class OrderItem(models.Model):
             self.unit_price = self.product.current_price
         if not self.total_price:
             self.total_price = self.unit_price * self.quantity
-        
-        # Create product snapshot
-        self.product_snapshot = {
-            'name': self.product.name,
-            'sku': self.product.sku,
-            'brand': self.product.brand.name,
-            'category': self.product.category.name,
-            'specifications': self.product.specifications,
-        }
         
         super().save(*args, **kwargs)
 
@@ -223,6 +211,7 @@ class ShippingMethod(models.Model):
 
 
 class PaymentMethod(models.Model):
+    # payment methods
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)

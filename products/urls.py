@@ -14,4 +14,5 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('recently-viewed/', views.recently_viewed, name='recently_viewed'),
+    path('ajax/subcategories/', views.get_subcategories, name='get_subcategories'),
 ] 

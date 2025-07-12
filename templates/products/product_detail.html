@@ -3,6 +3,10 @@
 
 {% block title %}{{ product.name }} | RevForge{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/f1_part_badge.css' %}">
+{% endblock %}
+
 {% block content %}
 <section class="product-detail-section py-5">
     <div class="container">
@@ -13,6 +17,15 @@
                 {% else %}
                 <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded" style="height:350px;">
                     <i class="fas fa-image fa-4x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Authentic F1 Part Badge on Image -->
+                {% if product.is_authentic_f1_part %}
+                <div class="position-absolute top-0 start-0 m-3">
+                    <span class="badge f1-part-badge fs-6 shadow">
+                        <i class="fas fa-star me-1"></i>Authentic F1 Part
+                    </span>
                 </div>
                 {% endif %}
             </div>
@@ -38,6 +51,19 @@
                         {% endif %}
                     </span>
                 </h2>
+                
+                <!-- Authentic F1 Part Badge -->
+                {% if product.is_authentic_f1_part %}
+                <div class="mb-3">
+                    <span class="badge f1-part-badge fs-6">
+                        <i class="fas fa-star me-1"></i>Authentic F1 Part
+                    </span>
+                    {% if product.vendor %}
+                    <small class="f1-vendor-team ms-2">by {{ product.vendor.vendor_team }}</small>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
                 <div class="mb-2 #ffffff">Brand: <strong>{{ product.brand.name }}</strong></div>
                 <div class="mb-3">
                     {% if product.is_on_sale %}

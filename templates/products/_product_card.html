@@ -33,6 +33,13 @@
         {% if product.is_on_sale %}
         <div class="sale-badge text-danger">SALE</div>
         {% endif %}
+        {% if product.is_authentic_f1_part %}
+        <div class="f1-badge position-absolute top-0 start-0 m-2">
+            <span class="badge f1-part-badge">
+                <i class="fas fa-star me-1"></i>Authentic F1 Part
+            </span>
+        </div>
+        {% endif %}
     </div>
     <div class="product-info">
         <h4 class="product-name">{{ product.name }}</h4>

@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Vendor Dashboard | RevForge{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Vendor Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark text-light border-danger">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">
+                                <i class="fas fa-store text-danger me-2"></i>
+                                Vendor Dashboard
+                            </h2>
+                            <p class="mb-0 text-light">
+                                Welcome back, {{ vendor_profile.get_full_name }}! 
+                                You're representing <strong class="text-danger">{{ vendor_profile.vendor_team }}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Verified Vendor
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light border-secondary h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes text-primary fs-1 mb-2"></i>
+                    <h4 class="text-light">{{ vendor_products.count }}</h4>
+                    <p class="text-light mb-0">Total Products</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light border-secondary h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-eye text-info fs-1 mb-2"></i>
+                    <h4 class="text-light">{{ vendor_products.count }}</h4>
+                    <p class="text-light mb-0">Active Listings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light border-secondary h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-warning fs-1 mb-2"></i>
+                    <h4 class="text-light">F1 Team</h4>
+                    <p class="text-light mb-0">{{ vendor_profile.vendor_team }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark text-light border-secondary">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-tools text-danger me-2"></i>
+                        Product Management
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'users:vendor_product_create' %}" class="btn btn-danger">
+                            <i class="fas fa-plus me-2"></i>
+                            Add New Product
+                        </a>
+                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-light">
+                            <i class="fas fa-store me-2"></i>
+                            View All Products
+                        </a>
+                        <a href="{% url 'users:profile' %}" class="btn btn-outline-light">
+                            <i class="fas fa-user me-2"></i>
+                            My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor Products -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark text-light border-secondary">
+                <div class="card-header bg-dark border-secondary">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        My Products
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if vendor_products %}
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in vendor_products %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if product.main_image %}
+                                                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}" 
+                                                         class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center" 
+                                                         style="width: 50px; height: 50px;">
+                                                        <i class="fas fa-image text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <h6 class="mb-0 text-light">{{ product.name }}</h6>
+                                                    <small class="text-light">{{ product.brand.name }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ product.category.name }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-light">${{ product.price }}</small>
+                                        </td>
+                                        <td>
+                                            {% if product.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-light">{{ product.created_at|date:"M d, Y" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'products:product_detail' slug=product.slug %}" 
+                                                   class="btn btn-sm btn-outline-info" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'users:vendor_product_edit' product_id=product.id %}" 
+                                                   class="btn btn-sm btn-outline-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'users:vendor_product_delete' product_id=product.id %}" 
+                                                   class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open text-light fs-1 mb-3"></i>
+                            <h5 class="text-light">No products yet</h5>
+                            <p class="text-light">Start by adding your first F1 authentic part!</p>
+                            <a href="{% url 'users:vendor_product_create' %}" class="btn btn-danger">
+                                <i class="fas fa-plus me-2"></i>
+                                Add Your First Product
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -5,7 +5,7 @@ from django.db.models import Avg
 
 
 class Review(models.Model):
-    # Product reviews
+    # Product reviews - simplified to rating only
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='reviews')
     
@@ -14,19 +14,6 @@ class Review(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(5)],
         help_text="Rating from 1 to 5 stars"
     )
-    
-    # Review content
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    
-    # Review status
-    is_verified_purchase = models.BooleanField(default=False, help_text="User has purchased this product")
-    is_approved = models.BooleanField(default=True, help_text="Review approved by admin")
-    is_helpful = models.BooleanField(default=False, help_text="Marked as helpful by other users")
-    
-    # Additional information
-    pros = models.TextField(blank=True, help_text="What you liked about this product")
-    cons = models.TextField(blank=True, help_text="What you didn't like about this product")
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -37,21 +24,10 @@ class Review(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Review by {self.user.username} for {self.product.name}"
+        return f"Rating by {self.user.username} for {self.product.name}"
 
     def save(self, *args, **kwargs):
-        # Check if user has purchased this product
-        if not self.is_verified_purchase:
-            from orders.models import Order
-            purchased = Order.objects.filter(
-                user=self.user,
-                items__product=self.product,
-                order_status__in=['delivered', 'shipped']
-            ).exists()
-            self.is_verified_purchase = purchased
-        
         super().save(*args, **kwargs)
-        
         # Update product's average rating
         self.product.save()
 
@@ -61,46 +37,6 @@ class Review(models.Model):
         filled_stars = '★' * self.rating
         empty_stars = '☆' * (5 - self.rating)
         return filled_stars + empty_stars
-
-    @property
-    def helpful_count(self):
-        # Get number of helpful votes
-        return self.helpful_votes.count()
-
-    @property
-    def unhelpful_count(self):
-        # Get number of unhelpful votes
-        return self.unhelpful_votes.count()
-
-
-class ReviewImage(models.Model):
-    # Review images
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='review_images')
-    image = models.ImageField(upload_to='reviews/')
-    caption = models.CharField(max_length=200, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Image for review by {self.review.user.username}"
-
-
-class ReviewVote(models.Model):
-    # Review votes
-    VOTE_CHOICES = [
-        ('helpful', 'Helpful'),
-        ('unhelpful', 'Unhelpful'),
-    ]
-    
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='votes')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    vote_type = models.CharField(max_length=10, choices=VOTE_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ['review', 'user']
-
-    def __str__(self):
-        return f"{self.user.username} voted {self.vote_type} on {self.review}"
 
 
 class ProductRating(models.Model):
@@ -120,7 +56,7 @@ class ProductRating(models.Model):
 
     def update_ratings(self):
         # Update aggregated ratings from reviews
-        reviews = self.product.reviews.filter(is_approved=True)
+        reviews = self.product.reviews.all()
         
         if reviews.exists():
             # Calculate average rating
@@ -162,42 +98,9 @@ class ProductRating(models.Model):
         return filled_stars + empty_stars
 
 
-class ReviewReport(models.Model):
-    # Review reports
-    REPORT_REASONS = [
-        ('inappropriate', 'Inappropriate Content'),
-        ('spam', 'Spam'),
-        ('fake', 'Fake Review'),
-        ('offensive', 'Offensive Language'),
-        ('other', 'Other'),
-    ]
-    
-    STATUS_CHOICES = [
-        ('pending', 'Pending Review'),
-        ('resolved', 'Resolved'),
-        ('dismissed', 'Dismissed'),
-    ]
-    
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='reports')
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE)
-    reason = models.CharField(max_length=20, choices=REPORT_REASONS)
-    description = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    admin_notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    resolved_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        unique_together = ['review', 'reporter']
-
-    def __str__(self):
-        return f"Report on review by {self.review.user.username}"
-
-
 # Signal to update product ratings when review is saved
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-
 
 @receiver(post_save, sender=Review)
 def update_product_rating(sender, instance, created, **kwargs):
@@ -205,7 +108,6 @@ def update_product_rating(sender, instance, created, **kwargs):
     product = instance.product
     rating_summary, created = ProductRating.objects.get_or_create(product=product)
     rating_summary.update_ratings()
-
 
 @receiver(post_delete, sender=Review)
 def update_product_rating_on_delete(sender, instance, **kwargs):

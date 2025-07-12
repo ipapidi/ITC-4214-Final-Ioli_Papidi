@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Case, When, F, DecimalField
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Category, SubCategory, Brand, ProductRating
@@ -13,6 +13,7 @@ import json
 
 
 def home(request):
+    # get featured products
     featured_products = Product.objects.filter(is_featured=True, is_active=True)[:6]
     bestsellers = Product.objects.filter(is_bestseller=True, is_active=True)[:6]
     categories = Category.objects.filter(is_active=True)[:9]
@@ -42,6 +43,7 @@ def home(request):
 
 
 def product_list(request):
+    # get all products
     products = Product.objects.filter(is_active=True)
 
     category = request.GET.get('category')
@@ -50,7 +52,7 @@ def product_list(request):
     sort_by = request.GET.get('sort_by', 'name')
     sort_order = request.GET.get('sort_order', 'asc')
 
-    # Filtering
+    # filter by category
     if category:
         products = products.filter(category__slug=category)
     if subcategory:
@@ -58,18 +60,29 @@ def product_list(request):
     if brand:
         products = products.filter(brand__slug=brand)
 
-    # Sorting
+    # sort products
     if sort_by == 'price':
-        order = 'price' if sort_order == 'asc' else '-price'
+        # Sort by current price (sale_price if available, otherwise price)
+        products = products.annotate(
+            sort_price=Case(
+                When(sale_price__isnull=False, then=F('sale_price')),
+                default=F('price'),
+                output_field=DecimalField(),
+            )
+        )
+        order = 'sort_price' if sort_order == 'asc' else '-sort_price'
     elif sort_by == 'Rating':
-        order = 'performance_rating' if sort_order == 'asc' else '-performance_rating'
+        # Sort by average rating
+        products = products.annotate(avg_rating=Avg('ratings__rating'))
+        order = 'avg_rating' if sort_order == 'asc' else '-avg_rating'
     elif sort_by == 'newest':
         order = 'created_at' if sort_order == 'asc' else '-created_at'
     else:
+        # Default to name sorting
         order = 'name' if sort_order == 'asc' else '-name'
     products = products.order_by(order)
 
-    # Dynamic subcategories for the selected category
+    # get subcategories
     subcategories = []
     if category:
         try:
@@ -84,38 +97,52 @@ def product_list(request):
 
     # Add star_rating property for each product (0-5 stars)
     for product in page_obj:
-        product.star_rating = min(round(product.performance_rating * 2 / 10 * 5), 5)
         # Add wishlist status for authenticated users
         if request.user.is_authenticated:
             product.is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
         else:
             product.is_in_wishlist = False
 
+    # Get categories and brands for filters
+    categories = Category.objects.filter(is_active=True)
+    brands = Brand.objects.filter(is_active=True)
+
+    # Create current_filters dict for template
+    current_filters = {
+        'category': category,
+        'subcategory': subcategory,
+        'brand': brand,
+        'sort_by': sort_by,
+        'sort_order': sort_order,
+    }
+
     context = {
         'products': page_obj,
-        'categories': Category.objects.filter(is_active=True),
-        'brands': Brand.objects.filter(is_active=True),
+        'categories': categories,
+        'brands': brands,
         'subcategories': subcategories,
-        'current_filters': {
-            'category': category,
-            'subcategory': subcategory,
-            'brand': brand,
-            'sort_by': sort_by,
-            'sort_order': sort_order,
-        },
+        'selected_category': category,
+        'selected_subcategory': subcategory,
+        'selected_brand': brand,
+        'sort_by': sort_by,
+        'sort_order': sort_order,
+        'current_filters': current_filters,
     }
     return render(request, 'products/product_list.html', context)
 
 
 def product_detail(request, slug):
+    # get product by slug
     product = get_object_or_404(Product, slug=slug, is_active=True)
     user_rating = None
     is_in_wishlist = False
     
     if request.user.is_authenticated:
+        # get user rating
         user_rating = ProductRating.objects.filter(product=product, user=request.user).first()
         is_in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
         if request.method == 'POST':
+            # handle rating form
             form = ProductRatingForm(request.POST, instance=user_rating)
             if form.is_valid():
                 rating_obj = form.save(commit=False)
@@ -158,6 +185,7 @@ def product_detail(request, slug):
 
 
 def category_detail(request, slug):
+    # get category by slug
     category = get_object_or_404(Category, slug=slug, is_active=True)
     products = Product.objects.filter(category=category, is_active=True)
     
@@ -173,6 +201,7 @@ def category_detail(request, slug):
 
 
 def subcategory_detail(request, category_slug, subcategory_slug):
+    # get subcategory by slug
     subcategory = get_object_or_404(
         SubCategory, 
         slug=subcategory_slug,
@@ -193,6 +222,7 @@ def subcategory_detail(request, category_slug, subcategory_slug):
 
 
 def brand_detail(request, slug):
+    # get brand by slug
     brand = get_object_or_404(Brand, slug=slug, is_active=True)
     products = Product.objects.filter(brand=brand, is_active=True)
     
@@ -208,6 +238,7 @@ def brand_detail(request, slug):
 
 
 def search(request):
+    # get search query
     query = request.GET.get('q', '').strip()
     products = Product.objects.filter(is_active=True)
 
@@ -219,6 +250,7 @@ def search(request):
         return redirect('products:contact')
 
     if query:
+        # filter by search
         products = products.filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
@@ -248,6 +280,7 @@ def search(request):
 
 
 def about(request):
+    # about page
     return render(request, 'products/about.html')
 
 
@@ -259,6 +292,7 @@ def contact(request):
 @csrf_exempt
 def recently_viewed(request):
     if request.method == "POST":
+        # get recently viewed ids
         data = json.loads(request.body)
         ids = data.get('viewed', [])[:3]
         products_qs = Product.objects.filter(id__in=ids)
@@ -267,3 +301,25 @@ def recently_viewed(request):
         products_html = render_to_string('products/_recently_viewed.html', {'products': products})
         return JsonResponse({'products_html': products_html})
     return JsonResponse({'products_html': ''})
+
+
+@csrf_exempt
+def get_subcategories(request):
+    # AJAX endpoint to get subcategories for a given category
+    category_slug = request.GET.get('category')
+    if category_slug:
+        try:
+            category = Category.objects.get(slug=category_slug, is_active=True)
+            subcategories = category.subcategories.filter(is_active=True)
+            data = {
+                'subcategories': [
+                    {'slug': subcat.slug, 'name': subcat.name}
+                    for subcat in subcategories
+                ]
+            }
+        except Category.DoesNotExist:
+            data = {'subcategories': []}
+    else:
+        data = {'subcategories': []}
+    
+    return JsonResponse(data)

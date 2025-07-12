@@ -5,16 +5,17 @@ from django.urls import reverse
 from django.conf import settings
 from django.core.exceptions import ValidationError
 import os
+from decimal import Decimal
 
 
 def validate_file_size(value):
-    #Validate file size (max 5MB)
+    # check file size
     filesize = value.size
     if filesize > 5 * 1024 * 1024:  # 5MB limit
         raise ValidationError("File size cannot exceed 5MB")
 
 def validate_file_type(value):
-    #Validate file type (images only)
+    # check file type
     ext = os.path.splitext(value.name)[1]
     valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
     if not ext.lower() in valid_extensions:
@@ -40,11 +41,13 @@ class Category(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        # auto create slug
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
+        # get category url
         return reverse('products:category_detail', kwargs={'slug': self.slug})
 
 
@@ -66,11 +69,13 @@ class SubCategory(models.Model):
         return f"{self.category.name} - {self.name}"
 
     def save(self, *args, **kwargs):
+        # auto create slug
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
+        # get subcategory url
         return reverse('products:subcategory_detail', kwargs={'category_slug': self.category.slug, 'subcategory_slug': self.slug})
 
 
@@ -92,6 +97,7 @@ class Brand(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        # auto create slug
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -112,7 +118,7 @@ class Product(models.Model):
     # Pricing
     price = models.DecimalField(max_digits=10, decimal_places=2)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    cost_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    discount_percentage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], help_text="Discount percentage (0-100)")
     
     # Inventory
     stock_quantity = models.PositiveIntegerField(default=0)
@@ -120,33 +126,10 @@ class Product(models.Model):
     
     # Product Details
     description = models.TextField()
-    specifications = models.JSONField(default=dict, blank=True, help_text="Technical specifications as JSON")
     features = models.TextField(blank=True, help_text="Key features and benefits")
     
     # Images
     main_image = models.ImageField(upload_to='products/main/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
-    
-    # Performance Rating Metrics
-    performance_rating = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
-        default=5,
-        help_text="Rating from 1-5"
-    )
-    weight_savings = models.CharField(max_length=50, blank=True, help_text="e.g., '2.5kg lighter'")
-    power_gain = models.CharField(max_length=50, blank=True, help_text="e.g., '+25 HP'")
-    
-    # Compatibility
-    compatible_cars = models.TextField(blank=True, help_text="Compatible car models")
-    installation_difficulty = models.CharField(
-        max_length=20,
-        choices=[
-            ('easy', 'Easy'),
-            ('medium', 'Medium'),
-            ('hard', 'Hard'),
-            ('expert', 'Expert Only')
-        ],
-        default='medium'
-    )
     
     # Status and Visibility
     is_active = models.BooleanField(default=True)
@@ -157,6 +140,20 @@ class Product(models.Model):
     meta_title = models.CharField(max_length=200, blank=True)
     meta_description = models.TextField(blank=True)
     keywords = models.CharField(max_length=500, blank=True)
+    
+    # Vendor Information
+    vendor = models.ForeignKey(
+        'users.UserProfile', 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='vendor_products',
+        help_text="Vendor who created this product"
+    )
+    is_authentic_f1_part = models.BooleanField(
+        default=False, 
+        help_text="Is this an authentic F1 part from a verified vendor?"
+    )
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -169,6 +166,13 @@ class Product(models.Model):
         return f"{self.brand.name} - {self.name}"
 
     def save(self, *args, **kwargs):
+        # Auto-calculate sale_price from price and discount_percentage
+        if self.discount_percentage:
+            self.sale_price = self.price * (Decimal('1') - Decimal(self.discount_percentage) / Decimal('100'))
+            if self.discount_percentage == 0:
+                self.sale_price = None
+        else:
+            self.sale_price = None
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -185,13 +189,6 @@ class Product(models.Model):
     def current_price(self):
         # Get current price
         return self.sale_price if self.is_on_sale else self.price
-
-    @property
-    def discount_percentage(self):
-        # Calculate discount percentage
-        if self.is_on_sale:
-            return int(((self.price - self.sale_price) / self.price) * 100)
-        return 0
 
     @property
     def stock_status(self):
@@ -212,50 +209,14 @@ class Product(models.Model):
         return None
 
 
-class ProductImage(models.Model):
-    # Additional product images
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/additional/', validators=[validate_file_size, validate_file_type])
-    alt_text = models.CharField(max_length=200, blank=True)
-    is_primary = models.BooleanField(default=False)
-    order = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['order', 'created_at']
-
-    def __str__(self):
-        return f"Image for {self.product.name}"
-
-    def save(self, *args, **kwargs):
-        # Ensure only one primary image per product
-        if self.is_primary:
-            ProductImage.objects.filter(product=self.product, is_primary=True).update(is_primary=False)
-        super().save(*args, **kwargs)
-
-
-class ProductSpecification(models.Model):
-    # Product specifications
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_specifications')
-    name = models.CharField(max_length=100)
-    value = models.CharField(max_length=200)
-    unit = models.CharField(max_length=20, blank=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ['order', 'name']
-        unique_together = ['product', 'name']
-
-    def __str__(self):
-        return f"{self.product.name} - {self.name}: {self.value} {self.unit}".strip()
-
-
 class ProductRating(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='ratings')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
-    review = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('product', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.product.name} {self.rating}/5"

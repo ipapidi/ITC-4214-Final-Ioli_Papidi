@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Category, SubCategory, Brand, Product, ProductImage, ProductSpecification
+from .models import Category, SubCategory, Brand, Product
 
 
 @admin.register(Category)
@@ -92,36 +92,20 @@ class BrandAdmin(admin.ModelAdmin):
     product_count.short_description = 'Products'
 
 
-class ProductImageInline(admin.TabularInline):
-    # Inline admin for images
-    model = ProductImage
-    extra = 1
-    fields = ['image', 'alt_text', 'is_primary', 'order']
-
-
-class ProductSpecificationInline(admin.TabularInline):
-    # Inline admin for specifications
-    model = ProductSpecification
-    extra = 1
-    fields = ['name', 'value', 'unit', 'order']
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     # Admin for products
     list_display = [
         'name', 'brand', 'category', 'price_display', 'stock_status_display', 
-        'performance_rating', 'is_featured', 'is_active', 'created_at'
+        'is_featured', 'is_active', 'created_at'
     ]
     list_filter = [
         'category', 'subcategory', 'brand', 'is_active', 'is_featured', 
-        'is_bestseller', 'installation_difficulty', 'created_at'
+        'is_bestseller', 'created_at'
     ]
     search_fields = ['name', 'sku', 'description', 'brand__name', 'category__name']
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ['created_at', 'updated_at', 'discount_percentage_display']
-    
-    inlines = [ProductImageInline, ProductSpecificationInline]
+    readonly_fields = ['created_at', 'updated_at', 'discount_percentage_display', 'sale_price']
     
     fieldsets = (
         ('Basic Information', {
@@ -131,17 +115,10 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('category', 'subcategory', 'brand')
         }),
         ('Pricing', {
-            'fields': ('price', 'sale_price', 'cost_price', 'discount_percentage_display')
+            'fields': ('price', 'discount_percentage', 'sale_price', 'discount_percentage_display')
         }),
         ('Inventory', {
             'fields': ('stock_quantity', 'min_stock_level')
-        }),
-        ('Performance Metrics', {
-            'fields': ('performance_rating', 'weight_savings', 'power_gain'),
-            'description': 'Performance metrics'
-        }),
-        ('Compatibility', {
-            'fields': ('compatible_cars', 'installation_difficulty')
         }),
         ('Media', {
             'fields': ('main_image',)
@@ -153,8 +130,8 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('meta_title', 'meta_description', 'keywords'),
             'classes': ('collapse',)
         }),
-        ('Technical Specifications', {
-            'fields': ('specifications',),
+        ('Vendor Information', {
+            'fields': ('vendor', 'is_authentic_f1_part'),
             'classes': ('collapse',)
         }),
         ('Timestamps', {
@@ -221,28 +198,3 @@ class ProductAdmin(admin.ModelAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, f'{updated} products deactivated.')
     deactivate_products.short_description = "Deactivate selected products"
-
-
-@admin.register(ProductImage)
-class ProductImageAdmin(admin.ModelAdmin):
-    # Admin for images
-    list_display = ['product', 'image_display', 'is_primary', 'order', 'created_at']
-    list_filter = ['is_primary', 'created_at']
-    search_fields = ['product__name', 'alt_text']
-    readonly_fields = ['created_at']
-
-    def image_display(self, obj):
-        """Display product image in admin list"""
-        if obj.image:
-            return format_html('<img src="{}" style="max-height: 50px; max-width: 80px;" />', obj.image.url)
-        return "No Image"
-    image_display.short_description = 'Image'
-
-
-@admin.register(ProductSpecification)
-class ProductSpecificationAdmin(admin.ModelAdmin):
-    # Admin for specifications
-    list_display = ['product', 'name', 'value', 'unit', 'order']
-    list_filter = ['order']
-    search_fields = ['product__name', 'name', 'value']
-    ordering = ['product', 'order']

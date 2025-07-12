@@ -8,13 +8,13 @@ import os
 
 
 def validate_file_size(value):
-    """Validate file size (max 5MB)"""
+    #Validate file size (max 5MB)
     filesize = value.size
     if filesize > 5 * 1024 * 1024:  # 5MB limit
         raise ValidationError("File size cannot exceed 5MB")
 
 def validate_file_type(value):
-    """Validate file type (images only)"""
+    #Validate file type (images only)
     ext = os.path.splitext(value.name)[1]
     valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
     if not ext.lower() in valid_extensions:
@@ -38,33 +38,29 @@ class UserProfile(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=100, blank=True)
     
-    # Car Information
-    primary_car_make = models.CharField(max_length=100, blank=True, help_text="e.g., Ferrari, Mercedes, BMW")
-    primary_car_model = models.CharField(max_length=100, blank=True, help_text="e.g., F8 Tributo, AMG GT, M3")
-    primary_car_year = models.PositiveIntegerField(blank=True, null=True)
-    car_color = models.CharField(max_length=50, blank=True)
-    
-    # Performance Preferences
-    performance_style = models.CharField(
+    # Vendor Information
+    is_vendor = models.BooleanField(default=False, help_text="Is this user a vendor?")
+    vendor_status = models.CharField(
         max_length=20,
         choices=[
-            ('track', 'Track Performance'),
-            ('street', 'Street Performance'),
-            ('show', 'Show Car'),
-            ('daily', 'Daily Driver'),
-            ('f1_inspired', 'F1 Inspired')
+            ('pending', 'Pending Approval'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected')
         ],
-        default='street'
+        default='pending',
+        help_text="Vendor approval status"
     )
-    
-    # F1 Team Preferences
-    favorite_f1_team = models.CharField(max_length=100, blank=True)
-    favorite_driver = models.CharField(max_length=100, blank=True)
-    
-    # Notification Preferences
-    email_notifications = models.BooleanField(default=True)
-    sms_notifications = models.BooleanField(default=False)
-    newsletter_subscription = models.BooleanField(default=True)
+    vendor_team = models.CharField(max_length=100, blank=True, help_text="F1 team this vendor represents")
+    vendor_application_date = models.DateTimeField(blank=True, null=True)
+    vendor_approved_date = models.DateTimeField(blank=True, null=True)
+    vendor_approved_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        blank=True, 
+        null=True, 
+        related_name='approved_vendors',
+        help_text="Admin who approved this vendor"
+    )
     
     # Account Settings
     is_verified = models.BooleanField(default=False)
@@ -85,12 +81,19 @@ class UserProfile(models.Model):
         # Get user's full name
         return f"{self.user.first_name} {self.user.last_name}".strip() or self.user.username
 
-    def get_car_info(self):
-        # Get formatted car information
-        if self.primary_car_make and self.primary_car_model:
-            year = f" {self.primary_car_year}" if self.primary_car_year else ""
-            return f"{self.primary_car_make} {self.primary_car_model}{year}"
-        return "No car specified"
+    def is_verified_vendor(self):
+        # Check if user is a verified vendor
+        return self.is_vendor and self.vendor_status == 'approved'
+
+    def get_vendor_badge(self):
+        # Get vendor badge text
+        if self.is_verified_vendor():
+            return "Verified Vendor"
+        elif self.is_vendor and self.vendor_status == 'pending':
+            return "Vendor (Pending)"
+        elif self.is_vendor and self.vendor_status == 'rejected':
+            return "Vendor (Rejected)"
+        return None
 
 
 class Wishlist(models.Model):
@@ -144,18 +147,6 @@ class UserPreference(models.Model):
     price_range_min = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     price_range_max = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     
-    # Notification Settings
-    email_frequency = models.CharField(
-        max_length=20,
-        choices=[
-            ('daily', 'Daily'),
-            ('weekly', 'Weekly'),
-            ('monthly', 'Monthly'),
-            ('never', 'Never')
-        ],
-        default='weekly'
-    )
-    
     # Privacy Settings
     profile_visibility = models.CharField(
         max_length=20,
@@ -178,11 +169,13 @@ class UserPreference(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
+        # make user profile
         UserProfile.objects.create(user=instance)
         UserPreference.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    # save profile and prefs
     instance.profile.save()
     instance.preferences.save()
