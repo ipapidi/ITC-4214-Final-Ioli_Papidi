@@ -1,0 +1,14 @@
+{% if products %}
+<div class="recently-viewed-section">
+    <div class="container">
+        <h3 class="recently-viewed-title text-center">Recently Viewed</h3><br>
+        <div class="row g-4 recently-viewed-list">
+            {% for product in products %}
+                <div class="col-md-6 col-lg-4">
+                    {% include 'products/_product_card.html' with product=product hide_add_to_cart=True only %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %} 

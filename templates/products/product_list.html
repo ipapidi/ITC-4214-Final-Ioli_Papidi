@@ -1,0 +1,186 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}All Products | RevForge{% endblock %}
+
+{% block extra_css %}
+<style>
+.filter-bar {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: 0 2px 12px rgba(231,76,60,0.07);
+}
+.filter-bar label {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+.filter-bar select {
+    background: var(--dark-bg);
+    color: var(--text-light);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    min-width: 120px;
+    margin-right: 0.5rem;
+}
+.filter-bar select:focus {
+    outline: none;
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 2px rgba(231,76,60,0.13);
+}
+.clear-filters-btn {
+    margin-left: auto;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(231,76,60,0.07);
+    display: inline-block;
+}
+.clear-filters-btn:hover {
+    background: var(--accent-light);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Product card clickable styling */
+.product-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.product-card .clickable-area {
+    cursor: pointer;
+}
+
+.product-card .non-clickable {
+    cursor: default;
+}
+
+.product-card .btn {
+    position: relative;
+    z-index: 10;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="products-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">All Products</h2>
+        </div>
+        <!-- Minimalistic Filter/Sort Bar -->
+        <form method="get" id="filter-form" class="filter-bar">
+            <label for="category">Category</label>
+            <select name="category" id="category-select" onchange="updateSubcategories(); this.form.submit();">
+                <option value="">All</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if current_filters.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="subcategory">Subcategory</label>
+            <select name="subcategory" id="subcategory-select" onchange="this.form.submit();">
+                <option value="">All</option>
+                {% for subcat in subcategories %}
+                    <option value="{{ subcat.slug }}" {% if current_filters.subcategory == subcat.slug %}selected{% endif %}>{{ subcat.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="brand">Brand</label>
+            <select name="brand" onchange="this.form.submit();">
+                <option value="">All</option>
+                {% for brand in brands %}
+                    <option value="{{ brand.slug }}" {% if current_filters.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="sort_by">Sort</label>
+            <select name="sort_by" onchange="this.form.submit();">
+                <option value="name" {% if current_filters.sort_by == 'name' %}selected{% endif %}>Name</option>
+                <option value="price" {% if current_filters.sort_by == 'price' %}selected{% endif %}>Price</option>
+                <option value="Rating" {% if current_filters.sort_by == 'Rating' %}selected{% endif %}>Rating</option>
+                <option value="newest" {% if current_filters.sort_by == 'newest' %}selected{% endif %}>Newest</option>
+            </select>
+            <select name="sort_order" onchange="this.form.submit();">
+                <option value="asc" {% if current_filters.sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+                <option value="desc" {% if current_filters.sort_order == 'desc' %}selected{% endif %}>Descending</option>
+            </select>
+            <a href="{% url 'products:product_list' %}" class="clear-filters-btn">Clear</a>
+        </form>
+        <!-- Products Grid -->
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-md-6 col-lg-4">
+                {% include 'products/_product_card.html' with product=product show_remove=False %}
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No products found</h4>
+                    <p class="text-muted">Try adjusting your filters or search terms</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Clear Filters</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="row mt-5">
+            <div class="col-12 d-flex justify-content-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        {% endif %}
+                        {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<script src="{% static 'js/products_product_list.js' %}" defer></script>
+{% endblock %} 

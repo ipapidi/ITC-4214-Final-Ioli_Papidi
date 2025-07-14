@@ -1,0 +1,98 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}RevForge - Premium Car Performance Parts{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background-image: url('{% static 'images/homebackground.png' %}');">
+    <div class="container">
+        <div class="row min-vh-100">
+            <div class="col-lg-7 col-md-10 d-flex flex-column justify-content-center">
+                <div class="hero-content text-center text-lg-start">
+                    <h1 class="hero-title">
+                        <span class="accent">REV</span>FORGE
+                    </h1>
+                    <p class="hero-subtitle">
+                        F1-Inspired Performance Parts
+                    </p>
+                    <p class="hero-description">
+                        Premium automotive upgrades designed with Formula 1 precision.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+                            Shop Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Categories</h2>
+        </div>
+
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        {% if category.icon_class %}
+                            <img src="{{ category.icon_class.url }}" alt="{{ category.name }} icon" style="width:64px;height:64px;object-fit:contain;border-radius:16px;box-shadow:0 2px 8px rgba(220,53,69,0.12);background:#181a1b;">
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
+                    </div>
+                    <h3 class="category-title">{{ category.name }}</h3>
+                    <p class="category-description">{{ category.description|truncatewords:8 }}</p>
+                    <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link">
+                        Explore
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section id="featured" class="featured-section py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Featured Products</h2>
+        </div>
+
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-md-6 col-lg-4">
+                {% include 'products/_product_card.html' with product=product show_remove=False %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="cta-title">Ready to Upgrade Your Vehicle?</h2>
+                <p class="cta-description">
+                    Join thousands of performance enthusiasts who trust RevForge.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
+                    Shop Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | RevForge{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/f1_part_badge.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="product-detail-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 position-relative">
+                {% if product.main_image %}
+                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+                {% else %}
+                <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded" style="height:350px;">
+                    <i class="fas fa-image fa-4x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Authentic F1 Part Badge on Image -->
+                {% if product.is_authentic_f1_part %}
+                <div class="position-absolute top-0 start-0 m-3">
+                    <span class="badge f1-part-badge fs-6 shadow">
+                        <i class="fas fa-star me-1"></i>Authentic F1 Part
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-3 d-flex align-items-center justify-content-between">
+                    {{ product.name }}
+                    <span class="ms-3 wishlist-heart">
+                        {% if user.is_authenticated %}
+                            <button type="button"
+                                class="btn {% if is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
+                                title="{% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
+                                onclick="toggleWishlist({{ product.id|escapejs }}, {{ is_in_wishlist|yesno:'true,false' }}, this)">
+                                {% if is_in_wishlist %}
+                                    <i class="fas fa-heart"></i>
+                                {% else %}
+                                    <i class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                        {% else %}
+                            <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-danger rounded-circle" title="Login to add to Wishlist">
+                                <i class="far fa-heart"></i>
+                            </a>
+                        {% endif %}
+                    </span>
+                </h2>
+                
+                <!-- Authentic F1 Part Badge -->
+                {% if product.is_authentic_f1_part %}
+                <div class="mb-3">
+                    <span class="badge f1-part-badge fs-6">
+                        <i class="fas fa-star me-1"></i>Authentic F1 Part
+                    </span>
+                    {% if product.vendor %}
+                    <small class="f1-vendor-team ms-2">by {{ product.vendor.vendor_team }}</small>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="mb-2 #ffffff">Brand: <strong>{{ product.brand.name }}</strong></div>
+                <div class="mb-3">
+                    {% if product.is_on_sale %}
+                    <span class="original-price h5 text-decoration-line-through me-2">${{ product.price }}</span>
+                    <span class="current-price h4 text-danger fw-bold">${{ product.sale_price }}</span>
+                    {% else %}
+                    <span class="current-price h4">${{ product.price }}</span>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {% if product.stock_status == 'out_of_stock' %}
+                        <span class="badge bg-danger" style="font-size:1rem;">Out of Stock</span>
+                    {% elif product.stock_status == 'low_stock' %}
+                        <span class="badge bg-warning text-dark" style="font-size:1rem;">Low Stock ({{ product.stock_quantity }})</span>
+                    {% else %}
+                        <span class="badge bg-success" style="font-size:1rem;">In Stock ({{ product.stock_quantity }})</span>
+                    {% endif %}
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="user-rating-form mb-4">
+                        <h5>{% if user_rating %}Update Your Rating{% else %}Rate this Product{% endif %}</h5>
+                        <form method="post" id="rating-form">
+                            {% csrf_token %}
+                            <div class="star-rating" id="star-rating">
+                                {% for i in "12345" %}
+                                    <span class="star{% if user_rating and user_rating.rating >= forloop.counter %} filled{% endif %}" data-value="{{ forloop.counter }}">&#9733;</span>
+                                {% endfor %}
+                            </div>
+                            {{ form.rating }}
+                            <button type="submit" class="btn btn-primary mt-2">Submit Rating</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">Log in to rate this product.</div>
+                {% endif %}
+                <div class="mb-4">
+                    <h5>Description</h5>
+                    <p>{{ product.description }}</p>
+                </div>
+                {% if product.features %}
+                <div class="mb-4">
+                    <h5>Features</h5>
+                    <ul>
+                        {% for feature in product.features.splitlines %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mb-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                        {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                    </button>
+                </form>
+                {% else %}
+                <a href="{% url 'users:login' %}?next={% url 'products:product_detail' product.slug %}" class="btn btn-danger w-100 mb-3 {% if product.stock_quantity == 0 %}disabled{% endif %}">
+                    {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                </a>
+                {% endif %}
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary mt-3">&larr; Back to Products</a>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="recently-viewed-container" 
+     data-recently-viewed-url="{% url 'products:recently_viewed' %}"
+     data-product-id="{{ product.id|escapejs }}"
+     data-csrf-token="{{ csrf_token|escapejs }}"></div>
+
+{% if recommended_products %}
+<div class="recommended-section mt-5">
+    <div class="container">
+        <h3 class="text-center mb-4">Recommended for You</h3>
+        <div class="row g-4">
+            {% for product in recommended_products %}
+            <div class="col-md-6 col-lg-4">
+                {% include 'products/_product_card.html' with product=product hide_add_to_cart=True only %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.star-rating {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    user-select: none;
+}
+.star-rating .star {
+    display: inline-block;
+    transition: color 0.2s;
+}
+.star-rating .star.filled,
+.star-rating .star.selected {
+    color: #ffc107;
+}
+</style>
+{% block extra_js %}
+<script src="{% static 'js/products_product_detail.js' %}?v=1" defer></script>
+{% endblock %}
+{% endblock %} 
