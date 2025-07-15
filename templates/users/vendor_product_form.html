@@ -15,61 +15,61 @@
 
 {% block content %}
 <div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="row justify-content-center"> <!-- Row -->
+        <div class="col-lg-8"> <!-- Column -->
             <!-- Header -->
-            <div class="card bg-dark text-light border-danger mb-4">
+            <div class="card bg-dark text-light border-danger mb-4"> <!-- Card -->
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-{% if product %}edit{% else %}plus{% endif %} text-danger fs-1 me-3"></i>
-                        <div>
-                            <h2 class="mb-1">
+                    <div class="d-flex align-items-center"> <!-- Flex align items -->
+                        <i class="fas fa-{% if product %}edit{% else %}plus{% endif %} text-danger fs-1 me-3"></i> <!-- Icon -->
+                        <div> <!-- Div -->
+                            <h2 class="mb-1"> <!-- Heading -->
                                 {% if product %}Edit Product{% else %}Add New Product{% endif %}
-                            </h2>
-                            <p class="text-light mb-0">
-                                {% if product %}
+                            </h2> <!-- Heading -->
+                            <p class="text-light mb-0"> <!-- Paragraph -->
+                                {% if product %} <!-- If product -->
                                     Update your F1 authentic part details
-                                {% else %}
+                                {% else %} <!-- If product is not set -->
                                     Create a new F1 authentic part for your team
-                                {% endif %}
+                                {% endif %} <!-- End if product -->
                             </p>
-                        </div>
-                    </div>
-                </div>
+                        </div> <!-- Div -->
+                    </div> <!-- Flex align items -->
+                </div> <!-- Card body -->
             </div>
 
             <!-- Product Form -->
-            <div class="card bg-dark text-light border-secondary">
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+            <div class="card bg-dark text-light border-secondary"> <!-- Card -->
+                <div class="card-body"> <!-- Card body -->
+                    <form method="post" enctype="multipart/form-data"> <!-- Form -->
+                        {% csrf_token %} <!-- CSRF token -->
                         
-                        <div class="row">
+                        <div class="row"> <!-- Row -->
                             <!-- Product Name -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3"> <!-- Column -->
                                 <label for="{{ form.name.id_for_label }}" class="form-label text-light">
                                     <i class="fas fa-tag me-2"></i>{{ form.name.label }} *
-                                </label>
-                                {{ form.name }}
-                                {% if form.name.errors %}
+                                </label> <!-- Label -->
+                                {{ form.name }} <!-- Field -->
+                                {% if form.name.errors %} <!-- If form name errors -->
                                     <div class="text-danger small mt-1">
                                         {% for error in form.name.errors %}
                                             <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                            </div>
+                            </div> <!-- Column -->
 
                             <!-- Category -->
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.category.id_for_label }}" class="form-label text-light">
-                                    <i class="fas fa-folder me-2"></i>{{ form.category.label }} *
-                                </label>
-                                {{ form.category }}
-                                {% if form.category.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {% for error in form.category.errors %}
-                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                                <label for="{{ form.category.id_for_label }}" class="form-label text-light"> <!-- Label -->
+                                    <i class="fas fa-folder me-2"></i>{{ form.category.label }} * <!-- Icon -->
+                                </label> <!-- Label -->
+                                {{ form.category }} <!-- Field -->
+                                {% if form.category.errors %} <!-- If form category errors -->
+                                    <div class="text-danger small mt-1"> <!-- Text danger -->
+                                        {% for error in form.category.errors %} <!-- For each error -->
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }} <!-- Icon -->
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -78,108 +78,108 @@
 
                         <!-- Description -->
                         <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label text-light">
-                                <i class="fas fa-align-left me-2"></i>{{ form.description.label }} *
-                            </label>
-                            {{ form.description }}
-                            <div class="form-text text-light">
-                                Describe your F1 authentic part in detail
-                            </div>
-                            {% if form.description.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.description.errors %}
-                                        <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            <label for="{{ form.description.id_for_label }}" class="form-label text-light"> <!-- Label -->
+                                <i class="fas fa-align-left me-2"></i>{{ form.description.label }} * <!-- Icon -->
+                            </label> <!-- Label -->
+                            {{ form.description }} <!-- Field -->
+                            <div class="form-text text-light"> <!-- Form text -->
+                                Describe your F1 authentic part in detail <!-- Paragraph -->
+                            </div> <!-- Form text -->
+                            {% if form.description.errors %} <!-- If form description errors -->
+                                <div class="text-danger small mt-1"> <!-- Text danger -->
+                                    {% for error in form.description.errors %} <!-- For each error -->
+                                        <i class="fas fa-exclamation-triangle me-1"></i>{{ error }} <!-- Icon -->
                                     {% endfor %}
-                                </div>
-                            {% endif %}
+                                </div> <!-- Text danger -->
+                            {% endif %} <!-- End if form description errors -->
                         </div>
 
                         <!-- Price and Stock -->
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.price.id_for_label }}" class="form-label text-light">
-                                    <i class="fas fa-dollar-sign me-2"></i>{{ form.price.label }} *
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-dark text-light border-secondary">$</span>
-                                    {{ form.price }}
-                                </div>
-                                {% if form.price.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {% for error in form.price.errors %}
-                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            <div class="col-md-6 mb-3"> <!-- Column -->
+                                <label for="{{ form.price.id_for_label }}" class="form-label text-light"> <!-- Label -->
+                                    <i class="fas fa-dollar-sign me-2"></i>{{ form.price.label }} * <!-- Icon -->
+                                </label> <!-- Label -->
+                                <div class="input-group"> <!-- Input group -->
+                                    <span class="input-group-text bg-dark text-light border-secondary">$</span> <!-- Input group text -->
+                                    {{ form.price }} <!-- Field -->
+                                </div> <!-- Input group -->
+                                {% if form.price.errors %} <!-- If form price errors -->
+                                    <div class="text-danger small mt-1"> <!-- Text danger -->
+                                        {% for error in form.price.errors %} <!-- For each error -->
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }} <!-- Icon -->
                                         {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                                    </div> <!-- Text danger -->
+                                {% endif %} <!-- End if form price errors -->
+                            </div> <!-- Column -->
 
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.stock_quantity.id_for_label }}" class="form-label text-light">
-                                    <i class="fas fa-boxes me-2"></i>{{ form.stock_quantity.label }}
-                                </label>
-                                {{ form.stock_quantity }}
-                                {% if form.stock_quantity.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {% for error in form.stock_quantity.errors %}
-                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                            <div class="col-md-6 mb-3"> <!-- Column -->
+                                <label for="{{ form.stock_quantity.id_for_label }}" class="form-label text-light"> <!-- Label -->
+                                    <i class="fas fa-boxes me-2"></i>{{ form.stock_quantity.label }} <!-- Icon -->
+                                </label> <!-- Label -->
+                                {{ form.stock_quantity }} <!-- Field -->
+                                {% if form.stock_quantity.errors %} <!-- If form stock quantity errors -->
+                                    <div class="text-danger small mt-1"> <!-- Text danger -->
+                                        {% for error in form.stock_quantity.errors %} <!-- For each error -->
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }} <!-- Icon -->
                                         {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                                    </div> <!-- Text danger -->
+                                {% endif %} <!-- End if form stock quantity errors -->
+                            </div> <!-- Column -->
                         </div>
 
                         <!-- Product Image -->
                         <div class="mb-3">
-                            <label for="{{ form.main_image.id_for_label }}" class="form-label text-light">
-                                <i class="fas fa-image me-2"></i>{{ form.main_image.label }}
-                            </label>
-                            <div class="d-flex align-items-center gap-2">
-                                {{ form.main_image }}
-                                <button type="button" id="clear-image-btn" class="btn btn-outline-danger btn-sm ms-2">Clear Image</button>
-                            </div>
-                            <div class="form-text text-light">
+                            <label for="{{ form.main_image.id_for_label }}" class="form-label text-light"> <!-- Label -->
+                                <i class="fas fa-image me-2"></i>{{ form.main_image.label }} <!-- Icon -->
+                            </label> <!-- Label -->
+                            <div class="d-flex align-items-center gap-2"> <!-- Flex align items -->
+                                {{ form.main_image }} <!-- Field -->
+                                <button type="button" id="clear-image-btn" class="btn btn-outline-danger btn-sm ms-2">Clear Image</button> <!-- Button -->
+                            </div> <!-- Flex align items -->
+                            <div class="form-text text-light"> <!-- Form text -->
                                 {{ form.main_image.help_text }}
-                            </div>
-                            {% if form.main_image.errors %}
-                                <div class="text-danger small mt-1">
+                            </div> <!-- Form text -->
+                            {% if form.main_image.errors %} <!-- If form main image errors -->
+                                <div class="text-danger small mt-1"> <!-- Text danger -->
                                     {% for error in form.main_image.errors %}
                                         <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                            {% if product and product.main_image %}
-                                <div class="mt-2" id="current-image-preview">
-                                    <small class="text-light">Current image:</small>
+                            {% if product and product.main_image %} <!-- If product and product main image -->
+                                <div class="mt-2" id="current-image-preview"> <!-- Div -->
+                                    <small class="text-light">Current image:</small> <!-- Small -->
                                     <img src="{{ product.main_image.url }}" 
                                          alt="{{ product.name }}" 
                                          class="img-thumbnail mt-1" 
-                                         style="max-width: 150px; max-height: 150px;">
-                                </div>
-                            {% endif %}
-                            <input type="hidden" name="clear_image" id="clear_image" value="0">
+                                         style="max-width: 150px; max-height: 150px;"> <!-- Image -->
+                                </div> <!-- Div -->
+                            {% endif %} <!-- End if product and product main image -->
+                            <input type="hidden" name="clear_image" id="clear_image" value="0"> <!-- Hidden input -->
                         </div>
 
                         <!-- F1 Team Badge -->
-                        <div class="alert alert-info bg-dark border-info">
-                            <i class="fas fa-star text-danger me-2"></i>
-                            <strong>F1 Authentic Part</strong>
-                            <br>
-                            <small class="text-light">
-                                This product will be marked as an authentic F1 part from your team ({{ user.profile.vendor_team }})
-                                <br>
-                                <strong>Brand:</strong> Will automatically be set to "{{ user.profile.vendor_team }}"
+                        <div class="alert alert-info bg-dark border-info"> <!-- Alert -->
+                            <i class="fas fa-star text-danger me-2"></i> <!-- Icon -->
+                            <strong>F1 Authentic Part</strong> <!-- Strong -->
+                            <br> <!-- Break -->
+                            <small class="text-light"> <!-- Small -->
+                                This product will be marked as an authentic F1 part from your team ({{ user.profile.vendor_team }}) <!-- Paragraph -->
+                                <br> <!-- Break -->
+                                <strong>Brand:</strong> Will automatically be set to "{{ user.profile.vendor_team }}" <!-- Strong -->
                             </small>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'users:vendor_dashboard' %}" class="btn btn-outline-light">
-                                <i class="fas fa-arrow-left me-2"></i>
-                                Back to Dashboard
+                        <div class="d-flex justify-content-between"> <!-- Flex justify content -->
+                            <a href="{% url 'users:vendor_dashboard' %}" class="btn btn-outline-light"> <!-- Button -->
+                                <i class="fas fa-arrow-left me-2"></i> <!-- Icon -->
+                                Back to Dashboard <!-- Back to dashboard -->
                             </a>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-{% if product %}save{% else %}plus{% endif %} me-2"></i>
-                                {% if product %}Update Product{% else %}Create Product{% endif %}
+                            <button type="submit" class="btn btn-danger"> <!-- Button -->
+                                <i class="fas fa-{% if product %}save{% else %}plus{% endif %} me-2"></i> <!-- Icon -->
+                                {% if product %}Update Product{% else %}Create Product{% endif %} <!-- Button text -->
                             </button>
                         </div>
                     </form>

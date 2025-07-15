@@ -7,56 +7,56 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;">
-    <div class="col-md-6 col-lg-5">
-        <form method="post" novalidate class="contact-form p-4 rounded-4 shadow">
-            <h2 class="mb-4 text-center text-light">Create Account</h2>
-            {% csrf_token %}
+<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;"> <!-- Register section -->
+    <div class="col-md-6 col-lg-5"> <!-- Column -->
+        <form method="post" novalidate class="contact-form p-4 rounded-4 shadow"> <!-- Form -->
+            <h2 class="mb-4 text-center text-light">Create Account</h2> <!-- Create account -->
+            {% csrf_token %} <!-- CSRF token -->
             
             <!-- Regular registration fields -->
-            {% for field in form %}
+            {% for field in form %} <!-- For each field -->
                 {% if field.name not in 'is_vendor,vendor_team' %}
-                    <div class="mb-3">
-                        <label class="form-label">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
-                        {% for error in field.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                    <div class="mb-3"> <!-- Margin bottom -->
+                        <label class="form-label">{{ field.label }}</label> <!-- Label -->
+                        {{ field }} <!-- Field -->
+                        {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %} <!-- Help text -->
+                        {% for error in field.errors %} <!-- For each error -->
+                            <div class="text-danger small">{{ error }}</div> <!-- Error -->
+                        {% endfor %} <!-- End for each error -->
+                    </div> <!-- Margin bottom -->
                 {% endif %}
             {% endfor %}
             
             <!-- Vendor registration section -->
             <div class="vendor-section">
-                <h5 class="text-light mb-3">Vendor Registration (Optional)</h5>
-                <div class="mb-3">
-                    <div class="form-check">
-                        {{ form.is_vendor }}
-                        <label class="form-check-label text-light" for="{{ form.is_vendor.id_for_label }}">
-                            {{ form.is_vendor.label }}
-                        </label>
-                        <div class="form-text">
+                <h5 class="text-light mb-3">Vendor Registration (Optional)</h5> <!-- Vendor registration -->
+                <div class="mb-3"> <!-- Margin bottom -->
+                    <div class="form-check"> <!-- Form check -->
+                        {{ form.is_vendor }} <!-- Field -->
+                        <label class="form-check-label text-light" for="{{ form.is_vendor.id_for_label }}"> <!-- Label -->
+                            {{ form.is_vendor.label }} <!-- Label -->
+                        </label> <!-- Label -->
+                        <div class="form-text"> <!-- Form text -->
                             Register as an F1 team vendor to sell authentic parts
-                        </div>
-                    </div>
-                </div>
+                        </div> <!-- Form text -->
+                    </div> <!-- Form check -->
+                </div> <!-- Margin bottom -->
                 
-                <div class="mb-3" id="vendor_team_container">
-                    <label class="form-label">{{ form.vendor_team.label }}</label>
-                    {{ form.vendor_team }}
-                    {% if form.vendor_team.help_text %}<div class="form-text">{{ form.vendor_team.help_text|safe }}</div>{% endif %}
-                    {% for error in form.vendor_team.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                <div class="mb-3" id="vendor_team_container"> <!-- Margin bottom -->
+                    <label class="form-label">{{ form.vendor_team.label }}</label> <!-- Label -->
+                    {{ form.vendor_team }} <!-- Field -->
+                    {% if form.vendor_team.help_text %}<div class="form-text">{{ form.vendor_team.help_text|safe }}</div>{% endif %} <!-- Help text -->
+                    {% for error in form.vendor_team.errors %} <!-- For each error -->
+                        <div class="text-danger small">{{ error }}</div> <!-- Error -->
+                    {% endfor %} <!-- End for each error -->
+                </div> <!-- Margin bottom -->
             </div>
             
-            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2 btn-register">Register</button>
-            <div class="mt-4 text-center login-link">
-                <span class="form-text">Already have an account?</span>
-                <a href="{% url 'users:login' %}" class="fw-semibold ms-1">Log in</a>
-            </div>
+            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2 btn-register">Register</button> <!-- Register button -->
+            <div class="mt-4 text-center login-link"> <!-- Login link -->
+                <span class="form-text">Already have an account?</span> <!-- Already have an account -->
+                <a href="{% url 'users:login' %}" class="fw-semibold ms-1">Log in</a> <!-- Log in -->
+            </div> <!-- Login link -->
         </form>
     </div>
 </div>

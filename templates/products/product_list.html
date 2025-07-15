@@ -3,8 +3,8 @@
 
 {% block title %}All Products | RevForge{% endblock %}
 
-{% block extra_css %}
-<style>
+{% block extra_css %} <!-- Forgot to move this to the css file before the deployment -->
+<style> 
 .filter-bar {
     background: var(--card-bg);
     border-radius: 10px;
@@ -78,60 +78,60 @@
 {% endblock %}
 
 {% block content %}
-<section class="products-section py-5">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="section-title">All Products</h2>
+<section class="products-section py-5"> <!-- Products section -->
+    <div class="container"> <!-- Container -->
+        <div class="section-header text-center mb-5"> <!-- Section header -->
+            <h2 class="section-title">All Products</h2> <!-- Section title -->
         </div>
         <!-- Minimalistic Filter/Sort Bar -->
-        <form method="get" id="filter-form" class="filter-bar">
-            <label for="category">Category</label>
+        <form method="get" id="filter-form" class="filter-bar"> <!-- Filter form -->
+            <label for="category">Category</label> <!-- Category label -->
             <select name="category" id="category-select" onchange="updateSubcategories(); this.form.submit();">
                 <option value="">All</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.slug }}" {% if current_filters.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
+                {% for cat in categories %} <!-- For each category -->
+                    <option value="{{ cat.slug }}" {% if current_filters.category == cat.slug %}selected{% endif %}>{{ cat.name }}</option> <!-- Category option -->
+                {% endfor %} <!-- End for each category -->
             </select>
-            <label for="subcategory">Subcategory</label>
-            <select name="subcategory" id="subcategory-select" onchange="this.form.submit();">
-                <option value="">All</option>
-                {% for subcat in subcategories %}
+            <label for="subcategory">Subcategory</label> <!-- Subcategory label -->
+            <select name="subcategory" id="subcategory-select" onchange="this.form.submit();"> <!-- Subcategory select -->
+                <option value="">All</option> <!-- All option -->
+                {% for subcat in subcategories %} <!-- For each subcategory -->
                     <option value="{{ subcat.slug }}" {% if current_filters.subcategory == subcat.slug %}selected{% endif %}>{{ subcat.name }}</option>
                 {% endfor %}
             </select>
-            <label for="brand">Brand</label>
-            <select name="brand" onchange="this.form.submit();">
-                <option value="">All</option>
-                {% for brand in brands %}
-                    <option value="{{ brand.slug }}" {% if current_filters.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>
-                {% endfor %}
-            </select>
-            <label for="sort_by">Sort</label>
+            <label for="brand">Brand</label> <!-- Brand label -->
+            <select name="brand" onchange="this.form.submit();"> <!-- Brand select -->
+                <option value="">All</option> <!-- All option -->
+                {% for brand in brands %} <!-- For each brand -->
+                    <option value="{{ brand.slug }}" {% if current_filters.brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option> <!-- Brand option -->
+                {% endfor %} <!-- End for each brand -->
+            </select> <!-- End brand select -->
+            <label for="sort_by">Sort</label> <!-- Sort label -->
             <select name="sort_by" onchange="this.form.submit();">
-                <option value="name" {% if current_filters.sort_by == 'name' %}selected{% endif %}>Name</option>
-                <option value="price" {% if current_filters.sort_by == 'price' %}selected{% endif %}>Price</option>
-                <option value="Rating" {% if current_filters.sort_by == 'Rating' %}selected{% endif %}>Rating</option>
-                <option value="newest" {% if current_filters.sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="name" {% if current_filters.sort_by == 'name' %}selected{% endif %}>Name</option> <!-- Name option -->
+                <option value="price" {% if current_filters.sort_by == 'price' %}selected{% endif %}>Price</option> <!-- Price option -->
+                <option value="Rating" {% if current_filters.sort_by == 'Rating' %}selected{% endif %}>Rating</option> <!-- Rating option -->
+                <option value="newest" {% if current_filters.sort_by == 'newest' %}selected{% endif %}>Newest</option> <!-- Newest option -->
+            </select> <!-- End sort select -->
+            <select name="sort_order" onchange="this.form.submit();"> <!-- Sort order select -->
+                <option value="asc" {% if current_filters.sort_order == 'asc' %}selected{% endif %}>Ascending</option> <!-- Ascending option -->
+                <option value="desc" {% if current_filters.sort_order == 'desc' %}selected{% endif %}>Descending</option> <!-- Descending option -->
             </select>
-            <select name="sort_order" onchange="this.form.submit();">
-                <option value="asc" {% if current_filters.sort_order == 'asc' %}selected{% endif %}>Ascending</option>
-                <option value="desc" {% if current_filters.sort_order == 'desc' %}selected{% endif %}>Descending</option>
-            </select>
-            <a href="{% url 'products:product_list' %}" class="clear-filters-btn">Clear</a>
+            <a href="{% url 'products:product_list' %}" class="clear-filters-btn">Clear</a> 
         </form>
         <!-- Products Grid -->
         <div class="row g-4">
-            {% for product in products %}
-            <div class="col-md-6 col-lg-4">
-                {% include 'products/_product_card.html' with product=product show_remove=False %}
-            </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5">
+            {% for product in products %} <!-- For each product -->
+            <div class="col-md-6 col-lg-4"> <!-- Column -->
+                {% include 'products/_product_card.html' with product=product show_remove=False %} <!-- Product card -->
+            </div> <!-- Column -->
+            {% empty %} <!-- If there are no products -->
+            <div class="col-12"> <!-- Column -->
+                <div class="text-center py-5"> <!-- Text center -->
                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4>No products found</h4>
-                    <p class="text-muted">Try adjusting your filters or search terms</p>
-                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Clear Filters</a>
+                    <h4>No products found</h4> <!-- No products found -->
+                    <p class="text-muted">Try adjusting your filters or search terms</p> <!-- Try adjusting your filters or search terms -->
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Clear Filters</a> <!-- Clear filters -->
                 </div>
             </div>
             {% endfor %}
@@ -139,48 +139,48 @@
         <!-- Pagination -->
         {% if products.has_other_pages %}
         <div class="row mt-5">
-            <div class="col-12 d-flex justify-content-center">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        {% if products.has_previous %}
+            <div class="col-12 d-flex justify-content-center"> <!-- Column -->
+                <nav aria-label="Page navigation"> <!-- Page navigation -->
+                    <ul class="pagination"> <!-- Pagination -->
+                        {% if products.has_previous %} <!-- If there is a previous page -->
                         <li class="page-item">
                             <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.previous_page_number }}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;</span>
+                        {% else %} <!-- If there is no previous page -->
+                        <li class="page-item disabled"> <!-- Page item -->
+                            <span class="page-link">&laquo;</span> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% endif %} <!-- End if there is no previous page -->
+                        {% for num in products.paginator.page_range %} <!-- For each page number -->
+                        {% if products.number == num %} <!-- If the current page is the same as the page number -->
+                        <li class="page-item active"> <!-- Page item -->
+                            <span class="page-link">{{ num }}</span> <!-- Page link -->
                         </li>
-                        {% endif %}
-                        {% for num in products.paginator.page_range %}
-                        {% if products.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %} <!-- If the page number is within 3 pages of the current page --></products.number>
+                        <li class="page-item"> <!-- Page item -->
+                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ num }}">{{ num }}</a> <!-- Page link -->
                         </li>
-                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ num }}">{{ num }}</a>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-                        {% if products.has_next %}
-                        <li class="page-item">
+                        {% endif %} <!-- End if there is no previous page -->
+                        {% endfor %} <!-- End for each page number -->
+                        {% if products.has_next %} <!-- If there is a next page -->
+                        <li class="page-item"> <!-- Page item -->
                             <a class="page-link" href="?{% if current_filters.category %}category={{ current_filters.category }}{% endif %}{% if current_filters.subcategory %}&subcategory={{ current_filters.subcategory }}{% endif %}{% if current_filters.brand %}&brand={{ current_filters.brand }}{% endif %}{% if current_filters.sort_by %}&sort_by={{ current_filters.sort_by }}{% endif %}{% if current_filters.sort_order %}&sort_order={{ current_filters.sort_order }}{% endif %}&page={{ products.next_page_number }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;</span>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</section>
-<script src="{% static 'js/products_product_list.js' %}" defer></script>
+                                <span aria-hidden="true">&raquo;</span> <!-- Page link -->
+                            </a> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% else %} <!-- If there is no next page -->
+                        <li class="page-item disabled"> <!-- Page item -->
+                            <span class="page-link">&raquo;</span> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% endif %} <!-- End if there is no next page -->
+                    </ul> <!-- Pagination -->
+                </nav> <!-- Page navigation -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+        {% endif %} <!-- End if there are other pages -->
+    </div> <!-- Container -->
+</section> <!-- Products section -->
+<script src="{% static 'js/products_product_list.js' %}" defer></script> <!-- Products product list JS -->
 {% endblock %} 

@@ -1,51 +1,51 @@
-{# Usage: include with product=product #}
-{% load static %}
-<div class="product-card" data-product-url="{% url 'products:product_detail' product.slug %}">
-    <div class="product-image position-relative">
-        {% if product.main_image %}
-        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded">
-        {% else %}
-        <div class="placeholder-image">
-            <i class="fas fa-image fa-3x"></i>
-        </div>
-        {% endif %}
+{# Usage: include with product=product #} <!-- Usage: include with product=product -->
+{% load static %} <!-- Loads the static files -->
+<div class="product-card" data-product-url="{% url 'products:product_detail' product.slug %}"> <!-- Product card -->
+    <div class="product-image position-relative"> <!-- Product image -->
+        {% if product.main_image %} <!-- If the product has a main image -->
+        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded"> <!-- Main image -->
+        {% else %} <!-- If the product does not have a main image -->
+        <div class="placeholder-image"> <!-- Placeholder image -->
+            <i class="fas fa-image fa-3x"></i> <!-- Image icon -->
+        </div> <!-- Placeholder image -->
+        {% endif %} <!-- End if the product does not have a main image -->
         <!-- Wishlist Heart Icon (toggle) -->
-        <div class="wishlist-heart position-absolute top-0 end-0 m-2">
+        <div class="wishlist-heart position-absolute top-0 end-0 m-2"> 
             {% if user.is_authenticated %}
                 <button type="button"
                     class="btn {% if product.is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
                     title="{% if product.is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
-                    onclick="toggleWishlist({{ product.id|escapejs }}, {{ product.is_in_wishlist|yesno:'true,false' }}, this)">
-                    {% if product.is_in_wishlist %}
-                        <i class="fas fa-heart"></i>
-                    {% else %}
-                        <i class="far fa-heart"></i>
-                    {% endif %}
-                </button>
-            {% else %}
+                    onclick="toggleWishlist({{ product.id|escapejs }}, {{ product.is_in_wishlist|yesno:'true,false' }}, this)"> <!-- Onclick -->
+                    {% if product.is_in_wishlist %} <!-- If the product is in the wishlist -->
+                        <i class="fas fa-heart"></i> <!-- Heart icon -->
+                    {% else %} <!-- If the product is not in the wishlist -->
+                        <i class="far fa-heart"></i> <!-- Heart icon -->
+                    {% endif %} <!-- End if the product is not in the wishlist -->
+                </button> <!-- Button -->
+            {% else %} <!-- If the user is not authenticated -->
                 <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" 
                    class="btn btn-outline-danger rounded-circle"
-                   title="Login to add to Wishlist">
-                    <i class="far fa-heart"></i>
-                </a>
-            {% endif %}
-        </div>
-        {% if product.is_on_sale %}
+                   title="Login to add to Wishlist"> <!-- Login to add to Wishlist -->
+                    <i class="far fa-heart"></i> <!-- Heart icon -->
+                </a> <!-- Button -->
+            {% endif %} <!-- End if the user is not authenticated -->
+        </div> <!-- Wishlist heart -->
+        {% if product.is_on_sale %} <!-- If the product is on sale -->
         <div class="sale-badge text-danger">SALE</div>
-        {% endif %}
-        {% if product.is_authentic_f1_part %}
-        <div class="f1-badge position-absolute top-0 start-0 m-2">
+        {% endif %} <!-- End if the product is on sale -->
+        {% if product.is_authentic_f1_part %} <!-- If the product is an authentic F1 part -->
+        <div class="f1-badge position-absolute top-0 start-0 m-2"> <!-- F1 badge -->
             <span class="badge f1-part-badge">
                 <i class="fas fa-star me-1"></i>Authentic F1 Part
             </span>
-        </div>
-        {% endif %}
-    </div>
-    <div class="product-info">
-        <h4 class="product-name">{{ product.name }}</h4>
-        <div class="product-brand">{{ product.brand.name }}</div>
-        <div class="product-category">{{ product.category.name }}</div>
-        <div class="product-rating">
+        </div> <!-- F1 badge -->
+        {% endif %} <!-- End if the product is an authentic F1 part -->
+    </div> <!-- Product image -->
+    <div class="product-info"> <!-- Product info -->
+        <h4 class="product-name">{{ product.name }}</h4> <!-- Product name -->
+        <div class="product-brand">{{ product.brand.name }}</div> <!-- Product brand -->
+        <div class="product-category">{{ product.category.name }}</div> <!-- Product category -->
+        <div class="product-rating"> <!-- Product rating -->
             <span class="stars">
                 {% if product.annotated_avg_rating is not None %}
                     {% with avg=product.annotated_avg_rating %}
@@ -56,46 +56,46 @@
                         {% include 'products/_product_card_stars.html' with avg=avg %}
                     {% endwith %}
                 {% else %}
-                    <span class="text-danger">No ratings yet.</span>
-                {% endif %}
-            </span>
-        </div>
-        <div class="product-price">
-            {% if product.is_on_sale %}
-            <span class="original-price">${{ product.price }}</span>
-            <span class="current-price text-danger fw-bold">${{ product.sale_price }}</span>
-            {% else %}
-            <span class="current-price">${{ product.price }}</span>
-            {% endif %}
-        </div>
-        <div class="product-stock mb-2">
-            {% if product.stock_status == 'out_of_stock' %}
-                <span class="text-danger" style="font-weight:bold;">Out of Stock</span>
-            {% elif product.stock_status == 'low_stock' %}
-                <span style="color:#ffc107; font-weight:bold;">Low Stock ({{ product.stock_quantity }})</span>
-            {% else %}
-                <span class="text-success" style="font-weight:bold;">In Stock ({{ product.stock_quantity }})</span>
-            {% endif %}
-        </div>
+                    <span class="text-danger">No ratings yet.</span> 
+                {% endif %} <!-- End if the product has a rating -->
+            </span> <!-- Product rating -->
+        </div> <!-- Product rating -->
+        <div class="product-price"> <!-- Product price -->
+            {% if product.is_on_sale %} <!-- If the product is on sale -->
+            <span class="original-price">${{ product.price }}</span> <!-- Original price -->
+            <span class="current-price text-danger fw-bold">${{ product.sale_price }}</span> <!-- Current price -->
+            {% else %} <!-- If the product is not on sale -->
+            <span class="current-price">${{ product.price }}</span> <!-- Current price -->
+            {% endif %} <!-- End if the product is on sale -->
+        </div> <!-- Product price -->
+        <div class="product-stock mb-2"> <!-- Product stock -->
+            {% if product.stock_status == 'out_of_stock' %} <!-- If the product is out of stock -->
+                <span class="text-danger" style="font-weight:bold;">Out of Stock</span> <!-- Out of stock -->
+            {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
+                <span style="color:#ffc107; font-weight:bold;">Low Stock ({{ product.stock_quantity }})</span> <!-- Low stock -->
+            {% else %} <!-- If the product is in stock -->
+                <span class="text-success" style="font-weight:bold;">In Stock ({{ product.stock_quantity }})</span> <!-- In stock -->
+            {% endif %} <!-- End if the product is out of stock -->
+        </div> <!-- Product stock -->
         <div class="non-clickable">
-            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-primary w-100 mt-2">
-                View Details
-            </a>
-            {% if not hide_add_to_cart %}
-                {% if user.is_authenticated %}
-                <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mt-2">
-                    {% csrf_token %}
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-outline-primary w-100 mt-2"> <!-- View details -->
+                View Details <!-- View details -->
+            </a> <!-- View details -->
+            {% if not hide_add_to_cart %} <!-- If the add to cart button is not hidden -->
+                {% if user.is_authenticated %} <!-- If the user is authenticated -->
+                <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mt-2"> <!-- Add to cart form -->
+                    {% csrf_token %} <!-- CSRF token -->
                     <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
-                        Add to Cart
-                    </button>
-                </form>
-                {% else %}
-                <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-danger w-100 mt-2">Add to Cart</a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-</div>
+                        Add to Cart <!-- Add to cart -->
+                    </button> <!-- Add to cart button -->
+                </form> <!-- Add to cart form -->
+                {% else %} <!-- If the user is not authenticated -->
+                <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-danger w-100 mt-2">Add to Cart</a> <!-- Add to cart button -->
+                {% endif %} <!-- End if the user is not authenticated -->
+            {% endif %} <!-- End if the add to cart button is not hidden -->
+        </div> <!-- Non-clickable -->
+    </div> <!-- Product info -->
+</div> <!-- Product card -->
 
-<script src="{% static 'js/products_product_card.js' %}" defer></script>
+<script src="{% static 'js/products_product_card.js' %}" defer></script> <!-- Products product card JS -->
 

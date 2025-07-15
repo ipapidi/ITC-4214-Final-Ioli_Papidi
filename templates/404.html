@@ -1,14 +1,14 @@
 {% extends 'base/base.html' %}
-{% block extra_head %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+{% block extra_head %} <!-- Extra head -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> <!-- Animate CSS -->
 {% endblock %}
-{% block content %}
-<div class="container error-404-container text-center animate__animated animate__fadeIn">
-    <h1 class="error-404-title animate__animated animate__bounceIn">404</h1>
-    <h2 class="mb-4">Page Not Found</h2>
-    <p class="lead mb-4">Sorry, the page you are looking for does not exist or has been moved.</p>
-    <div class="error-404-btns">
-        <button onclick="window.history.back();" class="btn btn-secondary mb-2">Go Back</button>
+{% block content %} <!-- Content -->
+<div class="container error-404-container text-center animate__animated animate__fadeIn"> <!-- Error 404 container -->
+    <h1 class="error-404-title animate__animated animate__bounceIn">404</h1> <!-- Error 404 title -->
+    <h2 class="mb-4">Page Not Found</h2> <!-- Page not found -->
+    <p class="lead mb-4">Sorry, the page you are looking for does not exist or has been moved.</p> <!-- Page not found -->
+    <div class="error-404-btns"> <!-- Error 404 buttons -->
+        <button onclick="window.history.back();" class="btn btn-secondary mb-2">Go Back</button> <!-- Go back button -->
     </div>
 </div>
-{% endblock %} 
+{% endblock %} <!-- End of content --> 

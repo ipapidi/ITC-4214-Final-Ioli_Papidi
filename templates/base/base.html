@@ -4,7 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}RevForge - Car Performance Parts{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}RevForge - Premium Car Performance Parts & F1 Authentic Parts{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}RevForge offers premium car performance parts, authentic F1 parts, and high-quality automotive components. Find the best brands in suspension, brakes, engine parts, and more.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}car performance parts, F1 parts, automotive parts, suspension, brakes, engine parts, exhaust, bodywork, electronics, cooling, aerodynamics{% endblock %}">
+    <meta name="author" content="RevForge">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
+    <meta property="og:title" content="{% block og_title %}{{ block.super }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ block.super }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/logo.png' %}{% endblock %}">
+    <meta property="og:site_name" content="RevForge">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#dc3545">
+    <meta name="msapplication-TileColor" content="#dc3545">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
     <!-- Bootstrap 5 CSS -->
@@ -19,66 +40,66 @@
 <body class="bg-dark text-light">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-danger navbar-sticky" style="position:fixed;top:0;left:0;right:0;width:100%;z-index:9999;background:#222 !important;">
-        <div class="container">
+        <div class="container"> <!-- Container for the navigation bar -->
             <a class="navbar-brand" href="{% url 'products:home' %}">
-                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 40px;">
+                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 40px;"> <!-- Logo -->
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> <!-- Button to toggle the navigation bar -->
+                <span class="navbar-toggler-icon"></span> <!-- Icon for the button -->
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:home' %}">Home</a>
+            <div class="collapse navbar-collapse" id="navbarNav"> <!-- Collapse the navigation bar -->
+                <ul class="navbar-nav me-auto"> <!-- Navigation bar items -->
+                    <li class="nav-item"> <!-- Navigation bar item -->
+                        <a class="nav-link" href="{% url 'products:home' %}">Home</a> <!-- Link to the home page -->
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:product_list' %}">Products</a>
+                    <li class="nav-item"> <!-- Navigation bar item -->
+                        <a class="nav-link" href="{% url 'products:product_list' %}">Products</a> <!-- Link to the products page -->
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:about' %}">About</a>
+                    <li class="nav-item"> <!-- Navigation bar item -->
+                        <a class="nav-link" href="{% url 'products:about' %}">About</a> <!-- Link to the about page -->
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products:contact' %}">Contact</a>
+                    <li class="nav-item"> <!-- Navigation bar item -->
+                        <a class="nav-link" href="{% url 'products:contact' %}">Contact</a> <!-- Link to the contact page -->
                     </li>
                 </ul>
                 <!-- Search Form -->
-                <form class="d-flex me-3" method="GET" action="{% url 'products:search' %}">
-                    <input class="form-control me-2 bg-dark text-light border-danger" type="search" name="q" placeholder="Search parts...">
-                    <button class="btn btn-outline-danger" type="submit">
-                        <i class="fas fa-search"></i>
+                <form class="d-flex me-3" method="GET" action="{% url 'products:search' %}"> <!-- Search form -->
+                    <input class="form-control me-2 bg-dark text-light border-danger" type="search" name="q" placeholder="Search parts..."> <!-- Search input -->
+                    <button class="btn btn-outline-danger" type="submit"> <!-- Search button -->
+                        <i class="fas fa-search"></i> <!-- Search icon -->
                     </button>
                 </form>
                 <!-- User Menu -->
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
+                <ul class="navbar-nav"> <!-- User menu -->
+                    {% if user.is_authenticated %} <!-- If the user is authenticated -->
+                    <li class="nav-item dropdown"> <!-- User menu item -->
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user me-1"></i>{{ user.username }}
                         </a>
-                        <ul class="dropdown-menu bg-dark border border-danger">
-                            <li><a class="dropdown-item text-light" href="{% url 'users:profile' %}">Profile</a></li>
-                            <li><a class="dropdown-item text-light" href="{% url 'users:wishlist' %}">Wishlist</a></li>
-                            <li><a class="dropdown-item text-light" href="{% url 'orders:order_history' %}">Orders</a></li>
-                            <li><hr class="dropdown-divider border-danger"></li>
-                            <li>
-                              <form method="post" action="{% url 'users:logout' %}" style="display:inline;">
+                        <ul class="dropdown-menu bg-dark border border-danger"> <!-- Dropdown menu -->
+                            <li><a class="dropdown-item text-light" href="{% url 'users:profile' %}">Profile</a></li> <!-- Profile link -->
+                            <li><a class="dropdown-item text-light" href="{% url 'users:wishlist' %}">Wishlist</a></li> <!-- Wishlist link -->
+                            <li><a class="dropdown-item text-light" href="{% url 'orders:order_history' %}">Orders</a></li> <!-- Orders link -->
+                            <li><hr class="dropdown-divider border-danger"></li> <!-- Divider -->
+                            <li> <!-- Logout link -->
+                              <form method="post" action="{% url 'users:logout' %}" style="display:inline;"> <!-- Logout form -->
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item text-light" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; width: 100%; text-align: left;">Logout</button>
                               </form>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'orders:cart' %}">
-                            <i class="fas fa-shopping-cart me-1"></i>
-                            <span class="badge bg-danger">{{ request.user.cart.total_items|default:0 }}</span>
+                    <li class="nav-item"> <!-- Cart link -->
+                        <a class="nav-link" href="{% url 'orders:cart' %}"> <!-- Cart link -->
+                            <i class="fas fa-shopping-cart me-1"></i> <!-- Cart icon -->
+                            <span class="badge bg-danger">{{ request.user.cart.total_items|default:0 }}</span> <!-- Cart badge -->
                         </a>
                     </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'users:login' %}">Login</a>
+                    <li class="nav-item"> <!-- Login link -->
+                        <a class="nav-link" href="{% url 'users:login' %}">Login</a> <!-- Login link -->
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item"> <!-- Register link -->
                         <a class="nav-link" href="{% url 'users:register' %}">Register</a>
                     </li>
                     {% endif %}
@@ -86,61 +107,61 @@
             </div>
         </div>
     </nav>
-    <div class="navbar-spacer"></div>
+    <div class="navbar-spacer"></div> <!-- Spacer for the navigation bar -->
     <!-- Messages -->
     {% if messages %}
-    <div class="container mt-3">
+    <div class="container mt-3"> <!-- Container for the messages -->
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"> <!-- Alert message -->
+            {{ message }} <!-- Message -->
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button> <!-- Close button -->
         </div>
         {% endfor %}
     </div>
     {% endif %}
     <!-- Main Content -->
-    <main class="container-fluid py-4">
-        {% block content %}{% endblock %}
+    <main class="container-fluid py-4"> <!-- Main content -->
+        {% block content %}{% endblock %} <!-- Block for the main content -->
     </main>
     <!-- Footer -->
     <footer class="footer mt-auto py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
+        <div class="container"> <!-- Container for the footer -->
+            <div class="row"> <!-- Row for the footer -->
+                <div class="col-lg-4 mb-4 mb-lg-0"> <!-- Column for the footer -->
                     <a class="navbar-brand" href="{% url 'products:home' %}">
-                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 50px;">
+                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 50px;"> <!-- Logo -->
                     </a>
-                    <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p>
+                    <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p> <!-- Description -->
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
-                    <h5 class="text-uppercase text-light mb-4">Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'products:home' %}" class="footer-link">Home</a></li>
-                        <li><a href="{% url 'products:product_list' %}" class="footer-link">Products</a></li>
-                        <li><a href="{% url 'products:about' %}" class="footer-link">About</a></li>
-                        <li><a href="{% url 'products:contact' %}" class="footer-link">Contact</a></li>
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0"> <!-- Column for the footer -->
+                    <h5 class="text-uppercase text-light mb-4">Links</h5> <!-- Links -->
+                    <ul class="list-unstyled"> <!-- List of links -->
+                        <li><a href="{% url 'products:home' %}" class="footer-link">Home</a></li> <!-- Home link -->
+                        <li><a href="{% url 'products:product_list' %}" class="footer-link">Products</a></li> <!-- Products link -->
+                        <li><a href="{% url 'products:about' %}" class="footer-link">About</a></li> <!-- About link -->
+                        <li><a href="{% url 'products:contact' %}" class="footer-link">Contact</a></li> <!-- Contact link -->
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                    <h5 class="text-uppercase text-light mb-4">Contact</h5>
-                    <ul class="list-unstyled">
-                        <li><p class="text-light"><i class="fas fa-envelope me-2 text-danger"></i> info@revforge.com</p></li>
-                        <li><p class="text-light"><i class="fas fa-phone me-2 text-danger"></i> +1 (555) 123-4567</p></li>
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"> <!-- Column for the footer -->
+                    <h5 class="text-uppercase text-light mb-4">Contact</h5> <!-- Contact -->
+                    <ul class="list-unstyled"> <!-- List of contact -->
+                        <li><p class="text-light"><i class="fas fa-envelope me-2 text-danger"></i> info@revforge.com</p></li> <!-- Email -->
+                        <li><p class="text-light"><i class="fas fa-phone me-2 text-danger"></i> +1 (555) 123-4567</p></li> <!-- Phone -->
                     </ul>
                 </div>
-                <div class="col-lg-3">
-                    <h5 class="text-uppercase text-light mb-4">Follow Us</h5>
-                    <div class="d-flex">
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                <div class="col-lg-3"> <!-- Column for the footer -->
+                    <h5 class="text-uppercase text-light mb-4">Follow Us</h5> <!-- Follow Us -->
+                    <div class="d-flex"> <!-- Social icons -->
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a> <!-- Twitter -->
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a> <!-- Facebook -->
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a> <!-- Instagram -->
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a> <!-- YouTube -->
                     </div>
                 </div>
             </div>
-            <hr class="my-4" style="border-color: var(--border-color);">
-            <div class="text-center text-light">
-                <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small>
+            <hr class="my-4" style="border-color: var(--border-color);"> <!-- Divider -->
+            <div class="text-center text-light"> <!-- Copyright -->
+                <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small> <!-- Copyright -->
             </div>
         </div>
     </footer>
@@ -150,6 +171,6 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <!-- Custom JS -->
     <script src="{% static 'js/main.js' %}"></script>
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %} <!-- Block for the extra JavaScript --> 
 </body>
 </html>

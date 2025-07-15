@@ -1,93 +1,93 @@
-{% load static %}
+{% load static %} <!-- Loads the static files -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice - {{ order.order_number }}</title>
-    <link rel="stylesheet" href="{% static 'css/invoice.css' %}">
+    <title>Invoice - {{ order.order_number }}</title> <!-- Title -->
+    <link rel="stylesheet" href="{% static 'css/invoice.css' %}"> <!-- Invoice CSS -->
 </head>
 <body>
-<div class="invoice-container">
-    <div class="header">
-        <div class="logo">
-            <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height:40px;vertical-align:middle;margin-right:10px;">
+<div class="invoice-container"> <!-- Invoice container -->
+    <div class="header"> <!-- Header -->
+        <div class="logo"> <!-- Logo -->
+            <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height:40px;vertical-align:middle;margin-right:10px;"> <!-- RevForge Logo -->
             
-        </div>
-        <div class="order-info">
-            <div><strong>Invoice #:</strong> {{ order.order_number }}</div>
-            <div><strong>Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</div>
-        </div>
-    </div>
-    <div class="section">
-        <div class="section-title">Billed To</div>
-        <div>{{ order.user.get_full_name|default:order.user.username }}</div>
-        <div>{{ order.shipping_address }}</div>
-        <div>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</div>
-        <div>{{ order.shipping_country }}</div>
-        <div>{{ order.shipping_phone }}</div>
-    </div>
-    <div class="section">
-        <div class="section-title">Order Summary</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>SKU</th>
-                    <th>Qty</th>
-                    <th class="right">Unit Price</th>
-                    <th class="right">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for item in order.items.all %}
-                <tr>
-                    <td>{{ item.product_name }}</td>
-                    <td>{{ item.product_sku }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td class="right">${{ item.unit_price }}</td>
-                    <td class="right">${{ item.total_price }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4" class="right">Subtotal</td>
-                    <td class="right">${{ order.subtotal }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="right">Tax</td>
-                    <td class="right">${{ order.tax_amount }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="right">Shipping</td>
-                    <td class="right">${{ order.shipping_cost }}</td>
-                </tr>
-                {% if order.discount_amount > 0 %}
-                <tr>
-                    <td colspan="4" class="right">Discount</td>
-                    <td class="right">-${{ order.discount_amount }}</td>
-                </tr>
+        </div> <!-- Logo -->
+        <div class="order-info"> <!-- Order info -->
+            <div><strong>Invoice #:</strong> {{ order.order_number }}</div> <!-- Invoice number -->
+            <div><strong>Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</div> <!-- Date -->
+        </div> <!-- Order info -->
+    </div> <!-- Header -->
+    <div class="section"> <!-- Section -->
+        <div class="section-title">Billed To</div> <!-- Billed to -->
+        <div>{{ order.user.get_full_name|default:order.user.username }}</div> <!-- User name -->
+        <div>{{ order.shipping_address }}</div> <!-- Shipping address -->
+        <div>{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</div> <!-- Shipping city, state, and postal code -->
+        <div>{{ order.shipping_country }}</div> <!-- Shipping country -->
+        <div>{{ order.shipping_phone }}</div> <!-- Shipping phone -->
+    </div> <!-- Section -->
+    <div class="section"> <!-- Section -->
+        <div class="section-title">Order Summary</div> <!-- Order summary -->
+        <table> <!-- Table -->
+            <thead> <!-- Table head -->
+                <tr> <!-- Table row -->
+                    <th>Product</th> <!-- Product -->
+                    <th>SKU</th> <!-- SKU -->
+                    <th>Qty</th> <!-- Quantity -->
+                    <th class="right">Unit Price</th> <!-- Unit price -->
+                    <th class="right">Total</th> <!-- Total -->
+                </tr> <!-- Table row -->
+            </thead> <!-- Table head -->
+            <tbody> <!-- Table body -->
+            {% for item in order.items.all %} <!-- For each item in the order -->
+                <tr> <!-- Table row -->
+                    <td>{{ item.product_name }}</td> <!-- Product name -->
+                    <td>{{ item.product_sku }}</td> <!-- Product SKU -->
+                    <td>{{ item.quantity }}</td> <!-- Quantity -->
+                    <td class="right">${{ item.unit_price }}</td> <!-- Unit price -->
+                    <td class="right">${{ item.total_price }}</td> <!-- Total price -->
+                </tr> <!-- Table row -->
+            {% endfor %} <!-- End for each item in the order -->
+            </tbody> <!-- Table body -->
+            <tfoot> <!-- Table foot -->
+                <tr> <!-- Table row -->
+                    <td colspan="4" class="right">Subtotal</td> <!-- Subtotal -->
+                    <td class="right">${{ order.subtotal }}</td> <!-- Subtotal -->
+                </tr> <!-- Table row -->
+                <tr> <!-- Table row -->
+                    <td colspan="4" class="right">Tax</td> <!-- Tax -->
+                    <td class="right">${{ order.tax_amount }}</td> <!-- Tax -->
+                </tr> <!-- Table row -->
+                <tr> <!-- Table row -->
+                    <td colspan="4" class="right">Shipping</td> <!-- Shipping -->
+                    <td class="right">${{ order.shipping_cost }}</td> <!-- Shipping -->
+                </tr> <!-- Table row -->
+                {% if order.discount_amount > 0 %} <!-- If there is a discount -->
+                <tr> <!-- Table row -->
+                    <td colspan="4" class="right">Discount</td> <!-- Discount -->
+                    <td class="right">-${{ order.discount_amount }}</td> <!-- Discount -->
+                </tr> <!-- Table row -->
                 {% endif %}
-                <tr class="total-row">
-                    <td colspan="4" class="right">Total</td>
-                    <td class="right">${{ order.total_amount }}</td>
-                </tr>
+                <tr class="total-row"> <!-- Table row -->
+                    <td colspan="4" class="right">Total</td> <!-- Total -->
+                    <td class="right">${{ order.total_amount }}</td> <!-- Total -->
+                </tr> <!-- Table row -->
             </tfoot>
         </table>
     </div>
     <div class="section">
-        <div class="section-title">Payment Method</div>
-        <div>{{ order.payment_method }}</div>
-        {% if order.payment_transaction_id %}
+        <div class="section-title">Payment Method</div> <!-- Payment method -->
+        <div>{{ order.payment_method }}</div> <!-- Payment method -->
+        {% if order.payment_transaction_id %} <!-- If there is a payment transaction ID -->
         <div><strong>Transaction ID:</strong> {{ order.payment_transaction_id }}</div>
-        {% endif %}
-    </div>
-    <div class="footer">
-        Thank you for your order!<br>
-        &copy; {{ now|date:"Y" }} RevForge. All rights reserved.
-    </div>
-    <button class="no-print" onclick="window.print()" style="margin-top:24px; padding:10px 24px; font-size:1rem; background:#c0392b; color:#fff; border:none; border-radius:6px; cursor:pointer;">Print / Save as PDF</button>
-</div>
-<script src="{% static 'js/orders_invoice.js' %}" defer></script>
-</body>
-</html> 
+        {% endif %} <!-- End if there is a payment transaction ID -->
+    </div> <!-- Section -->
+    <div class="footer"> <!-- Footer -->
+        Thank you for your order!<br> <!-- Thank you for your order -->
+        &copy; {{ now|date:"Y" }} RevForge. All rights reserved. <!-- Copyright -->
+    </div> <!-- Footer -->
+    <button class="no-print" onclick="window.print()" style="margin-top:24px; padding:10px 24px; font-size:1rem; background:#c0392b; color:#fff; border:none; border-radius:6px; cursor:pointer;">Print / Save as PDF</button> <!-- Print / Save as PDF button -->
+</div> <!-- Invoice container -->
+<script src="{% static 'js/orders_invoice.js' %}" defer></script> <!-- Orders invoice JS -->
+</body> <!-- Body -->
+</html> <!-- HTML --> 

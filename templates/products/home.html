@@ -1,36 +1,37 @@
-{% extends 'base/base.html' %}
-{% load static %}
+{% extends 'base/base.html' %} <!-- Extends the base template -->
+{% load static %} <!-- Loads the static files -->
 
-{% block title %}RevForge - Premium Car Performance Parts{% endblock %}
+{% block title %}RevForge - Premium Car Performance Parts{% endblock %} <!-- Title -->
 
-{% block content %}
+{% block content %} <!-- Content -->
 <!-- Hero Section -->
-<section class="hero-section" style="background-image: url('{% static 'images/homebackground.png' %}');">
-    <div class="container">
-        <div class="row min-vh-100">
-            <div class="col-lg-7 col-md-10 d-flex flex-column justify-content-center">
-                <div class="hero-content text-center text-lg-start">
-                    <h1 class="hero-title">
+<section class="hero-section" style="background-image: url('{% static 'images/homebackground.png' %}');"> <!-- Hero section -->
+    <div class="container"> <!-- Container -->
+        <div class="row min-vh-100"> <!-- Row -->
+            <div class="col-lg-7 col-md-10 d-flex flex-column justify-content-center"> <!-- Column -->
+                <div class="hero-content text-center text-lg-start"> <!-- Hero content -->
+                    <h1 class="hero-title"> <!-- Hero title -->
                         <span class="accent">REV</span>FORGE
-                    </h1>
-                    <p class="hero-subtitle">
-                        F1-Inspired Performance Parts
-                    </p>
+                    </h1> <!-- Hero title -->
+                    <p class="hero-subtitle"> <!-- Hero subtitle -->
+                        F1-Inspired Performance Parts <!-- F1-Inspired Performance Parts -->
+                    </p> <!-- Hero subtitle -->
                     <p class="hero-description">
-                        Premium automotive upgrades designed with Formula 1 precision.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
-                            Shop Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+                        Premium automotive upgrades designed with Formula 1 precision. 
+                    </p> <!-- Hero description -->
+                    <div class="hero-buttons"> <!-- Hero buttons -->
+                        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg"> <!-- Button -->
+                            Shop Now 
+                        </a> <!-- Button -->
+                    </div> <!-- Hero buttons -->
+                </div> <!-- Hero content -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- Hero section -->
 
 <!-- Categories Section -->
+<<<<<<< HEAD
 <section class="categories-section py-5">
     <div class="container">
         <div class="section-header text-center mb-5">
@@ -53,6 +54,30 @@
                     <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link">
                         Explore
                     </a>
+=======
+<section class="categories-section py-5"> 
+    <div class="container"> <!-- Container -->
+        <div class="section-header text-center mb-5"> <!-- Section header -->
+            <h2 class="section-title">Categories</h2> <!-- Section title -->
+        </div> <!-- Section header -->
+
+        <div class="row g-4"> <!-- Row -->
+            {% for category in categories %} <!-- For each category -->
+            <div class="col-md-6 col-lg-4"> <!-- Column -->
+                <div class="category-card"> <!-- Category card -->
+                    <div class="category-icon"> <!-- Category icon -->
+                        {% if category.icon_class %} <!-- If category icon class -->
+                            <img src="{{ category.icon_class.url }}" alt="{{ category.name }} icon" style="width:64px;height:64px;object-fit:contain;border-radius:16px;box-shadow:0 2px 8px rgba(220,53,69,0.12);background:#181a1b;"> <!-- Image -->
+                        {% else %} <!-- If category icon class is not set -->
+                            <i class="fas fa-cog"></i> <!-- Icon -->
+                        {% endif %} <!-- End if category icon class -->
+                    </div> <!-- Category icon -->
+                    <h3 class="category-title">{{ category.name }}</h3> <!-- Category title -->
+                    <p class="category-description">{{ category.description|truncatewords:8 }}</p> <!-- Category description -->
+                    <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link"> <!-- Category link -->
+                        Explore <!-- Explore -->
+                    </a> <!-- Category link -->
+>>>>>>> a95348d (added comments and meta tags)
                 </div>
             </div>
             {% endfor %}
@@ -61,6 +86,7 @@
 </section>
 
 <!-- Featured Products -->
+<<<<<<< HEAD
 <section id="featured" class="featured-section py-5">
     <div class="container">
         <div class="section-header text-center mb-5">
@@ -96,3 +122,40 @@
     </div>
 </section>
 {% endblock %}
+=======
+<section id="featured" class="featured-section py-5"> <!-- Featured products section -->
+    <div class="container"> <!-- Container -->
+        <div class="section-header text-center mb-5"> <!-- Section header -->
+            <h2 class="section-title">Featured Products</h2> <!-- Section title -->
+        </div> <!-- Section header -->
+
+        <div class="row g-4"> <!-- Row -->
+            {% for product in featured_products %} <!-- For each featured product -->
+            <div class="col-md-6 col-lg-4"> <!-- Column -->
+                {% include 'products/_product_card.html' with product=product show_remove=False %} <!-- Product card -->
+            </div> <!-- Column -->
+            {% endfor %} <!-- End for each featured product -->
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- Featured products section -->
+
+<!-- CTA Section -->
+<section class="cta-section py-5"> <!-- CTA section -->
+    <div class="container"> <!-- Container -->
+        <div class="row align-items-center"> <!-- Row -->
+            <div class="col-lg-8"> <!-- Column -->
+                <h2 class="cta-title">Ready to Upgrade Your Vehicle?</h2> <!-- CTA title -->
+                <p class="cta-description"> <!-- CTA description -->
+                    Join thousands of performance enthusiasts who trust RevForge. <!-- Join thousands of performance enthusiasts who trust RevForge. -->
+                </p> <!-- CTA description -->
+            </div> <!-- Column -->
+            <div class="col-lg-4 text-lg-end"> <!-- Column -->
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg"> <!-- Button -->
+                    Shop Now 
+                </a> <!-- Button -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- CTA section -->
+{% endblock %} <!-- End of content -->
+>>>>>>> a95348d (added comments and meta tags)
