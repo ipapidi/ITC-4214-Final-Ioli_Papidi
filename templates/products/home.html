@@ -31,30 +31,6 @@
 </section> <!-- Hero section -->
 
 <!-- Categories Section -->
-<<<<<<< HEAD
-<section class="categories-section py-5">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="section-title">Categories</h2>
-        </div>
-
-        <div class="row g-4">
-            {% for category in categories %}
-            <div class="col-md-6 col-lg-4">
-                <div class="category-card">
-                    <div class="category-icon">
-                        {% if category.icon_class %}
-                            <img src="{{ category.icon_class.url }}" alt="{{ category.name }} icon" style="width:64px;height:64px;object-fit:contain;border-radius:16px;box-shadow:0 2px 8px rgba(220,53,69,0.12);background:#181a1b;">
-                        {% else %}
-                            <i class="fas fa-cog"></i>
-                        {% endif %}
-                    </div>
-                    <h3 class="category-title">{{ category.name }}</h3>
-                    <p class="category-description">{{ category.description|truncatewords:8 }}</p>
-                    <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link">
-                        Explore
-                    </a>
-=======
 <section class="categories-section py-5"> 
     <div class="container"> <!-- Container -->
         <div class="section-header text-center mb-5"> <!-- Section header -->
@@ -77,7 +53,6 @@
                     <a href="{% url 'products:product_list' %}?category={{ category.slug }}" class="category-link"> <!-- Category link -->
                         Explore <!-- Explore -->
                     </a> <!-- Category link -->
->>>>>>> a95348d (added comments and meta tags)
                 </div>
             </div>
             {% endfor %}
@@ -86,43 +61,6 @@
 </section>
 
 <!-- Featured Products -->
-<<<<<<< HEAD
-<section id="featured" class="featured-section py-5">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="section-title">Featured Products</h2>
-        </div>
-
-        <div class="row g-4">
-            {% for product in featured_products %}
-            <div class="col-md-6 col-lg-4">
-                {% include 'products/_product_card.html' with product=product show_remove=False %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="cta-section py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h2 class="cta-title">Ready to Upgrade Your Vehicle?</h2>
-                <p class="cta-description">
-                    Join thousands of performance enthusiasts who trust RevForge.
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">
-                    Shop Now
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
-=======
 <section id="featured" class="featured-section py-5"> <!-- Featured products section -->
     <div class="container"> <!-- Container -->
         <div class="section-header text-center mb-5"> <!-- Section header -->
@@ -158,4 +96,3 @@
     </div> <!-- Container -->
 </section> <!-- CTA section -->
 {% endblock %} <!-- End of content -->
->>>>>>> a95348d (added comments and meta tags)

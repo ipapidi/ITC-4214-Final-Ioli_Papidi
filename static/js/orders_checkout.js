@@ -13,42 +13,6 @@ document.addEventListener('DOMContentLoaded', function() { //Add a DOMContentLoa
     });
 
     // Delivery fee and total calculation
-<<<<<<< HEAD
-    const shippingSelect = document.getElementById('shipping_method');
-    const deliveryFeeSpan = document.getElementById('delivery-fee');
-    const orderTotalSpan = document.getElementById('order-total');
-    const taxAmountSpan = document.getElementById('tax-amount');
-    const form = document.querySelector('form');
-    const shippingMethods = window.shippingMethods || {};
-
-    function getSubtotal() {
-        // Try to get from data attribute
-        let subtotal = form.getAttribute('data-subtotal');
-        if (subtotal) {
-            subtotal = subtotal.replace(/[$,]/g, '');
-            subtotal = parseFloat(subtotal);
-        }
-        // Fallback: parse from visible subtotal span
-        if (!subtotal || isNaN(subtotal) || subtotal === 0) {
-            const subtotalSpan = document.querySelector('.card-title .text-danger');
-            if (subtotalSpan) {
-                let text = subtotalSpan.textContent.replace(/[$,]/g, '');
-                subtotal = parseFloat(text);
-            }
-        }
-        return subtotal && !isNaN(subtotal) ? subtotal : 0;
-    }
-
-    function updateSummary() {
-        const subtotal = getSubtotal();
-        const selectedId = shippingSelect.value;
-        const fee = shippingMethods[selectedId] || 0;
-        const taxAmount = subtotal * 0.24;
-        const total = subtotal + taxAmount + fee;
-        if (deliveryFeeSpan) deliveryFeeSpan.textContent = `$${fee.toFixed(2)}`;
-        if (taxAmountSpan) taxAmountSpan.textContent = `$${taxAmount.toFixed(2)}`;
-        if (orderTotalSpan) orderTotalSpan.textContent = `$${total.toFixed(2)}`;
-=======
     const shippingSelect = document.getElementById('shipping_method'); //Get the shipping method select element
     const deliveryFeeSpan = document.getElementById('delivery-fee'); //Get the delivery fee span element
     const orderTotalSpan = document.getElementById('order-total'); //Get the order total span element
@@ -83,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() { //Add a DOMContentLoa
         if (deliveryFeeSpan) deliveryFeeSpan.textContent = `$${fee.toFixed(2)}`; //Set the delivery fee
         if (taxAmountSpan) taxAmountSpan.textContent = `$${taxAmount.toFixed(2)}`; //Set the tax amount
         if (orderTotalSpan) orderTotalSpan.textContent = `$${total.toFixed(2)}`; //Set the order total
->>>>>>> a95348d (added comments and meta tags)
     }
 
     // Initial update
