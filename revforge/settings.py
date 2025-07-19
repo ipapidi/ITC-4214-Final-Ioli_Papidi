@@ -23,25 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^%^cna0v8jn(+m5=z&k3m!_v-0-sen@)=t3*27#)g@-h@31)94'
 
-<<<<<<< HEAD
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ['ipapidi.pythonanywhere.com']
-=======
-#IMPORTANT !!!!! IF DEPLOYED, UNCOMMENT THE LINES BELOW AND COMMENT THE LINES EVEN MORE BELOW 
+#IMPORTANT !!!!! IF DEPLOYED, UNCOMMENT THE LINES BELOW AND COMMENT THE LINES EVEN MORE BELOW
 #DEBUG = False
-#ALLOWED_HOSTS = ['ipapidi.pythonanywhere.com']
+#ALLOWED_HOSTS = ["ipapidi.pythonanywhere.com"]
 
 #IMPORTANT !!!!! IF RUN LOCALLY, UNCOMMENT THE LINES BELOW AND COMMENT THE LINES ABOVE
 DEBUG = True
-ALLOWED_HOSTS = ['*']
->>>>>>> a95348d (added comments and meta tags)
-
-# Application definition
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+ALLOWED_HOSTS = ["*"]
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
