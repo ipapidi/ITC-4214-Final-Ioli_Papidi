@@ -24,16 +24,6 @@ def validate_file_type(value): #Validates the file type
 
 class Category(models.Model):
     # Product categories
-<<<<<<< HEAD
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='categories/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
-    icon_class = models.ImageField(upload_to='categories/', max_length=50, blank=True, help_text="CSS class for category icon")
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-=======
     name = models.CharField(max_length=100, unique=True) #Sets the name of the category
     slug = models.SlugField(max_length=100, unique=True, blank=True) #Sets the slug of the category
     description = models.TextField(blank=True) #Sets the description of the category
@@ -42,7 +32,6 @@ class Category(models.Model):
     is_active = models.BooleanField(default=True) #Sets the active status of the category
     created_at = models.DateTimeField(auto_now_add=True) #Sets the created at of the category
     updated_at = models.DateTimeField(auto_now=True) #Sets the updated at of the category
->>>>>>> a95348d (added comments and meta tags)
 
     class Meta:
         verbose_name_plural = "Categories" #Sets the verbose name of the category
@@ -117,21 +106,6 @@ class Brand(models.Model):
 class Product(models.Model):
     # Main product model
     # Basic Information
-<<<<<<< HEAD
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, blank=True)
-    sku = models.CharField(max_length=50, unique=True, help_text="Stock Keeping Unit")
-
-    # Categorization
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='products')
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='products')
-
-    # Pricing
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    discount_percentage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], help_text="Discount percentage (0-100)")
-=======
     name = models.CharField(max_length=200) #Sets the name of the product
     slug = models.SlugField(max_length=200, blank=True) #Sets the slug of the product
     sku = models.CharField(max_length=50, unique=True, help_text="Stock Keeping Unit") #Sets the SKU of the product
@@ -145,33 +119,12 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2) #Sets the price of the product
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Sets the sale price of the product
     discount_percentage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], help_text="Discount percentage (0-100)") #Sets the discount percentage of the product
->>>>>>> a95348d (added comments and meta tags)
 
     # Inventory
     stock_quantity = models.PositiveIntegerField(default=0)
     min_stock_level = models.PositiveIntegerField(default=5)
 
     # Product Details
-<<<<<<< HEAD
-    description = models.TextField()
-    features = models.TextField(blank=True, help_text="Key features and benefits")
-
-    # Images
-    main_image = models.ImageField(upload_to='products/main/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
-
-    # Status and Visibility
-    is_active = models.BooleanField(default=True)
-    is_featured = models.BooleanField(default=False)
-    is_bestseller = models.BooleanField(default=False)
-
-    # SEO and Marketing
-    meta_title = models.CharField(max_length=200, blank=True)
-    meta_description = models.TextField(blank=True)
-    keywords = models.CharField(max_length=500, blank=True)
-
-    # Vendor Information
-    vendor = models.ForeignKey(
-=======
     description = models.TextField() #Sets the description of the product
     features = models.TextField(blank=True, help_text="Key features and benefits") #Sets the features of the product
 
@@ -190,7 +143,6 @@ class Product(models.Model):
 
     # Vendor Information
     vendor = models.ForeignKey( #Sets the vendor of the product
->>>>>>> a95348d (added comments and meta tags)
         'users.UserProfile',
         on_delete=models.SET_NULL,
         blank=True,
@@ -198,11 +150,7 @@ class Product(models.Model):
         related_name='vendor_products',
         help_text="Vendor who created this product"
     )
-<<<<<<< HEAD
-    is_authentic_f1_part = models.BooleanField(
-=======
     is_authentic_f1_part = models.BooleanField( #Sets the authentic F1 part status of the product
->>>>>>> a95348d (added comments and meta tags)
         default=False,
         help_text="Is this an authentic F1 part from a verified vendor?"
     )

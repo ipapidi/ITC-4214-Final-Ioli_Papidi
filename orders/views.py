@@ -10,13 +10,8 @@ from decimal import Decimal
 
 @login_required
 def cart_view(request):
-<<<<<<< HEAD
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.items.all()
-=======
     cart, created = Cart.objects.get_or_create(user=request.user) #Gets or creates the cart for the user
     cart_items = cart.items.all() #Gets all the items in the cart
->>>>>>> a95348d (added comments and meta tags)
 
     context = {
         'cart': cart,
@@ -27,55 +22,31 @@ def cart_view(request):
 
 @login_required
 def add_to_cart(request, product_id):
-<<<<<<< HEAD
-    product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-
-    cart_item, created = CartItem.objects.get_or_create(
-=======
     product = get_object_or_404(Product, id=product_id) #Gets the product
     cart, created = Cart.objects.get_or_create(user=request.user) #Gets or creates the cart for the user
 
     cart_item, created = CartItem.objects.get_or_create( #Gets or creates the cart item
->>>>>>> a95348d (added comments and meta tags)
         cart=cart,
         product=product,
         defaults={'quantity': 1}
     )
 
     if not created:
-<<<<<<< HEAD
-        cart_item.quantity += 1
-        cart_item.save()
-
-    messages.success(request, f'{product.name} added to cart!')
-    return redirect('orders:cart')
-=======
         cart_item.quantity += 1 #Increments the quantity
         cart_item.save() #Saves the cart item
 
     messages.success(request, f'{product.name} added to cart!') #Displays the message
     return redirect('orders:cart') #Redirects to the cart view
->>>>>>> a95348d (added comments and meta tags)
 
 
 @login_required
 def remove_from_cart(request, item_id):
-<<<<<<< HEAD
-    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-    product_name = cart_item.product.name
-    cart_item.delete()
-
-    messages.success(request, f'{product_name} removed from cart!')
-    return redirect('orders:cart')
-=======
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user) #Gets the cart item
     product_name = cart_item.product.name #Gets the product name
     cart_item.delete() #Deletes the cart item
 
     messages.success(request, f'{product_name} removed from cart!') #Displays the message
     return redirect('orders:cart') #Redirects to the cart view
->>>>>>> a95348d (added comments and meta tags)
 
 
 @login_required
@@ -112,17 +83,6 @@ def checkout(request):
 
     if request.method == 'POST':
         try:
-<<<<<<< HEAD
-            selected_payment_method_id = request.POST.get('payment_method')
-            selected_shipping_method_id = request.POST.get('shipping_method')
-            payment_method = PaymentMethod.objects.get(id=selected_payment_method_id) if selected_payment_method_id else None
-            shipping_method = ShippingMethod.objects.get(id=selected_shipping_method_id) if selected_shipping_method_id else None
-            shipping_cost = shipping_method.cost if shipping_method else 0
-            subtotal = cart.total_price
-            tax_amount = subtotal * Decimal('0.24')  # 24% tax rate to match Cart model
-            total_with_tax = subtotal + tax_amount
-            total_amount = total_with_tax + shipping_cost
-=======
             selected_payment_method_id = request.POST.get('payment_method') #Gets the payment method
             selected_shipping_method_id = request.POST.get('shipping_method') #Gets the shipping method
             payment_method = PaymentMethod.objects.get(id=selected_payment_method_id) if selected_payment_method_id else None #Gets the payment method
@@ -132,7 +92,6 @@ def checkout(request):
             tax_amount = subtotal * Decimal('0.24')  # 24% tax rate to match Cart model
             total_with_tax = subtotal + tax_amount #Gets the total with tax
             total_amount = total_with_tax + shipping_cost #Gets the total amount
->>>>>>> a95348d (added comments and meta tags)
 
             order = Order.objects.create( #Creates the order
                 user=request.user,
@@ -192,17 +151,10 @@ def checkout(request):
 
 @login_required
 def order_detail(request, order_number):
-<<<<<<< HEAD
-    order = get_object_or_404(Order, order_number=order_number, user=request.user)
-
-    # Get status history for this order
-    status_history = order.status_history.all()
-=======
     order = get_object_or_404(Order, order_number=order_number, user=request.user) #Gets the order
 
     # Get status history for this order
     status_history = order.status_history.all() #Gets the status history
->>>>>>> a95348d (added comments and meta tags)
 
     context = {
         'order': order,
@@ -213,11 +165,7 @@ def order_detail(request, order_number):
 
 @login_required
 def order_history(request):
-<<<<<<< HEAD
-    orders = request.user.orders.all()
-=======
     orders = request.user.orders.all() #Gets all the orders for the user
->>>>>>> a95348d (added comments and meta tags)
 
     # Sample orders for demonstration if user has no orders
     if not orders.exists():
@@ -233,30 +181,17 @@ def order_history(request):
 @login_required
 def cancel_order(request, order_number):
     """Cancel an order if it's still cancellable"""
-<<<<<<< HEAD
-    order = get_object_or_404(Order, order_number=order_number, user=request.user)
-
-    if not order.can_cancel:
-        messages.error(request, 'This order cannot be cancelled.')
-        return redirect('orders:order_detail', order_number=order_number)
-=======
     order = get_object_or_404(Order, order_number=order_number, user=request.user) #Gets the order
 
     if not order.can_cancel:
         messages.error(request, 'This order cannot be cancelled.') #Displays the message
         return redirect('orders:order_detail', order_number=order_number) #Redirects to the order detail view
->>>>>>> a95348d (added comments and meta tags)
 
     if request.method == 'POST':
         try:
             # Update order status
-<<<<<<< HEAD
-            order.order_status = 'cancelled'
-            order.save()
-=======
             order.order_status = 'cancelled' #Sets the order status to cancelled
             order.save() #Saves the order
->>>>>>> a95348d (added comments and meta tags)
 
             # Create status history entry
             OrderStatusHistory.objects.create(
@@ -266,19 +201,11 @@ def cancel_order(request, order_number):
                 changed_by=request.user #Sets the changed by
             )
 
-<<<<<<< HEAD
-            messages.success(request, f'Order {order.order_number} has been cancelled successfully.')
-            return redirect('orders:order_history')
-
-        except Exception as e:
-            messages.error(request, f'Error cancelling order: {str(e)}')
-=======
             messages.success(request, f'Order {order.order_number} has been cancelled successfully.') #Displays the message
             return redirect('orders:order_history') #Redirects to the order history view
 
         except Exception as e:
             messages.error(request, f'Error cancelling order: {str(e)}') #Displays the message
->>>>>>> a95348d (added comments and meta tags)
 
     context = {
         'order': order,
@@ -295,24 +222,6 @@ def download_invoice(request, order_number):
 @login_required
 def track_order(request, order_number):
     """AJAX endpoint for real-time order tracking"""
-<<<<<<< HEAD
-    order = get_object_or_404(Order, order_number=order_number, user=request.user)
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({
-            'order_number': order.order_number,
-            'status': order.order_status,
-            'status_display': order.get_order_status_display(),
-            'payment_status': order.payment_status,
-            'payment_status_display': order.get_payment_status_display(),
-            'created_at': order.created_at.isoformat(),
-            'shipped_at': order.shipped_at.isoformat() if order.shipped_at else None,
-            'delivered_at': order.delivered_at.isoformat() if order.delivered_at else None,
-            'can_cancel': order.can_cancel,
-        })
-
-    return redirect('orders:order_detail', order_number=order_number)
-=======
     order = get_object_or_404(Order, order_number=order_number, user=request.user) #Gets the order
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest': #Checks if the request is an AJAX request
@@ -329,4 +238,3 @@ def track_order(request, order_number):
         }) #Returns the JSON response
 
     return redirect('orders:order_detail', order_number=order_number) #Redirects to the order detail view
->>>>>>> a95348d (added comments and meta tags)
