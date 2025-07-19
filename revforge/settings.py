@@ -30,6 +30,12 @@ SECRET_KEY = 'django-insecure-^%^cna0v8jn(+m5=z&k3m!_v-0-sen@)=t3*27#)g@-h@31)94
 #IMPORTANT !!!!! IF RUN LOCALLY, UNCOMMENT THE LINES BELOW AND COMMENT THE LINES ABOVE
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
