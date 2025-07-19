@@ -3,9 +3,13 @@
 
 {% block title %}RevForge - Premium Car Performance Parts{% endblock %} <!-- Title -->
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock %}
+
 {% block content %} <!-- Content -->
 <!-- Hero Section -->
-<section class="hero-section" style="background-image: url('{% static 'images/homebackground.png' %}');"> <!-- Hero section -->
+<section class="hero-section"> <!-- Hero section -->
     <div class="container"> <!-- Container -->
         <div class="row min-vh-100"> <!-- Row -->
             <div class="col-lg-7 col-md-10 d-flex flex-column justify-content-center"> <!-- Column -->
@@ -43,7 +47,7 @@
                 <div class="category-card"> <!-- Category card -->
                     <div class="category-icon"> <!-- Category icon -->
                         {% if category.icon_class %} <!-- If category icon class -->
-                            <img src="{{ category.icon_class.url }}" alt="{{ category.name }} icon" style="width:64px;height:64px;object-fit:contain;border-radius:16px;box-shadow:0 2px 8px rgba(220,53,69,0.12);background:#181a1b;"> <!-- Image -->
+                            <img src="{{ category.icon_class.url }}" alt="{{ category.name }} icon" class="category-icon"> <!-- Image -->
                         {% else %} <!-- If category icon class is not set -->
                             <i class="fas fa-cog"></i> <!-- Icon -->
                         {% endif %} <!-- End if category icon class -->

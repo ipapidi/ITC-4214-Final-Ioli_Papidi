@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <title>Invoice - {{ order.order_number }}</title> <!-- Title -->
     <link rel="stylesheet" href="{% static 'css/invoice.css' %}"> <!-- Invoice CSS -->
+    <link rel="stylesheet" href="{% static 'css/orders.css' %}"> <!-- Orders CSS -->
 </head>
 <body>
 <div class="invoice-container"> <!-- Invoice container -->
     <div class="header"> <!-- Header -->
         <div class="logo"> <!-- Logo -->
-            <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height:40px;vertical-align:middle;margin-right:10px;"> <!-- RevForge Logo -->
+            <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="invoice-logo"> <!-- RevForge Logo -->
             
         </div> <!-- Logo -->
         <div class="order-info"> <!-- Order info -->
@@ -86,7 +87,7 @@
         Thank you for your order!<br> <!-- Thank you for your order -->
         &copy; {{ now|date:"Y" }} RevForge. All rights reserved. <!-- Copyright -->
     </div> <!-- Footer -->
-    <button class="no-print" onclick="window.print()" style="margin-top:24px; padding:10px 24px; font-size:1rem; background:#c0392b; color:#fff; border:none; border-radius:6px; cursor:pointer;">Print / Save as PDF</button> <!-- Print / Save as PDF button -->
+    <button class="no-print print-button" onclick="window.print()">Print / Save as PDF</button> <!-- Print / Save as PDF button -->
 </div> <!-- Invoice container -->
 <script src="{% static 'js/orders_invoice.js' %}" defer></script> <!-- Orders invoice JS -->
 </body> <!-- Body -->

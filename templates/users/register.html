@@ -4,10 +4,11 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/users_vendor_registration.css' %}">
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;"> <!-- Register section -->
+<div class="d-flex align-items-center justify-content-center min-vh-80 register-section"> <!-- Register section -->
     <div class="col-md-6 col-lg-5"> <!-- Column -->
         <form method="post" novalidate class="contact-form p-4 rounded-4 shadow"> <!-- Form -->
             <h2 class="mb-4 text-center text-light">Create Account</h2> <!-- Create account -->

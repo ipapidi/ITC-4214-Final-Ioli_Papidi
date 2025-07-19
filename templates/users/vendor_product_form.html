@@ -7,6 +7,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/users_vendor_product_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
 {% endblock %}
 
 {% block extra_js %}
@@ -152,8 +153,7 @@
                                     <small class="text-light">Current image:</small> <!-- Small -->
                                     <img src="{{ product.main_image.url }}" 
                                          alt="{{ product.name }}" 
-                                         class="img-thumbnail mt-1" 
-                                         style="max-width: 150px; max-height: 150px;"> <!-- Image -->
+                                         class="img-thumbnail mt-1 vendor-product-image"> <!-- Image -->
                                 </div> <!-- Div -->
                             {% endif %} <!-- End if product and product main image -->
                             <input type="hidden" name="clear_image" id="clear_image" value="0"> <!-- Hidden input -->

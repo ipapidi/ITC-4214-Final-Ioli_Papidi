@@ -1,0 +1,51 @@
+/* Users Login/Register Styles */
+.login-section {
+    min-height: 80vh;
+}
+
+.register-section {
+    min-height: 80vh;
+}
+
+.form-label-accent {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.login-button {
+    font-size: 1.15rem;
+}
+
+.form-text-light {
+    color: #e0e0e0;
+}
+
+/* Vendor Product Form Styles */
+.vendor-product-image {
+    max-width: 150px;
+    max-height: 150px;
+}
+
+/* Vendor Dashboard Styles */
+.vendor-product-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.vendor-product-placeholder {
+    width: 50px;
+    height: 50px;
+}
+
+/* Vendor Product Confirm Delete Styles */
+.confirm-delete-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.confirm-delete-placeholder {
+    width: 80px;
+    height: 80px;
+} 

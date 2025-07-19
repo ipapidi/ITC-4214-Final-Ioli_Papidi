@@ -3,13 +3,17 @@
 
 {% block title %}Your Cart | RevForge{% endblock %} <!-- Title -->
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
 {% block content %} <!-- Content -->
 <section class="cart-section py-5"> <!-- Cart section -->
     <div class="container"> <!-- Container -->
         {% if messages %} <!-- If there are messages -->
         <div class="mb-3"> <!-- Message container -->
             {% for message in messages %} <!-- For each message -->
-            <div class="alert alert-{{ message.tags }}" style="background:#23272b; color:#fff; border:none;"> <!-- Message -->
+            <div class="alert alert-{{ message.tags }} alert-dark"> <!-- Message -->
                 {{ message }} <!-- Message -->
             </div>
             {% endfor %} <!-- End for each message -->
@@ -36,7 +40,7 @@
                                 {% if item.product.main_image %} <!-- If the product has a main image -->
                                 <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" width="60" class="me-3 rounded"> <!-- Product image -->
                                 {% else %} <!-- If the product does not have a main image -->
-                                <div class="placeholder-image me-3" style="width:60px; height:60px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:8px;"> <!-- Placeholder image -->
+                                <div class="placeholder-image me-3 cart-placeholder-image"> <!-- Placeholder image -->
                                     <i class="fas fa-image fa-lg text-muted"></i> <!-- Placeholder image icon -->
                                 </div> <!-- Placeholder image -->
                                 {% endif %} <!-- End if the product does not have a main image -->
@@ -50,7 +54,7 @@
                         <td> <!-- Quantity column -->
                             <form method="post" action="{% url 'orders:update_cart_item' item.id %}" class="d-flex align-items-center"> <!-- Update cart item form -->
                                 {% csrf_token %} <!-- CSRF token -->
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm me-2" style="width:70px;"> <!-- Quantity input -->
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm me-2 quantity-input"> <!-- Quantity input -->
                                 <button type="submit" class="btn btn-outline-primary btn-sm">Update</button> <!-- Update button -->
                             </form> <!-- Update cart item form -->
                         </td> <!-- Quantity column -->

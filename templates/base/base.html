@@ -35,14 +35,15 @@
     <!-- Custom CSS (load last for override) -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/f1_part_badge.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-dark text-light">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-danger navbar-sticky" style="position:fixed;top:0;left:0;right:0;width:100%;z-index:9999;background:#222 !important;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-danger navbar-sticky">
         <div class="container"> <!-- Container for the navigation bar -->
             <a class="navbar-brand" href="{% url 'products:home' %}">
-                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 40px;"> <!-- Logo -->
+                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="navbar-logo"> <!-- Logo -->
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> <!-- Button to toggle the navigation bar -->
                 <span class="navbar-toggler-icon"></span> <!-- Icon for the button -->
@@ -82,9 +83,9 @@
                             <li><a class="dropdown-item text-light" href="{% url 'orders:order_history' %}">Orders</a></li> <!-- Orders link -->
                             <li><hr class="dropdown-divider border-danger"></li> <!-- Divider -->
                             <li> <!-- Logout link -->
-                              <form method="post" action="{% url 'users:logout' %}" style="display:inline;"> <!-- Logout form -->
+                              <form method="post" action="{% url 'users:logout' %}" class="logout-form"> <!-- Logout form -->
                                 {% csrf_token %}
-                                <button type="submit" class="dropdown-item text-light" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; width: 100%; text-align: left;">Logout</button>
+                                <button type="submit" class="dropdown-item text-light logout-button">Logout</button>
                               </form>
                             </li>
                         </ul>
@@ -129,7 +130,7 @@
             <div class="row"> <!-- Row for the footer -->
                 <div class="col-lg-4 mb-4 mb-lg-0"> <!-- Column for the footer -->
                     <a class="navbar-brand" href="{% url 'products:home' %}">
-                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" style="height: 50px;"> <!-- Logo -->
+                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="footer-logo"> <!-- Logo -->
                     </a>
                     <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p> <!-- Description -->
                 </div>
@@ -159,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            <hr class="my-4" style="border-color: var(--border-color);"> <!-- Divider -->
+            <hr class="my-4 footer-divider"> <!-- Divider -->
             <div class="text-center text-light"> <!-- Copyright -->
                 <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small> <!-- Copyright -->
             </div>

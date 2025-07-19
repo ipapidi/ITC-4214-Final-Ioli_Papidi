@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/f1_part_badge.css' %}"> <!-- F1 part badge CSS -->
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}"> <!-- Product detail CSS -->
 {% endblock %} <!-- End of extra CSS -->
 
 {% block content %} <!-- Content -->
@@ -15,7 +16,7 @@
                 {% if product.main_image %} <!-- If the product has a main image -->
                 <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow"> <!-- Main image -->
                 {% else %} <!-- If the product does not have a main image -->
-                <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded" style="height:350px;"> <!-- Placeholder image -->
+                <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded"> <!-- Placeholder image -->
                     <i class="fas fa-image fa-4x text-muted"></i> <!-- Image icon -->
                 </div> <!-- Placeholder image -->
                 {% endif %} <!-- End if the product does not have a main image -->
@@ -75,11 +76,11 @@
                 </div> <!-- Margin bottom -->
                 <div class="mb-3"> <!-- Margin bottom -->
                     {% if product.stock_status == 'out_of_stock' %} <!-- If the product is out of stock -->
-                        <span class="badge bg-danger" style="font-size:1rem;">Out of Stock</span> 
+                        <span class="badge bg-danger stock-badge out-of-stock">Out of Stock</span> 
                     {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
-                        <span class="badge bg-warning text-dark" style="font-size:1rem;">Low Stock ({{ product.stock_quantity }})</span> 
+                        <span class="badge bg-warning text-dark stock-badge low-stock">Low Stock ({{ product.stock_quantity }})</span> 
                     {% else %} <!-- If the product is in stock -->
-                        <span class="badge bg-success" style="font-size:1rem;">In Stock ({{ product.stock_quantity }})</span> 
+                        <span class="badge bg-success stock-badge in-stock">In Stock ({{ product.stock_quantity }})</span> 
                     {% endif %} <!-- End if the product is out of stock -->
                 </div> <!-- Margin bottom -->
                 {% if user.is_authenticated %} <!-- If the user is authenticated -->
@@ -150,22 +151,7 @@
 </div> <!-- Recommended section -->
 {% endif %} <!-- End if there are recommended products -->
 
-<style>
-.star-rating {
-    font-size: 2rem;
-    color: #ccc;
-    cursor: pointer;
-    user-select: none;
-}
-.star-rating .star {
-    display: inline-block;
-    transition: color 0.2s;
-}
-.star-rating .star.filled,
-.star-rating .star.selected {
-    color: #ffc107;
-}
-</style>
+
 {% block extra_js %} <!-- Extra JS -->
 <script src="{% static 'js/products_product_detail.js' %}?v=1" defer></script> <!-- Products product detail JS -->
 {% endblock %} <!-- End of extra JS -->

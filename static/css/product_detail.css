@@ -1,0 +1,40 @@
+/* Product Detail Star Rating Styles */
+.star-rating {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star-rating .star {
+    display: inline-block;
+    transition: color 0.2s;
+}
+
+.star-rating .star.filled,
+.star-rating .star.selected {
+    color: #ffc107;
+}
+
+/* Product Detail Placeholder Image */
+.placeholder-image {
+    height: 350px;
+}
+
+/* Product Detail Stock Badge Styles */
+.stock-badge {
+    font-size: 1rem;
+}
+
+.stock-badge.out-of-stock {
+    background-color: #dc3545;
+}
+
+.stock-badge.low-stock {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.stock-badge.in-stock {
+    background-color: #198754;
+} 

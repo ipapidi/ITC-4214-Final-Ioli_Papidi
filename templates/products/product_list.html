@@ -3,78 +3,8 @@
 
 {% block title %}All Products | RevForge{% endblock %}
 
-{% block extra_css %} <!-- Forgot to move this to the css file before the deployment -->
-<style> 
-.filter-bar {
-    background: var(--card-bg);
-    border-radius: 10px;
-    padding: 1rem 1rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    box-shadow: 0 2px 12px rgba(231,76,60,0.07);
-}
-.filter-bar label {
-    color: var(--accent-color);
-    font-weight: 600;
-    margin-right: 0.5rem;
-    font-size: 1rem;
-}
-.filter-bar select {
-    background: var(--dark-bg);
-    color: var(--text-light);
-    border: 1px solid var(--accent-color);
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    min-width: 120px;
-    margin-right: 0.5rem;
-}
-.filter-bar select:focus {
-    outline: none;
-    border-color: var(--accent-light);
-    box-shadow: 0 0 0 2px rgba(231,76,60,0.13);
-}
-.clear-filters-btn {
-    margin-left: auto;
-    background: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 0.8rem 1.5rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s;
-    box-shadow: 0 2px 8px rgba(231,76,60,0.07);
-    display: inline-block;
-}
-.clear-filters-btn:hover {
-    background: var(--accent-light);
-    color: #fff;
-    text-decoration: none;
-}
-
-/* Product card clickable styling */
-.product-card {
-    cursor: pointer;
-    position: relative;
-}
-
-.product-card .clickable-area {
-    cursor: pointer;
-}
-
-.product-card .non-clickable {
-    cursor: default;
-}
-
-.product-card .btn {
-    position: relative;
-    z-index: 10;
-}
-</style>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_list.css' %}">
 {% endblock %}
 
 {% block content %}

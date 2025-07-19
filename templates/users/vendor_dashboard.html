@@ -3,6 +3,10 @@
 
 {% block title %}Vendor Dashboard | RevForge{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid py-4"> <!-- Container -->
     <!-- Vendor Dashboard Header -->
@@ -122,11 +126,10 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 {% if product.main_image %} <!-- If product main image -->
-                                                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}" 
-                                                         class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;"> <!-- Image -->
+                                                                                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}" 
+                                     class="rounded me-3 vendor-product-thumbnail"> <!-- Image -->
                                                 {% else %} <!-- If product main image is not set -->
-                                                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center" 
-                                                         style="width: 50px; height: 50px;"> <!-- Background secondary -->
+                                                                                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center vendor-product-placeholder"> <!-- Background secondary -->
                                                         <i class="fas fa-image text-muted"></i> <!-- Icon -->
                                                     </div>
                                                 {% endif %}

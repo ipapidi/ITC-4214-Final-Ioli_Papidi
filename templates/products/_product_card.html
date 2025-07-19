@@ -70,11 +70,11 @@
         </div> <!-- Product price -->
         <div class="product-stock mb-2"> <!-- Product stock -->
             {% if product.stock_status == 'out_of_stock' %} <!-- If the product is out of stock -->
-                <span class="text-danger" style="font-weight:bold;">Out of Stock</span> <!-- Out of stock -->
-            {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
-                <span style="color:#ffc107; font-weight:bold;">Low Stock ({{ product.stock_quantity }})</span> <!-- Low stock -->
-            {% else %} <!-- If the product is in stock -->
-                <span class="text-success" style="font-weight:bold;">In Stock ({{ product.stock_quantity }})</span> <!-- In stock -->
+                                        <span class="text-danger product-card-out-of-stock">Out of Stock</span> <!-- Out of stock -->
+                    {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
+                        <span class="product-card-low-stock">Low Stock ({{ product.stock_quantity }})</span> <!-- Low stock -->
+                    {% else %} <!-- If the product is in stock -->
+                        <span class="text-success product-card-in-stock">In Stock ({{ product.stock_quantity }})</span> <!-- In stock -->
             {% endif %} <!-- End if the product is out of stock -->
         </div> <!-- Product stock -->
         <div class="non-clickable">

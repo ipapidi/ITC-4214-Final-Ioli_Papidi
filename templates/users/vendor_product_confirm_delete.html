@@ -3,6 +3,10 @@
 
 {% block title %}Delete Product | Vendor Dashboard{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
+{% endblock %}
+
 {% block content %} 
 <div class="container py-4"> <!-- Container -->
     <div class="row justify-content-center"> <!-- Row -->
@@ -28,10 +32,9 @@
                             <div class="d-flex align-items-center"> <!-- Flex align items -->
                                 {% if product.main_image %} <!-- If product main image -->
                                     <img src="{{ product.main_image.url }}" alt="{{ product.name }}" 
-                                         class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;"> <!-- Image -->
+                                         class="rounded me-3 confirm-delete-image"> <!-- Image -->
                                 {% else %} <!-- If product main image is not set -->
-                                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center" 
-                                         style="width: 80px; height: 80px;"> <!-- Background secondary -->
+                                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center confirm-delete-placeholder"> <!-- Background secondary -->
                                         <i class="fas fa-image text-muted fs-2"></i> <!-- Icon -->
                                     </div> <!-- Background secondary -->
                                 {% endif %} <!-- End if product main image -->

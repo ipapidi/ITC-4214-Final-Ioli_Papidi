@@ -1,7 +1,11 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Contact Us | RevForge{% endblock %} <!-- Title -->
+{% block title %}Contact Us | RevForge{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock %} <!-- Title -->
 
 {% block content %} <!-- Content -->
 <!-- Contact Hero Section -->
@@ -9,8 +13,8 @@
     <div class="container"> <!-- Container -->
         <div class="row justify-content-center align-items-center min-vh-40"> <!-- Row -->
             <div class="col-lg-10 text-center"> <!-- Column -->
-                <h1 class="display-3 fw-bold text-light mb-3" style="letter-spacing:0.04em;">Contact <span class="accent">RevForge</span></h1> <!-- Heading -->
-                <p class="lead text-light mb-4" style="font-size:1.25rem;max-width:700px;margin:auto;text-shadow:1px 1px 8px #000;"> <!-- Paragraph -->
+                <h1 class="display-3 fw-bold text-light mb-3 contact-heading">Contact <span class="accent">RevForge</span></h1> <!-- Heading -->
+                <p class="lead text-light mb-4 contact-lead"> <!-- Paragraph -->
                     Have a question, need support, or want to connect? Use the form below, find us on the map, or check our FAQ for quick answers. <!-- Paragraph -->
                 </p> <!-- Paragraph -->
             </div> <!-- Column -->
@@ -19,7 +23,7 @@
 </section> <!-- Section -->
 
 <!-- Contact Form & Map Section -->
-<section class="py-5" style="background: var(--card-bg);">
+<section class="py-5 contact-section">
     <div class="container">
         <div class="row g-5">
             <!-- Contact Form -->
@@ -44,7 +48,7 @@
             <!-- Google Maps Widget -->
             <div class="col-lg-6"> <!-- Column -->
                 <div class="ratio ratio-16x9 rounded-4 shadow mb-4"> <!-- Ratio -->
-                    <iframe src="https://www.google.com/maps?q=American+College+of+Greece&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> <!-- Iframe -->
+                    <iframe src="https://www.google.com/maps?q=American+College+of+Greece&output=embed" width="100%" height="100%" class="contact-map" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> <!-- Iframe -->
                 </div> <!-- Ratio -->
                 <div class="contact-location p-3 rounded-4 mt-2"> <!-- Contact location -->
                     <h5 class="mb-2">Our Location</h5> <!-- Heading -->

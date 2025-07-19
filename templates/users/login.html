@@ -1,14 +1,20 @@
 {% extends 'base/base.html' %}
+{% load static %}
+
 {% block title %}Login | RevForge{% endblock %} <!-- Title -->
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/users.css' %}">
+{% endblock %}
 {% block content %} <!-- Content -->
-<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;"> <!-- Login section -->
+<div class="d-flex align-items-center justify-content-center min-vh-80 login-section"> <!-- Login section -->
     <div class="col-md-6 col-lg-5"> <!-- Column -->
         <form method="post" novalidate class="contact-form p-4 rounded-4 shadow">
             <h2 class="mb-4 text-center text-light">Sign In</h2> <!-- Sign in -->
             {% csrf_token %} <!-- CSRF token -->
             {% for field in form %} <!-- For each field -->
                 <div class="mb-3"> <!-- Margin bottom -->
-                    <label class="form-label" style="color: var(--accent-color); font-weight: 600;">{{ field.label }}</label> <!-- Label -->
+                    <label class="form-label form-label-accent">{{ field.label }}</label> <!-- Label -->
                     {{ field }} <!-- Field -->
                     {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text }}</div>{% endif %} <!-- Help text -->
                     {% for error in field.errors %} <!-- For each error -->
@@ -16,9 +22,9 @@
                     {% endfor %} <!-- End for each error -->
                 </div> <!-- Margin bottom -->
             {% endfor %} <!-- End for each field -->
-            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2" style="font-size:1.15rem;">Login</button> <!-- Login button -->
+            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2 login-button">Login</button> <!-- Login button -->
             <div class="mt-4 text-center"> <!-- Margin top -->
-                <span class="form-text" style="color: #e0e0e0">Don't have an account?</span> <!-- Don't have an account -->
+                <span class="form-text form-text-light">Don't have an account?</span> <!-- Don't have an account -->
                 <a href="{% url 'users:register' %}" class="text-danger fw-semibold ms-1">Register</a> <!-- Register -->
             </div> <!-- Margin top -->
         </form> <!-- Form -->

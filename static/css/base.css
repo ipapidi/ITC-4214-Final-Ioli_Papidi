@@ -1,0 +1,36 @@
+/* Base Template Navigation Styles */
+.navbar-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #222 !important;
+}
+
+.navbar-logo {
+    height: 40px;
+}
+
+.footer-logo {
+    height: 50px;
+}
+
+.logout-form {
+    display: inline;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.footer-divider {
+    border-color: var(--border-color);
+} 
