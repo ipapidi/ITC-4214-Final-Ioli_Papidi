@@ -1,27 +1,27 @@
 {% extends 'base/base.html' %}
-{% block title %}Login | RevForge{% endblock %}
-{% block content %}
-<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;">
-    <div class="col-md-6 col-lg-5">
+{% block title %}Login | RevForge{% endblock %} <!-- Title -->
+{% block content %} <!-- Content -->
+<div class="d-flex align-items-center justify-content-center min-vh-80" style="min-height:80vh;"> <!-- Login section -->
+    <div class="col-md-6 col-lg-5"> <!-- Column -->
         <form method="post" novalidate class="contact-form p-4 rounded-4 shadow">
-            <h2 class="mb-4 text-center text-light">Sign In</h2>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label" style="color: var(--accent-color); font-weight: 600;">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text }}</div>{% endif %}
-                    {% for error in field.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2" style="font-size:1.15rem;">Login</button>
-            <div class="mt-4 text-center">
-                <span class="form-text" style="color: #e0e0e0">Don't have an account?</span>
-                <a href="{% url 'users:register' %}" class="text-danger fw-semibold ms-1">Register</a>
-            </div>
-        </form>
-    </div>
+            <h2 class="mb-4 text-center text-light">Sign In</h2> <!-- Sign in -->
+            {% csrf_token %} <!-- CSRF token -->
+            {% for field in form %} <!-- For each field -->
+                <div class="mb-3"> <!-- Margin bottom -->
+                    <label class="form-label" style="color: var(--accent-color); font-weight: 600;">{{ field.label }}</label> <!-- Label -->
+                    {{ field }} <!-- Field -->
+                    {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text }}</div>{% endif %} <!-- Help text -->
+                    {% for error in field.errors %} <!-- For each error -->
+                        <div class="text-danger small">{{ error }}</div> <!-- Error -->
+                    {% endfor %} <!-- End for each error -->
+                </div> <!-- Margin bottom -->
+            {% endfor %} <!-- End for each field -->
+            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mt-2" style="font-size:1.15rem;">Login</button> <!-- Login button -->
+            <div class="mt-4 text-center"> <!-- Margin top -->
+                <span class="form-text" style="color: #e0e0e0">Don't have an account?</span> <!-- Don't have an account -->
+                <a href="{% url 'users:register' %}" class="text-danger fw-semibold ms-1">Register</a> <!-- Register -->
+            </div> <!-- Margin top -->
+        </form> <!-- Form -->
+    </div> <!-- Column -->
 </div>
 {% endblock %} 

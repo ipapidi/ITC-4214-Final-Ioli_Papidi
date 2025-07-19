@@ -1,352 +1,352 @@
-{% extends 'base/base.html' %}
-{% load static %}
+{% extends 'base/base.html' %} <!-- Extends the base template -->
+{% load static %} <!-- Loads the static files -->
 
-{% block title %}Order #{{ order.order_number }} - RevForge{% endblock %}
+{% block title %}Order #{{ order.order_number }} - RevForge{% endblock %} <!-- Title -->
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% block extra_css %} <!-- Extra CSS -->
+<link rel="stylesheet" href="{% static 'css/orders.css' %}"> <!-- Orders CSS -->
 {% endblock %}
 
-{% block content %}
-<div class="container">
+{% block content %} <!-- Content -->
+<div class="container"> <!-- Container -->
     <!-- Back Button -->
-    <div class="row mb-4">
-        <div class="col-12">
+    <div class="row mb-4"> <!-- Row -->
+        <div class="col-12"> <!-- Column -->
             <a href="{% url 'orders:order_history' %}" class="btn back-button">
-                <i class="fas fa-arrow-left me-2"></i>Back to Orders
-            </a>
-        </div>
-    </div>
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders <!-- Back to orders -->
+            </a> <!-- Back to orders -->
+        </div> <!-- Column -->
+    </div> <!-- Row -->
 
     <!-- Order Header -->
-    <div class="order-detail-header">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="order-number mb-2">Order #{{ order.order_number }}</h1>
-                <p class="text-light mb-0">
-                    <i class="fas fa-calendar me-2"></i>
-                    Placed on {{ order.created_at|date:"F d, Y" }} at {{ order.created_at|time:"g:i A" }}
+    <div class="order-detail-header"> <!-- Order detail header -->
+        <div class="row align-items-center"> <!-- Row -->
+            <div class="col-md-8"> <!-- Column -->
+                <h1 class="order-number mb-2">Order #{{ order.order_number }}</h1> <!-- Order number -->
+                <p class="text-light mb-0"> <!-- Text -->
+                    <i class="fas fa-calendar me-2"></i> <!-- Calendar icon -->
+                    Placed on {{ order.created_at|date:"F d, Y" }} at {{ order.created_at|time:"g:i A" }} <!-- Placed on -->
                 </p>
-            </div>
-            <div class="col-md-4 text-end">
-                <div class="mb-3">
-                    <span class="text-light fw-bold me-2">Order Status:</span>
+            </div> <!-- Column -->
+            <div class="col-md-4 text-end"> <!-- Column -->
+                <div class="mb-3"> <!-- Div -->
+                    <span class="text-light fw-bold me-2">Order Status:</span> <!-- Order status -->
                     <span class="status-badge-large status-{{ order.order_status }}">
-                        {{ order.get_order_status_display }}
-                    </span>
-                </div>
-                <div>
-                    <span class="text-light fw-bold me-2">Payment Status:</span>
-                    <span class="payment-badge-large payment-{{ order.payment_status }}">
-                        {{ order.get_payment_status_display }}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
+                        {{ order.get_order_status_display }} <!-- Order status display -->
+                    </span> <!-- Status badge -->
+                </div> <!-- Div -->
+                <div> <!-- Div -->
+                    <span class="text-light fw-bold me-2">Payment Status:</span> <!-- Payment status -->
+                    <span class="payment-badge-large payment-{{ order.payment_status }}"> <!-- Payment badge -->
+                        {{ order.get_payment_status_display }} <!-- Payment status display -->
+                    </span> <!-- Payment badge -->
+                </div> <!-- Div -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+    </div> <!-- Order detail header -->
 
-    <div class="row">
+    <div class="row"> <!-- Row -->
         <!-- Order Items -->
-        <div class="col-lg-8">
-            <div class="detail-card">
-                <h5>
-                    <i class="fas fa-boxes me-2"></i>
-                    Order Items ({{ order.items.count }})
-                </h5>
-                {% for item in order.items.all %}
-                <div class="order-item-detail">
-                    <div class="row align-items-center">
-                        <div class="col-md-2">
+        <div class="col-lg-8"> <!-- Column -->
+            <div class="detail-card"> <!-- Detail card -->
+                <h5> <!-- Heading -->
+                    <i class="fas fa-boxes me-2"></i> <!-- Boxes icon -->
+                    Order Items ({{ order.items.count }}) <!-- Order items -->
+                </h5> <!-- Heading -->
+                {% for item in order.items.all %} <!-- For each item in the order -->
+                <div class="order-item-detail"> <!-- Order item detail -->
+                    <div class="row align-items-center"> <!-- Row -->
+                        <div class="col-md-2"> <!-- Column -->
                             {% if item.product.main_image %}
-                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product_name }}" class="product-image">
+                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product_name }}" class="product-image"> <!-- Product image -->
                             {% else %}
-                                <div class="product-image d-flex align-items-center justify-content-center bg-secondary">
-                                    <i class="fas fa-image text-light"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
+                                <div class="product-image d-flex align-items-center justify-content-center bg-secondary"> <!-- Product image -->
+                                    <i class="fas fa-image text-light"></i> <!-- Image icon -->
+                                </div> <!-- Product image -->
+                            {% endif %} <!-- End if there is a product image -->
+                        </div> <!-- Column -->
+                        <div class="col-md-6"> <!-- Column -->
                             <h6 class="text-light mb-1">{{ item.product_name }}</h6>
-                            <p class="text-light mb-1">SKU: {{ item.product_sku }}</p>
-                            <small class="text-light">
-                                <i class="fas fa-tag me-1"></i>
-                                Unit Price: ${{ item.unit_price }}
+                            <p class="text-light mb-1">SKU: {{ item.product_sku }}</p> <!-- Product SKU -->
+                            <small class="text-light"> <!-- Small text -->
+                                <i class="fas fa-tag me-1"></i> <!-- Tag icon -->
+                                Unit Price: ${{ item.unit_price }} <!-- Unit price -->
                             </small>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <span class="text-light fw-bold">Qty: {{ item.quantity }}</span>
-                        </div>
-                        <div class="col-md-2 text-end">
-                            <span class="text-danger fw-bold fs-5">${{ item.total_price }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+                        </div> <!-- Column -->
+                        <div class="col-md-2 text-center"> <!-- Column -->
+                            <span class="text-light fw-bold">Qty: {{ item.quantity }}</span> <!-- Quantity -->
+                        </div> <!-- Column -->
+                        <div class="col-md-2 text-end"> <!-- Column -->
+                            <span class="text-danger fw-bold fs-5">${{ item.total_price }}</span> <!-- Total price -->
+                        </div> <!-- Column -->
+                    </div> <!-- Row -->
+                </div> <!-- Order item detail -->
+                {% endfor %} <!-- End for each item in the order -->
+            </div> <!-- Detail card -->
 
             <!-- Order Progress Tracker -->
-            <div class="detail-card">
-                <h5>
-                    <i class="fas fa-truck me-2"></i>
-                    Order Progress
-                </h5>
-                <div class="progress-tracker-detailed">
-                    <div class="progress-step-detailed">
-                        <div class="step-icon-detailed step-completed">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">Order Placed</div>
-                            <div class="step-description">Your order has been successfully placed</div>
-                            <div class="step-time">{{ order.created_at|date:"M d, Y g:i A" }}</div>
-                        </div>
+            <div class="detail-card"> <!-- Detail card -->
+                <h5> <!-- Heading -->
+                    <i class="fas fa-truck me-2"></i> <!-- Truck icon -->
+                    Order Progress <!-- Order progress -->
+                </h5> <!-- Heading -->
+                <div class="progress-tracker-detailed"> <!-- Progress tracker detailed -->
+                    <div class="progress-step-detailed"> <!-- Progress step detailed -->
+                        <div class="step-icon-detailed step-completed"> <!-- Step icon detailed -->
+                            <i class="fas fa-check"></i> <!-- Check icon -->
+                        </div> <!-- Step icon detailed -->
+                        <div class="step-content"> <!-- Step content -->
+                            <div class="step-title">Order Placed</div> <!-- Step title -->
+                            <div class="step-description">Your order has been successfully placed</div> <!-- Step description -->
+                            <div class="step-time">{{ order.created_at|date:"M d, Y g:i A" }}</div> <!-- Step time -->
+                        </div> <!-- Step content -->
+                    </div> <!-- Progress step detailed -->
+                    
+                    <div class="progress-step-detailed"> <!-- Progress step detailed -->
+                        <div class="step-icon-detailed {% if order.order_status in 'confirmed,processing,shipped,delivered' %}step-completed{% elif order.order_status == 'pending' %}step-current{% else %}step-pending{% endif %}"> <!-- Step icon detailed -->
+                            <i class="fas fa-check"></i> <!-- Check icon -->
+                        </div> <!-- Step icon detailed -->
+                        <div class="step-content"> <!-- Step content -->
+                            <div class="step-title">Order Confirmed</div> <!-- Step title -->
+                            <div class="step-description"> <!-- Step description -->
+                                {% if order.order_status in 'confirmed,processing,shipped,delivered' %} <!-- If the order status is confirmed, processing, shipped, or delivered -->
+                                    Your order has been confirmed and is being processed <!-- Order confirmed and being processed -->
+                                {% elif order.order_status == 'pending' %} <!-- If the order status is pending -->
+                                    We're currently reviewing your order <!-- We're currently reviewing your order -->
+                                {% else %} <!-- If the order status is not confirmed, processing, shipped, or delivered -->
+                                    Pending confirmation <!-- Pending confirmation -->
+                                {% endif %} <!-- End if the order status is not confirmed, processing, shipped, or delivered -->
+                            </div> <!-- Step description -->
+                            <div class="step-time"> <!-- Step time -->
+                                {% if order.order_status in 'confirmed,processing,shipped,delivered' %} <!-- If the order status is confirmed, processing, shipped, or delivered -->
+                                    Confirmed <!-- Confirmed -->
+                                {% elif order.order_status == 'pending' %} <!-- If the order status is pending -->
+                                    Processing... <!-- Processing... -->
+                                {% else %} <!-- If the order status is not confirmed, processing, shipped, or delivered -->
+                                    Pending <!-- Pending -->
+                                {% endif %} <!-- End if the order status is not confirmed, processing, shipped, or delivered -->
+                            </div> <!-- Step time -->
+                        </div> <!-- Step content -->
                     </div>
                     
-                    <div class="progress-step-detailed">
-                        <div class="step-icon-detailed {% if order.order_status in 'confirmed,processing,shipped,delivered' %}step-completed{% elif order.order_status == 'pending' %}step-current{% else %}step-pending{% endif %}">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">Order Confirmed</div>
-                            <div class="step-description">
-                                {% if order.order_status in 'confirmed,processing,shipped,delivered' %}
-                                    Your order has been confirmed and is being processed
-                                {% elif order.order_status == 'pending' %}
-                                    We're currently reviewing your order
-                                {% else %}
-                                    Pending confirmation
-                                {% endif %}
-                            </div>
-                            <div class="step-time">
-                                {% if order.order_status in 'confirmed,processing,shipped,delivered' %}
-                                    Confirmed
-                                {% elif order.order_status == 'pending' %}
-                                    Processing...
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-step-detailed">
-                        <div class="step-icon-detailed {% if order.order_status in 'processing,shipped,delivered' %}step-completed{% elif order.order_status == 'confirmed' %}step-current{% else %}step-pending{% endif %}">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">Processing</div>
-                            <div class="step-description">
-                                {% if order.order_status in 'processing,shipped,delivered' %}
-                                    Your order has been processed and is ready for shipment
-                                {% elif order.order_status == 'confirmed' %}
+                    <div class="progress-step-detailed"> <!-- Progress step detailed -->
+                        <div class="step-icon-detailed {% if order.order_status in 'processing,shipped,delivered' %}step-completed{% elif order.order_status == 'confirmed' %}step-current{% else %}step-pending{% endif %}"> <!-- Step icon detailed -->
+                            <i class="fas fa-cog"></i> <!-- Cog icon -->
+                        </div> <!-- Step icon detailed -->
+                        <div class="step-content"> <!-- Step content -->
+                            <div class="step-title">Processing</div> <!-- Step title -->
+                            <div class="step-description"> <!-- Step description -->
+                                {% if order.order_status in 'processing,shipped,delivered' %} <!-- If the order status is processing, shipped, or delivered -->
+                                    Your order has been processed and is ready for shipment <!-- Your order has been processed and is ready for shipment -->
+                                {% elif order.order_status == 'confirmed' %} <!-- If the order status is confirmed -->
                                     We're preparing your items for shipment
-                                {% else %}
-                                    Pending processing
-                                {% endif %}
-                            </div>
-                            <div class="step-time">
-                                {% if order.order_status in 'processing,shipped,delivered' %}
-                                    Processed
-                                {% elif order.order_status == 'confirmed' %}
+                                {% else %} <!-- If the order status is not processing, shipped, or delivered -->
+                                    Pending processing 
+                                {% endif %} <!-- End if the order status is not processing, shipped, or delivered -->
+                            </div> <!-- Step description -->
+                            <div class="step-time"> <!-- Step time -->
+                                {% if order.order_status in 'processing,shipped,delivered' %} <!-- If the order status is processing, shipped, or delivered -->
+                                    Processed 
+                                {% elif order.order_status == 'confirmed' %} <!-- If the order status is confirmed -->
                                     Processing...
-                                {% else %}
-                                    Pending
-                                {% endif %}
+                                {% else %} <!-- If the order status is not processing, shipped, or delivered -->
+                                    Pending 
+                                {% endif %} <!-- End if the order status is not processing, shipped, or delivered -->
                             </div>
                         </div>
                     </div>
                     
-                    <div class="progress-step-detailed">
-                        <div class="step-icon-detailed {% if order.order_status in 'shipped,delivered' %}step-completed{% elif order.order_status == 'processing' %}step-current{% else %}step-pending{% endif %}">
-                            <i class="fas fa-shipping-fast"></i>
+                    <div class="progress-step-detailed"> <!-- Progress step detailed -->
+                        <div class="step-icon-detailed {% if order.order_status in 'shipped,delivered' %}step-completed{% elif order.order_status == 'processing' %}step-current{% else %}step-pending{% endif %}"> <!-- Step icon detailed -->
+                            <i class="fas fa-shipping-fast"></i> <!-- Shipping fast icon -->
                         </div>
-                        <div class="step-content">
-                            <div class="step-title">Shipped</div>
-                            <div class="step-description">
-                                {% if order.order_status in 'shipped,delivered' %}
-                                    Your order is on its way to you
-                                    {% if order.shipped_at %}
-                                        <br>Shipped on {{ order.shipped_at|date:"M d, Y" }}
+                        <div class="step-content"> <!-- Step content -->
+                            <div class="step-title">Shipped</div> <!-- Step title -->
+                            <div class="step-description"> <!-- Step description -->
+                                {% if order.order_status in 'shipped,delivered' %} <!-- If the order status is shipped, or delivered -->
+                                    Your order is on its way to you <!-- Your order is on its way to you -->
+                                    {% if order.shipped_at %} <!-- If the order has been shipped -->
+                                        <br>Shipped on {{ order.shipped_at|date:"M d, Y" }} <!-- Shipped on -->
                                     {% endif %}
-                                {% elif order.order_status == 'processing' %}
-                                    Preparing for shipment
-                                {% else %}
-                                    Pending shipment
-                                {% endif %}
-                            </div>
-                            <div class="step-time">
-                                {% if order.order_status in 'shipped,delivered' %}
-                                    {% if order.shipped_at %}
-                                        {{ order.shipped_at|date:"M d, Y" }}
-                                    {% else %}
-                                        Shipped
+                                {% elif order.order_status == 'processing' %} <!-- If the order status is processing -->
+                                    Preparing for shipment <!-- Preparing for shipment -->
+                                {% else %} <!-- If the order status is not shipped, or delivered -->
+                                    Pending shipment <!-- Pending shipment -->
+                                {% endif %} <!-- End if the order status is not shipped, or delivered -->
+                            </div> <!-- Step description -->
+                            <div class="step-time"> <!-- Step time -->
+                                {% if order.order_status in 'shipped,delivered' %} <!-- If the order status is shipped, or delivered -->
+                                    {% if order.shipped_at %} <!-- If the order has been shipped -->
+                                        {{ order.shipped_at|date:"M d, Y" }} <!-- Shipped on -->
+                                    {% else %} <!-- If the order has not been shipped -->
+                                        Shipped <!-- Shipped -->
                                     {% endif %}
-                                {% elif order.order_status == 'processing' %}
-                                    Preparing...
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                                {% elif order.order_status == 'processing' %} <!-- If the order status is processing -->
+                                    Preparing... <!-- Preparing... -->
+                                {% else %} <!-- If the order status is not shipped, or delivered -->
+                                    Pending <!-- Pending -->
+                                {% endif %} <!-- End if the order status is not shipped, or delivered -->
+                            </div> <!-- Step time -->
+                        </div> <!-- Step content -->
+                    </div> <!-- Progress step detailed -->
                     
-                    <div class="progress-step-detailed">
-                        <div class="step-icon-detailed {% if order.order_status == 'delivered' %}step-completed{% elif order.order_status == 'shipped' %}step-current{% else %}step-pending{% endif %}">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="step-content">
-                            <div class="step-title">Delivered</div>
-                            <div class="step-description">
-                                {% if order.order_status == 'delivered' %}
-                                    Your order has been delivered
-                                    {% if order.delivered_at %}
-                                        <br>Delivered on {{ order.delivered_at|date:"M d, Y" }}
+                    <div class="progress-step-detailed"> <!-- Progress step detailed -->
+                        <div class="step-icon-detailed {% if order.order_status == 'delivered' %}step-completed{% elif order.order_status == 'shipped' %}step-current{% else %}step-pending{% endif %}"> <!-- Step icon detailed -->
+                            <i class="fas fa-home"></i> <!-- Home icon -->
+                        </div> <!-- Step icon detailed -->
+                        <div class="step-content"> <!-- Step content -->
+                            <div class="step-title">Delivered</div> <!-- Step title -->
+                            <div class="step-description"> <!-- Step description -->
+                                {% if order.order_status == 'delivered' %} <!-- If the order status is delivered -->
+                                    Your order has been delivered <!-- Your order has been delivered -->
+                                    {% if order.delivered_at %} <!-- If the order has been delivered -->
+                                        <br>Delivered on {{ order.delivered_at|date:"M d, Y" }} <!-- Delivered on -->
                                     {% endif %}
-                                {% elif order.order_status == 'shipped' %}
-                                    Your order is in transit
-                                {% else %}
-                                    Pending delivery
-                                {% endif %}
-                            </div>
-                            <div class="step-time">
-                                {% if order.order_status == 'delivered' %}
-                                    {% if order.delivered_at %}
-                                        {{ order.delivered_at|date:"M d, Y" }}
-                                    {% else %}
-                                        Delivered
-                                    {% endif %}
-                                {% elif order.order_status == 'shipped' %}
-                                    In Transit
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                {% elif order.order_status == 'shipped' %} <!-- If the order status is shipped -->
+                                    Your order is in transit <!-- Your order is in transit -->
+                                {% else %} <!-- If the order status is not delivered or shipped -->
+                                    Pending delivery <!-- Pending delivery -->
+                                {% endif %} <!-- End if the order status is not delivered or shipped -->
+                            </div> <!-- Step description -->
+                            <div class="step-time"> <!-- Step time -->
+                                {% if order.order_status == 'delivered' %} <!-- If the order status is delivered -->
+                                    {% if order.delivered_at %} <!-- If the order has been delivered -->
+                                        {{ order.delivered_at|date:"M d, Y" }} <!-- Delivered on -->
+                                    {% else %} <!-- If the order has not been delivered -->
+                                        Delivered <!-- Delivered -->
+                                    {% endif %} <!-- End if the order has been delivered -->
+                                {% elif order.order_status == 'shipped' %} <!-- If the order status is shipped -->
+                                    In Transit <!-- In Transit -->
+                                {% else %} <!-- If the order status is not delivered or shipped -->
+                                    Pending <!-- Pending -->
+                                {% endif %} <!-- End if the order status is not delivered or shipped -->
+                            </div> <!-- Step time -->
+                        </div> <!-- Step content -->
+                    </div> <!-- Progress step detailed -->
+                </div> <!-- Detail card -->
+            </div> <!-- Detail card -->
+        </div> <!-- Column -->
 
         <!-- Order Information Sidebar -->
-        <div class="col-lg-4">
+        <div class="col-lg-4"> <!-- Column -->
             <!-- Order Summary -->
-            <div class="detail-card">
+            <div class="detail-card"> <!-- Detail card -->
                 <h5>
                     <i class="fas fa-calculator me-2"></i>
                     Order Summary
                 </h5>
-                <div class="info-row">
-                    <span class="text-light">Subtotal:</span>
-                    <span class="text-light">${{ order.subtotal }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-light">Tax:</span>
-                    <span class="text-light">${{ order.tax_amount }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="text-light">Shipping:</span>
-                    <span class="text-light">${{ order.shipping_cost }}</span>
-                </div>
-                {% if order.discount_amount > 0 %}
-                <div class="info-row">
-                    <span class="text-light">Discount:</span>
-                    <span class="text-success">-${{ order.discount_amount }}</span>
-                </div>
+                <div class="info-row"> <!-- Info row -->
+                    <span class="text-light">Subtotal:</span> <!-- Subtotal -->
+                    <span class="text-light">${{ order.subtotal }}</span> <!-- Subtotal -->
+                </div> <!-- Info row -->
+                <div class="info-row"> <!-- Info row -->
+                    <span class="text-light">Tax:</span> <!-- Tax -->
+                    <span class="text-light">${{ order.tax_amount }}</span> <!-- Tax -->
+                </div> <!-- Info row -->
+                <div class="info-row"> <!-- Info row -->
+                    <span class="text-light">Shipping:</span> <!-- Shipping -->
+                    <span class="text-light">${{ order.shipping_cost }}</span> <!-- Shipping -->
+                </div> <!-- Info row -->
+                {% if order.discount_amount > 0 %} <!-- If there is a discount -->
+                <div class="info-row"> <!-- Info row -->
+                    <span class="text-light">Discount:</span> <!-- Discount -->
+                    <span class="text-success">-${{ order.discount_amount }}</span> <!-- Discount -->
+                </div> <!-- Info row -->
                 {% endif %}
-                <div class="info-row">
-                    <span class="text-light">Total:</span>
-                    <span class="text-danger fw-bold fs-4">${{ order.total_amount }}</span>
-                </div>
-            </div>
+                <div class="info-row"> <!-- Info row -->
+                    <span class="text-light">Total:</span> <!-- Total -->
+                    <span class="text-danger fw-bold fs-4">${{ order.total_amount }}</span> <!-- Total -->
+                </div> <!-- Info row -->
+            </div> <!-- Detail card -->
 
             <!-- Shipping Information -->
-            <div class="detail-card">
+            <div class="detail-card"> <!-- Detail card -->
                 <h5>
-                    <i class="fas fa-map-marker-alt me-2"></i>
-                    Shipping Address
-                </h5>
+                    <i class="fas fa-map-marker-alt me-2"></i> <!-- Map marker icon -->
+                    Shipping Address <!-- Shipping address -->
+                </h5> <!-- Heading -->
                 <div class="text-light">
-                    <p class="mb-1">{{ order.shipping_address }}</p>
-                    <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</p>
-                    <p class="mb-3">{{ order.shipping_country }}</p>
-                    <p class="mb-0">
-                        <i class="fas fa-phone me-2"></i>{{ order.shipping_phone }}
-                    </p>
-                </div>
-            </div>
+                    <p class="mb-1">{{ order.shipping_address }}</p> <!-- Shipping address -->
+                    <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</p> <!-- Shipping city, state, and postal code -->
+                    <p class="mb-3">{{ order.shipping_country }}</p> <!-- Shipping country -->
+                    <p class="mb-0"> <!-- Phone -->
+                        <i class="fas fa-phone me-2"></i>{{ order.shipping_phone }} <!-- Phone -->
+                    </p> <!-- Phone -->
+                </div> <!-- Text -->
+            </div> <!-- Detail card -->
 
             <!-- Payment Information -->
-            <div class="detail-card">
+            <div class="detail-card"> <!-- Detail card -->
                 <h5>
-                    <i class="fas fa-credit-card me-2"></i>
-                    Payment Information
-                </h5>
+                    <i class="fas fa-credit-card me-2"></i> <!-- Credit card icon -->
+                    Payment Information <!-- Payment information -->
+                </h5> <!-- Heading -->
                 <div class="text-light">
-                    <p class="mb-2">
-                        <strong>Method:</strong> {{ order.payment_method }}
-                    </p>
-                    {% if order.payment_transaction_id %}
+                    <p class="mb-2"> <!-- Method -->
+                        <strong>Method:</strong> {{ order.payment_method }} <!-- Payment method -->
+                    </p> <!-- Method -->
+                    {% if order.payment_transaction_id %} <!-- If there is a payment transaction ID -->
                     <p class="mb-0">
-                        <strong>Transaction ID:</strong> {{ order.payment_transaction_id }}
-                    </p>
-                    {% endif %}
+                        <strong>Transaction ID:</strong> {{ order.payment_transaction_id }} <!-- Payment transaction ID -->
+                    </p> <!-- Transaction ID -->
+                    {% endif %} <!-- End if there is a payment transaction ID -->
                 </div>
             </div>
 
             <!-- Customer Notes -->
-            {% if order.customer_notes %}
-            <div class="detail-card">
-                <h5>
-                    <i class="fas fa-sticky-note me-2"></i>
-                    Order Notes
-                </h5>
-                <div class="text-light">
-                    <p class="mb-0">{{ order.customer_notes }}</p>
-                </div>
-            </div>
-            {% endif %}
+            {% if order.customer_notes %} <!-- If there are customer notes -->
+            <div class="detail-card"> <!-- Detail card -->
+                <h5> <!-- Heading -->
+                    <i class="fas fa-sticky-note me-2"></i> <!-- Sticky note icon -->
+                    Order Notes <!-- Order notes -->
+                </h5> <!-- Heading -->
+                <div class="text-light"> <!-- Text -->
+                    <p class="mb-0">{{ order.customer_notes }}</p> <!-- Customer notes -->
+                </div> <!-- Text -->
+            </div> <!-- Detail card -->
+            {% endif %} <!-- End if there are customer notes -->
 
             <!-- Action Buttons -->
-            <div class="detail-card">
-                <h5>
-                    <i class="fas fa-cogs me-2"></i>
-                    Actions
-                </h5>
-                <div class="d-grid gap-2">
-                    {% if order.can_cancel %}
-                    <a href="{% url 'orders:cancel_order' order_number=order.order_number %}" class="btn btn-outline-warning">
-                        <i class="fas fa-times me-2"></i>Cancel Order
-                    </a>
-                    {% endif %}
-                    <a href="{% url 'orders:download_invoice' order_number=order.order_number %}" class="btn btn-outline-info">
-                        <i class="fas fa-download me-2"></i>Download Invoice
-                    </a>
-                    <button class="btn btn-outline-success" onclick="openSupportModal()">
-                        <i class="fas fa-headset me-2"></i>Contact Support
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+            <div class="detail-card"> <!-- Detail card -->
+                <h5> <!-- Heading -->
+                    <i class="fas fa-cogs me-2"></i> <!-- Cog icon -->
+                    Actions <!-- Actions -->
+                </h5> <!-- Heading -->
+                <div class="d-grid gap-2"> <!-- Grid -->
+                    {% if order.can_cancel %} <!-- If the order can be cancelled -->
+                    <a href="{% url 'orders:cancel_order' order_number=order.order_number %}" class="btn btn-outline-warning"> <!-- Cancel order button -->
+                        <i class="fas fa-times me-2"></i>Cancel Order <!-- Cancel order -->
+                    </a> <!-- Cancel order button -->
+                    {% endif %} <!-- End if the order can be cancelled -->
+                    <a href="{% url 'orders:download_invoice' order_number=order.order_number %}" class="btn btn-outline-info"> <!-- Download invoice button -->
+                        <i class="fas fa-download me-2"></i>Download Invoice <!-- Download invoice -->
+                    </a> <!-- Download invoice button -->
+                    <button class="btn btn-outline-success" onclick="openSupportModal()"> <!-- Contact support button -->
+                        <i class="fas fa-headset me-2"></i>Contact Support <!-- Contact support -->
+                    </button> <!-- Contact support button -->
+                </div> <!-- Grid -->
+            </div> <!-- Detail card -->
+        </div> <!-- Column -->
+    </div> <!-- Row -->
+</div> <!-- Container -->
 
 <!-- Support Modal -->
 <div id="supportModal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     <div style="background:#23272b; color:#fff; border-radius:12px; max-width:350px; margin:auto; padding:32px 24px; box-shadow:0 2px 16px rgba(0,0,0,0.15); position:relative;">
         <button onclick="closeSupportModal()" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
-        <div style="text-align:center;">
-            <i class="fas fa-headset" style="font-size:2.5rem; color:#27ae60;"></i>
-            <h4 class="mt-3 mb-2">Customer Support</h4>
-            <p class="mb-2">Call us anytime for help with your order:</p>
-            <div style="font-size:1.2rem; font-weight:bold; color:#27ae60; margin-bottom:8px;">
-                <i class="fas fa-phone-alt me-2"></i>+30 697 400 0000
-            </div>
+        <div style="text-align:center;"> <!-- Text -->
+            <i class="fas fa-headset" style="font-size:2.5rem; color:#27ae60;"></i> <!-- Headset icon -->
+            <h4 class="mt-3 mb-2">Customer Support</h4> <!-- Customer support -->
+            <p class="mb-2">Call us anytime for help with your order:</p> <!-- Call us anytime for help with your order -->
+            <div style="font-size:1.2rem; font-weight:bold; color:#27ae60; margin-bottom:8px;"> <!-- Phone icon -->
+                <i class="fas fa-phone-alt me-2"></i>+30 697 400 0000 <!-- Phone icon -->
+            </div> <!-- Phone icon -->
             <div style="font-size:1rem; color:#aaa;">We're here for you 24/7!</div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+        </div> <!-- Text -->
+    </div> <!-- Text -->
+</div> <!-- Container -->
+{% endblock %} <!-- End of content -->
 
-{% block extra_js %}
-<script src="{% static 'js/orders_order_detail.js' %}" defer></script>
-{% endblock %} 
+{% block extra_js %} <!-- Extra JS -->
+<script src="{% static 'js/orders_order_detail.js' %}" defer></script> <!-- Orders order detail JS -->
+{% endblock %} <!-- End of extra JS -->

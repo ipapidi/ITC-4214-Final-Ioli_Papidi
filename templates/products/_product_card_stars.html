@@ -1,8 +1,8 @@
-{% for i in "12345" %}
-    {% if forloop.counter <= avg|floatformat:0|add:'0' %}
-        <i class="fas fa-star text-warning"></i>
-    {% else %}
-        <i class="far fa-star text-muted"></i>
-    {% endif %}
-{% endfor %}
-<span class="rating-text">({{ avg|floatformat:1 }}/5)</span> 
+{% for i in "12345" %} <!-- For each star -->
+    {% if forloop.counter <= avg|floatformat:0|add:'0' %} <!-- If the counter is less than or equal to the average -->
+        <i class="fas fa-star text-warning"></i> <!-- Star icon -->
+    {% else %} <!-- If the counter is greater than the average -->
+        <i class="far fa-star text-muted"></i> <!-- Star icon -->
+    {% endif %} <!-- End if the counter is greater than the average -->
+{% endfor %} <!-- End for each star -->
+<span class="rating-text">({{ avg|floatformat:1 }}/5)</span> <!-- Rating text -->

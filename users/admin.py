@@ -12,21 +12,21 @@ class UserProfileInline(admin.StackedInline):
     Inline admin for user profiles.
     """
     model = UserProfile
-    can_delete = False
-    verbose_name_plural = 'Profile'
-    fk_name = 'user'  # Specify which ForeignKey to use
-    fieldsets = (
-        ('Personal Information', {
-            'fields': ('phone_number', 'date_of_birth', 'profile_picture')
+    can_delete = False # Can delete
+    verbose_name_plural = 'Profile' # Verbose name plural
+    fk_name = 'user' # Foreign key to user
+    fieldsets = ( # Fieldsets
+        ('Personal Information', { # Personal information
+            'fields': ('phone_number', 'date_of_birth', 'profile_picture') # Fields
         }),
-        ('Address', {
-            'fields': ('address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country')
+        ('Address', { # Address
+            'fields': ('address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country') # Fields
         }),
-        ('Vendor Information', {
-            'fields': ('is_vendor', 'vendor_status', 'vendor_team', 'vendor_application_date', 'vendor_approved_date', 'vendor_approved_by'),
-            'classes': ('collapse',)
+        ('Vendor Information', { # Vendor information
+            'fields': ('is_vendor', 'vendor_status', 'vendor_team', 'vendor_application_date', 'vendor_approved_date', 'vendor_approved_by'), # Fields
+            'classes': ('collapse',) # Classes
         }),
-        ('Account', {
+        ('Account', { # Account
             'fields': ('is_verified', 'verification_token', 'last_login_ip')
         }),
     )
@@ -36,19 +36,19 @@ class UserPreferenceInline(admin.StackedInline):
     """
     Inline admin for user preferences.
     """
-    model = UserPreference
-    can_delete = False
-    verbose_name_plural = 'Preferences'
-    fk_name = 'user'
-    fieldsets = (
-        ('Display Preferences', {
-            'fields': ('theme',)
+    model = UserPreference # Model
+    can_delete = False # Can delete
+    verbose_name_plural = 'Preferences' # Verbose name plural
+    fk_name = 'user' # Foreign key to user
+    fieldsets = ( # Fieldsets
+        ('Display Preferences', { # Display preferences
+            'fields': ('theme',) # Fields
         }),
-        ('Product Preferences', {
-            'fields': ('preferred_categories', 'preferred_brands', 'price_range_min', 'price_range_max')
+        ('Product Preferences', { # Product preferences
+            'fields': ('preferred_categories', 'preferred_brands', 'price_range_min', 'price_range_max') # Fields
         }),
-        ('Privacy Settings', {
-            'fields': ('profile_visibility',)
+        ('Privacy Settings', { # Privacy settings
+            'fields': ('profile_visibility',) # Fields
         }),
     )
 
@@ -57,74 +57,74 @@ class UserAdmin(BaseUserAdmin):
     """
     Extended user admin with profile and preferences.
     """
-    inlines = [UserProfileInline, UserPreferenceInline]
-    list_display = ['username', 'email', 'full_name', 'vendor_status', 'is_verified', 'date_joined']
-    list_filter = ['is_active', 'is_staff', 'date_joined', 'profile__is_verified', 'profile__is_vendor', 'profile__vendor_status']
-    search_fields = ['username', 'first_name', 'last_name', 'email', 'profile__vendor_team']
-    readonly_fields = ['date_joined', 'last_login']
-    actions = ['approve_vendors', 'reject_vendors']
+    inlines = [UserProfileInline, UserPreferenceInline] # Inlines
+    list_display = ['username', 'email', 'full_name', 'vendor_status', 'is_verified', 'date_joined'] # List display
+    list_filter = ['is_active', 'is_staff', 'date_joined', 'profile__is_verified', 'profile__is_vendor', 'profile__vendor_status'] # List filter
+    search_fields = ['username', 'first_name', 'last_name', 'email', 'profile__vendor_team'] # Search fields
+    readonly_fields = ['date_joined', 'last_login'] # Readonly fields
+    actions = ['approve_vendors', 'reject_vendors'] # Actions
 
     def full_name(self, obj):
         """Display user's full name"""
-        return obj.profile.get_full_name()
-    full_name.short_description = 'Full Name'
+        return obj.profile.get_full_name() # Return user's full name
+    full_name.short_description = 'Full Name' 
 
     def vendor_status(self, obj):
         """Display vendor status"""
         if obj.profile.is_vendor:
-            status = obj.profile.vendor_status
-            if status == 'approved':
-                return format_html('<span style="color: #27ae60;">✓ Approved Vendor</span>')
-            elif status == 'pending':
-                return format_html('<span style="color: #f39c12;">Pending</span>')
-            elif status == 'rejected':
-                return format_html('<span style="color: #e74c3c;">✗ Rejected</span>')
-        return format_html('<span style="color: #95a5a6;">Not a Vendor</span>')
-    vendor_status.short_description = 'Vendor Status'
+            status = obj.profile.vendor_status # Vendor status
+            if status == 'approved': # If vendor status is approved
+                return format_html('<span style="color: #27ae60;">✓ Approved Vendor</span>') # Return approved vendor
+            elif status == 'pending': # If vendor status is pending
+                return format_html('<span style="color: #f39c12;">Pending</span>') # Return pending
+            elif status == 'rejected': # If vendor status is rejected
+                return format_html('<span style="color: #e74c3c;">✗ Rejected</span>') # Return rejected
+        return format_html('<span style="color: #95a5a6;">Not a Vendor</span>') # Return not a vendor
+    vendor_status.short_description = 'Vendor Status' # Short description
 
     def is_verified(self, obj):
         """Display verification status"""
-        if obj.profile.is_verified:
-            return format_html('<span style="color: #27ae60;">✓ Verified</span>')
-        return format_html('<span style="color: #e74c3c;">✗ Not Verified</span>')
-    is_verified.short_description = 'Verified'
+        if obj.profile.is_verified: # If user is verified
+            return format_html('<span style="color: #27ae60;">✓ Verified</span>') # Return verified
+        return format_html('<span style="color: #e74c3c;">✗ Not Verified</span>') # Return not verified
+    is_verified.short_description = 'Verified' # Short description
 
     def approve_vendors(self, request, queryset):
         """Admin action to approve vendors"""
-        updated = 0
-        for user in queryset:
-            if user.profile.is_vendor and user.profile.vendor_status == 'pending':
-                user.profile.vendor_status = 'approved'
-                user.profile.vendor_approved_date = timezone.now()
-                user.profile.vendor_approved_by = request.user
-                user.profile.save()
-                updated += 1
+        updated = 0 # Updated
+        for user in queryset: # For each user
+            if user.profile.is_vendor and user.profile.vendor_status == 'pending': # If user is vendor and vendor status is pending
+                user.profile.vendor_status = 'approved' # Vendor status
+                user.profile.vendor_approved_date = timezone.now() # Vendor approved date
+                user.profile.vendor_approved_by = request.user # Vendor approved by
+                user.profile.save() # Save user profile
+                updated += 1 # Increment updated
         
-        if updated == 1:
-            self.message_user(request, f'{updated} vendor application approved.')
-        else:
-            self.message_user(request, f'{updated} vendor applications approved.')
-    approve_vendors.short_description = "Approve selected vendor applications"
+        if updated == 1: # If updated is 1
+            self.message_user(request, f'{updated} vendor application approved.') # Message user
+        else: # If updated is not 1
+            self.message_user(request, f'{updated} vendor applications approved.') # Message user
+    approve_vendors.short_description = "Approve selected vendor applications" # Short description
 
     def reject_vendors(self, request, queryset):
         """Admin action to reject vendors"""
-        updated = 0
-        for user in queryset:
-            if user.profile.is_vendor and user.profile.vendor_status == 'pending':
-                user.profile.vendor_status = 'rejected'
-                user.profile.save()
-                updated += 1
+        updated = 0 # Updated
+        for user in queryset: # For each user
+            if user.profile.is_vendor and user.profile.vendor_status == 'pending': # If user is vendor and vendor status is pending
+                user.profile.vendor_status = 'rejected' # Vendor status
+                user.profile.save() # Save user profile
+                updated += 1 # Increment updated
         
-        if updated == 1:
-            self.message_user(request, f'{updated} vendor application rejected.')
-        else:
-            self.message_user(request, f'{updated} vendor applications rejected.')
-    reject_vendors.short_description = "Reject selected vendor applications"
+        if updated == 1: # If updated is 1
+            self.message_user(request, f'{updated} vendor application rejected.') # Message user
+        else: # If updated is not 1
+            self.message_user(request, f'{updated} vendor applications rejected.') # Message user
+    reject_vendors.short_description = "Reject selected vendor applications" # Short description
 
 
 # Re-register UserAdmin
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.unregister(User) # Unregister user
+admin.site.register(User, UserAdmin) # Register user
 
 
 @admin.register(Wishlist)
@@ -132,11 +132,11 @@ class WishlistAdmin(admin.ModelAdmin):
     """
     Admin interface for user wishlists.
     """
-    list_display = ['user', 'product', 'added_at']
-    list_filter = ['added_at']
-    search_fields = ['user__username', 'product__name']
-    readonly_fields = ['added_at']
-    ordering = ['-added_at']
+    list_display = ['user', 'product', 'added_at'] # List display
+    list_filter = ['added_at'] # List filter
+    search_fields = ['user__username', 'product__name'] # Search fields
+    readonly_fields = ['added_at'] # Readonly fields
+    ordering = ['-added_at'] # Ordering
 
 
 @admin.register(RecentlyViewed)
@@ -144,8 +144,8 @@ class RecentlyViewedAdmin(admin.ModelAdmin):
     """
     Admin interface for recently viewed products.
     """
-    list_display = ['user', 'product', 'view_count', 'viewed_at']
-    list_filter = ['viewed_at']
-    search_fields = ['user__username', 'product__name']
-    readonly_fields = ['viewed_at']
-    ordering = ['-viewed_at']
+    list_display = ['user', 'product', 'view_count', 'viewed_at'] # List display
+    list_filter = ['viewed_at'] # List filter
+    search_fields = ['user__username', 'product__name'] # Search fields
+    readonly_fields = ['viewed_at'] # Readonly fields
+    ordering = ['-viewed_at'] # Ordering

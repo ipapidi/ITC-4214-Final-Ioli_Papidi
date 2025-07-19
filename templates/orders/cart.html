@@ -1,78 +1,78 @@
-{% extends 'base/base.html' %}
-{% load static %}
+{% extends 'base/base.html' %} <!-- Extends the base template -->
+{% load static %} <!-- Loads the static files -->
 
-{% block title %}Your Cart | RevForge{% endblock %}
+{% block title %}Your Cart | RevForge{% endblock %} <!-- Title -->
 
-{% block content %}
-<section class="cart-section py-5">
-    <div class="container">
-        {% if messages %}
-        <div class="mb-3">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}" style="background:#23272b; color:#fff; border:none;">
-                {{ message }}
+{% block content %} <!-- Content -->
+<section class="cart-section py-5"> <!-- Cart section -->
+    <div class="container"> <!-- Container -->
+        {% if messages %} <!-- If there are messages -->
+        <div class="mb-3"> <!-- Message container -->
+            {% for message in messages %} <!-- For each message -->
+            <div class="alert alert-{{ message.tags }}" style="background:#23272b; color:#fff; border:none;"> <!-- Message -->
+                {{ message }} <!-- Message -->
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        <h2 class="mb-4">Your Shopping Cart</h2>
+            {% endfor %} <!-- End for each message -->
+        </div> <!-- Message container -->
+        {% endif %} <!-- End if there are messages -->
+        <h2 class="mb-4">Your Shopping Cart</h2> <!-- Shopping cart title -->
         {% if cart_items %}
-        <div class="table-responsive">
-            <table class="table table-dark align-middle">
-                <thead>
+        <div class="table-responsive"> <!-- Table container -->
+            <table class="table table-dark align-middle"> <!-- Table -->
+                <thead> <!-- Table header -->
                     <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                {% if item.product.main_image %}
-                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" width="60" class="me-3 rounded">
-                                {% else %}
-                                <div class="placeholder-image me-3" style="width:60px; height:60px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:8px;">
-                                    <i class="fas fa-image fa-lg text-muted"></i>
-                                </div>
-                                {% endif %}
-                                <div>
-                                    <a href="{% url 'products:product_detail' item.product.slug %}" class="fw-semibold">{{ item.product.name }}</a><br>
-                                    <small class="text-light">Brand: {{ item.product.brand.name }}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>${{ item.product.current_price }}</td>
-                        <td>
-                            <form method="post" action="{% url 'orders:update_cart_item' item.id %}" class="d-flex align-items-center">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm me-2" style="width:70px;">
-                                <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
-                            </form>
-                        </td>
-                        <td>${{ item.total_price }}</td>
-                        <td>
-                            <form method="post" action="{% url 'orders:remove_from_cart' item.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-flex justify-content-end align-items-center mt-4">
-            <h4 class="me-4">Cart Total: <span class="text-danger">${{ cart.total_price }}</span></h4>
-            <a href="{% url 'orders:checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
-        </div>
-        {% else %}
-        <div class="alert alert-info">Your cart is empty.</div>
-        {% endif %}
-    </div>
-</section>
-{% endblock %} 
+                        <th>Product</th> <!-- Product column -->
+                        <th>Price</th> <!-- Price column -->
+                        <th>Quantity</th> <!-- Quantity column -->
+                        <th>Total</th> <!-- Total column -->
+                        <th></th> <!-- Remove column -->
+                    </tr> <!-- Table row -->
+                </thead> <!-- Table header -->
+                <tbody> <!-- Table body -->
+                    {% for item in cart_items %} <!-- For each item in the cart -->
+                    <tr> <!-- Table row -->
+                        <td> <!-- Product column -->
+                            <div class="d-flex align-items-center"> <!-- Product container -->
+                                {% if item.product.main_image %} <!-- If the product has a main image -->
+                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" width="60" class="me-3 rounded"> <!-- Product image -->
+                                {% else %} <!-- If the product does not have a main image -->
+                                <div class="placeholder-image me-3" style="width:60px; height:60px; background:#eee; display:flex; align-items:center; justify-content:center; border-radius:8px;"> <!-- Placeholder image -->
+                                    <i class="fas fa-image fa-lg text-muted"></i> <!-- Placeholder image icon -->
+                                </div> <!-- Placeholder image -->
+                                {% endif %} <!-- End if the product does not have a main image -->
+                                <div> <!-- Product container -->
+                                    <a href="{% url 'products:product_detail' item.product.slug %}" class="fw-semibold">{{ item.product.name }}</a><br> <!-- Product name -->
+                                    <small class="text-light">Brand: {{ item.product.brand.name }}</small> <!-- Product brand -->
+                                </div> <!-- Product container -->
+                            </div> <!-- Product container -->
+                        </td> <!-- Product column -->
+                        <td>${{ item.product.current_price }}</td> <!-- Price column -->
+                        <td> <!-- Quantity column -->
+                            <form method="post" action="{% url 'orders:update_cart_item' item.id %}" class="d-flex align-items-center"> <!-- Update cart item form -->
+                                {% csrf_token %} <!-- CSRF token -->
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm me-2" style="width:70px;"> <!-- Quantity input -->
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Update</button> <!-- Update button -->
+                            </form> <!-- Update cart item form -->
+                        </td> <!-- Quantity column -->
+                        <td>${{ item.total_price }}</td> <!-- Total column -->
+                        <td> <!-- Remove column -->
+                            <form method="post" action="{% url 'orders:remove_from_cart' item.id %}"> <!-- Remove from cart form -->
+                                {% csrf_token %} <!-- CSRF token -->
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button> <!-- Remove button -->
+                            </form> <!-- Remove from cart form -->
+                        </td> <!-- Remove column -->
+                    </tr> <!-- Table row -->
+                    {% endfor %} <!-- End for each item in the cart -->
+                </tbody> <!-- Table body -->
+            </table> <!-- Table -->
+        </div> <!-- Table container -->
+        <div class="d-flex justify-content-end align-items-center mt-4"> <!-- Cart total container -->
+            <h4 class="me-4">Cart Total: <span class="text-danger">${{ cart.total_price }}</span></h4> <!-- Cart total -->
+            <a href="{% url 'orders:checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a> <!-- Proceed to checkout button -->
+        </div> <!-- Cart total container -->
+        {% else %} <!-- If there are no items in the cart -->
+        <div class="alert alert-info">Your cart is empty.</div> <!-- Your cart is empty -->
+        {% endif %} <!-- End if there are no items in the cart -->
+    </div> <!-- Container -->
+</section> <!-- Cart section -->
+{% endblock %} <!-- End of content --> 

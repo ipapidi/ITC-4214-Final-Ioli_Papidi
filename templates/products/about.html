@@ -1,73 +1,73 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}About RevForge{% endblock %}
+{% block title %}About RevForge{% endblock %} <!-- Title -->
 
-{% block content %}
+{% block content %} <!-- Content -->
 <!-- About Hero Section (no background image) -->
-<section class="py-5 bg-black">
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-40">
-            <div class="col-lg-10 text-center">
-                <h1 class="display-3 fw-bold text-light mb-3" style="letter-spacing:0.04em;">About <span class="accent">RevForge</span></h1>
-                <p class="lead text-light mb-4" style="font-size:1.35rem;max-width:700px;margin:auto;text-shadow:1px 1px 8px #000;">
-                    RevForge is a next-generation e-commerce platform dedicated to car performance enthusiasts. Inspired by the innovation and aesthetics of Formula 1, we deliver premium, precision-engineered parts to help you unlock your vehicle's true potential—on the road or the track.
-                </p>
+<section class="py-5 bg-black"> <!-- Section -->
+    <div class="container"> <!-- Container -->
+        <div class="row justify-content-center align-items-center min-vh-40"> <!-- Row -->
+            <div class="col-lg-10 text-center"> <!-- Column -->
+                <h1 class="display-3 fw-bold text-light mb-3" style="letter-spacing:0.04em;">About <span class="accent">RevForge</span></h1> <!-- Heading -->
+                <p class="lead text-light mb-4" style="font-size:1.35rem;max-width:700px;margin:auto;text-shadow:1px 1px 8px #000;"> <!-- Paragraph -->
+                    RevForge is a next-generation e-commerce platform dedicated to car performance enthusiasts. Inspired by the innovation and aesthetics of Formula 1, we deliver premium, precision-engineered parts to help you unlock your vehicle's true potential—on the road or the track. <!-- Paragraph -->
+                </p> <!-- Paragraph -->
             </div>
-        </div>
-    </div>
-</section>
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- Section -->
 
 <!-- Mission Section -->
-<section class="py-5" style="background: var(--card-bg);">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="section-title mb-4">Our Mission</h2>
-                <p class="lead text-light" style="font-size:1.15rem;">
-                    At RevForge, our mission is to empower drivers and builders with the world's best performance parts, curated for quality, reliability, and style. We believe in the thrill of engineering, the beauty of speed, and the community that forms around automotive passion. Every product we offer is selected and tested to meet the highest standards—so you can drive, race, and dream without limits.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
+<section class="py-5" style="background: var(--card-bg);"> <!-- Section -->
+    <div class="container"> <!-- Container -->
+        <div class="row justify-content-center"> <!-- Row -->
+            <div class="col-lg-8 text-center"> <!-- Column -->
+                <h2 class="section-title mb-4">Our Mission</h2> <!-- Heading -->
+                <p class="lead text-light" style="font-size:1.15rem;"> <!-- Paragraph -->
+                    At RevForge, our mission is to empower drivers and builders with the world's best performance parts, curated for quality, reliability, and style. We believe in the thrill of engineering, the beauty of speed, and the community that forms around automotive passion. Every product we offer is selected and tested to meet the highest standards—so you can drive, race, and dream without limits. <!-- Paragraph -->
+                </p> <!-- Paragraph -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- Section -->
 
 <!-- Team Section -->
 <section class="py-5 bg-black">
     <div class="container">
         <div class="row mb-5">
             <div class="col text-center">
-                <h2 class="section-title mb-4">Meet the Team</h2>
-                <p class="text-light" style="font-size:1.1rem;max-width:600px;margin:auto;">
-                    RevForge is built by a diverse team of engineers, designers, and motorsport enthusiasts. We combine technical expertise with a love for racing to bring you an unmatched shopping experience.
-                </p>
-            </div>
-        </div>
-        <div class="row justify-content-center g-4">
+                <h2 class="section-title mb-4">Meet the Team</h2> <!-- Heading -->
+                <p class="text-light" style="font-size:1.1rem;max-width:600px;margin:auto;"> <!-- Paragraph -->
+                    RevForge is built by a diverse team of engineers, designers, and motorsport enthusiasts. We combine technical expertise with a love for racing to bring you an unmatched shopping experience. <!-- Paragraph -->
+                </p> <!-- Paragraph -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+        <div class="row justify-content-center g-4"> <!-- Row -->
             <!-- Team Member 1 -->
-            <div class="col-md-4 col-lg-3">
-                <div class="team-card text-center p-4 bg-dark rounded-4 h-100">
-                    <div class="team-photo mb-3 mx-auto rounded-circle overflow-hidden d-flex align-items-center justify-content-center" style="width:120px;height:120px;background:#181818;border:2px solid #444;">
-                        <img src="{% static 'images/person1.png' %}" alt="Alex Carter" style="width:100%;height:100%;object-fit:cover;display:block;">
-                    </div>
-                    <h5 class="text-light mb-1">Alex Carter</h5>
-                    <p class="text-muted mb-2">Lead Engineer</p>
-                    <p class="small text-light">A lifelong motorsport innovator, Alex brings cutting-edge engineering to every RevForge project. Loves pushing boundaries—on the track and in the codebase.</p>
-                </div>
-            </div>
+            <div class="col-md-4 col-lg-3"> <!-- Column -->
+                <div class="team-card text-center p-4 bg-dark rounded-4 h-100"> <!-- Team card -->
+                    <div class="team-photo mb-3 mx-auto rounded-circle overflow-hidden d-flex align-items-center justify-content-center" style="width:120px;height:120px;background:#181818;border:2px solid #444;"> <!-- Team photo -->
+                        <img src="{% static 'images/person1.png' %}" alt="Alex Carter" style="width:100%;height:100%;object-fit:cover;display:block;"> <!-- Image -->
+                    </div> <!-- Team photo -->
+                    <h5 class="text-light mb-1">Alex Carter</h5> <!-- Name -->
+                    <p class="text-muted mb-2">Lead Engineer</p> <!-- Role -->
+                    <p class="small text-light">A lifelong motorsport innovator, Alex brings cutting-edge engineering to every RevForge project. Loves pushing boundaries—on the track and in the codebase.</p> <!-- Description -->
+                </div> <!-- Team card -->
+            </div> <!-- Column -->
             <!-- Team Member 2 -->
             <div class="col-md-4 col-lg-3">
                 <div class="team-card text-center p-4 bg-dark rounded-4 h-100">
                     <div class="team-photo mb-3 mx-auto rounded-circle overflow-hidden d-flex align-items-center justify-content-center" style="width:120px;height:120px;background:#181818;border:2px solid #444;">
-                        <img src="{% static 'images/person2.png' %}" alt="Riley Morgan" style="width:100%;height:100%;object-fit:cover;display:block;">
-                    </div>
-                    <h5 class="text-light mb-1">Riley Morgan</h5>
-                    <p class="text-muted mb-2">Product Designer</p>
-                    <p class="small text-light">Fascinated by speed and style, Riley crafts user experiences as sleek as an F1 car. Always chasing the perfect balance of form and function.</p>
-                </div>
-            </div>
+                        <img src="{% static 'images/person2.png' %}" alt="Riley Morgan" style="width:100%;height:100%;object-fit:cover;display:block;"> <!-- Image -->
+                    </div> <!-- Team photo -->
+                    <h5 class="text-light mb-1">Riley Morgan</h5> <!-- Name -->
+                    <p class="text-muted mb-2">Product Designer</p> <!-- Role -->
+                    <p class="small text-light">Fascinated by speed and style, Riley crafts user experiences as sleek as an F1 car. Always chasing the perfect balance of form and function.</p> <!-- Description -->
+                </div> <!-- Team card -->
+            </div> <!-- Column -->
             <!-- Add more team members as needed -->
-        </div>
-    </div>
-</section>
-{% endblock %} 
+        </div> <!-- Row -->
+    </div> <!-- Container -->
+</section> <!-- Section -->
+{% endblock %} <!-- End of content -->

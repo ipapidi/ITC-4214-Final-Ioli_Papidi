@@ -4,67 +4,67 @@
 {% block title %}Search Results | RevForge{% endblock %}
 
 {% block content %}
-<section class="products-section py-5">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="section-title">Search Results</h2>
-            {% if query %}
-                <p class="text-light">Results for: <span class="fw-bold">"{{ query }}"</span></p>
-            {% endif %}
-        </div>
-        <div class="row g-4">
-            {% for product in products %}
-            <div class="col-md-6 col-lg-4">
-                {% include 'products/_product_card.html' with product=product show_remove=False %}
+<section class="products-section py-5"> <!-- Products section -->
+    <div class="container"> <!-- Container -->
+        <div class="section-header text-center mb-5"> <!-- Section header -->
+            <h2 class="section-title">Search Results</h2> <!-- Section title -->
+            {% if query %} <!-- If there is a query -->
+                <p class="text-light">Results for: <span class="fw-bold">"{{ query }}"</span></p> <!-- Results for -->
+            {% endif %} <!-- End if there is a query -->
+        </div> <!-- Section header -->
+        <div class="row g-4"> <!-- Row -->
+            {% for product in products %} <!-- For each product -->
+            <div class="col-md-6 col-lg-4"> <!-- Column -->
+                {% include 'products/_product_card.html' with product=product show_remove=False %} <!-- Product card -->
             </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4>No products found</h4>
-                    <p class="text-muted">Try a different search term or check your spelling.</p>
-                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Back to Products</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% if products.has_other_pages %}
-        <div class="row mt-5">
-            <div class="col-12 d-flex justify-content-center">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        {% if products.has_previous %}
-                        <li class="page-item">
+            {% empty %} <!-- If there are no products -->
+            <div class="col-12"> <!-- Column -->
+                <div class="text-center py-5"> <!-- Text center -->
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i> <!-- Search icon -->
+                    <h4>No products found</h4> <!-- No products found -->
+                    <p class="text-muted">Try a different search term or check your spelling.</p> <!-- Try a different search term or check your spelling -->
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">Back to Products</a> <!-- Back to products -->
+                </div> <!-- Text center -->
+            </div> <!-- Column -->
+            {% endfor %} <!-- End for each product -->
+        </div> <!-- Row -->
+        {% if products.has_other_pages %} <!-- If there are other pages -->
+        <div class="row mt-5"> <!-- Row -->
+            <div class="col-12 d-flex justify-content-center"> <!-- Column -->
+                <nav aria-label="Page navigation"> <!-- Page navigation -->
+                    <ul class="pagination"> <!-- Pagination -->
+                        {% if products.has_previous %} <!-- If there is a previous page -->
+                        <li class="page-item"> <!-- Page item -->
                             <a class="page-link" href="?q={{ query }}&page={{ products.previous_page_number }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        {% else %}
+                                <span aria-hidden="true">&laquo;</span> <!-- Previous page -->
+                            </a> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% else %} <!-- If there is no previous page -->
                         <li class="page-item disabled">
-                            <span class="page-link">&laquo;</span>
-                        </li>
-                        {% endif %}
+                            <span class="page-link">&laquo;</span> <!-- Previous page -->
+                        </li> <!-- Page item -->
+                        {% endif %} <!-- End if there is no previous page -->
                         {% for num in products.paginator.page_range %}
                         {% if products.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-                        {% if products.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;</span>
-                        </li>
+                        <li class="page-item active"> <!-- Page item -->
+                            <span class="page-link">{{ num }}</span> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %} <!-- If the page number is within 3 pages of the current page -->
+                        <li class="page-item"> <!-- Page item -->
+                            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% endif %} 
+                        {% endfor %} <!-- End for each page number -->
+                        {% if products.has_next %} <!-- If there is a next page -->
+                        <li class="page-item"> <!-- Page item -->
+                            <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}" aria-label="Next"> <!-- Page link -->
+                                <span aria-hidden="true">&raquo;</span> <!-- Next page -->
+                            </a> <!-- Page link -->
+                        </li> <!-- Page item -->
+                        {% else %} <!-- If there is no next page -->
+                        <li class="page-item disabled"> <!-- Page item -->
+                            <span class="page-link">&raquo;</span> <!-- Next page -->
+                        </li> <!-- Page item -->
                         {% endif %}
                     </ul>
                 </nav>

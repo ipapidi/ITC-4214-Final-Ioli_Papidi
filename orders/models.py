@@ -30,6 +30,7 @@ class Cart(models.Model):
         return self.total_price + (self.total_price * tax_rate) #Returns the total price of the items in the cart with tax
 
 
+
 class CartItem(models.Model):
     # Cart items
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items') #One to many relationship with the Cart model
@@ -125,10 +126,15 @@ class Order(models.Model):
             date_str = datetime.now().strftime('%Y%m%d') #Formats the date as YYYYMMDD
             last_order = Order.objects.filter(order_number__startswith=f'RF-{date_str}').order_by('-order_number').first() #Filters the objects by the order number
 
+
             if last_order:
                 last_number = int(last_order.order_number.split('-')[-1]) #Splits the order number and gets the last number
                 new_number = last_number + 1 #Adds 1 to the last number
             else:
+                new_number = 1
+            self.order_number = f"RF-{date_str}-{new_number:04d}"
+        super().save(*args, **kwargs)
+
                 new_number = 1 #Sets the new number to 1
 
             self.order_number = f"RF-{date_str}-{new_number:04d}" #Formats the order number as RF-YYYYMMDD-XXXX
@@ -147,6 +153,15 @@ class Order(models.Model):
 
     def calculate_totals(self):
         # Calculate order totals
+        subtotal = sum(item.total_price for item in self.items.all())
+        tax_amount = subtotal * Decimal('0.24')  # 24% tax - if the government changes this, change it here
+        total = subtotal + tax_amount + self.shipping_cost - self.discount_amount
+
+        self.subtotal = subtotal
+        self.tax_amount = tax_amount
+        self.total_amount = total
+        self.save()
+
         subtotal = sum(item.total_price for item in self.items.all()) #Calculates the subtotal
         tax_amount = subtotal * Decimal('0.24')  #Calculates the tax amount
         total = subtotal + tax_amount + self.shipping_cost - self.discount_amount #Calculates the total
@@ -181,6 +196,7 @@ class OrderItem(models.Model):
             self.total_price = self.unit_price * self.quantity #Sets the total price
 
         super().save(*args, **kwargs) #Saves the object
+
 
 
 class OrderStatusHistory(models.Model):
