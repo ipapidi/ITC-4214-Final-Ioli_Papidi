@@ -4,7 +4,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator, MinLengthValidator
 import os
+import re
 
 
 def validate_file_size(value):
@@ -20,23 +22,111 @@ def validate_file_type(value):
     if not ext.lower() in valid_extensions:
         raise ValidationError('Only image files are allowed.')
 
+def validate_phone_number(value):
+    """Validate phone number format"""
+    if not value:
+        return value
+    
+    # Remove all non-digit characters
+    digits_only = re.sub(r'\D', '', value)
+    
+    if len(digits_only) < 10:
+        raise ValidationError('Phone number must have at least 10 digits.')
+    
+    if len(digits_only) > 15:
+        raise ValidationError('Phone number cannot exceed 15 digits.')
+    
+    return value
+
+def validate_postal_code(value):
+    """Validate postal code format"""
+    if not value:
+        return value
+    
+    # Allow alphanumeric characters, spaces, and hyphens
+    if not re.match(r'^[A-Za-z0-9\s\-]+$', value):
+        raise ValidationError('Postal code can only contain letters, numbers, spaces, and hyphens.')
+    
+    if len(value.strip()) < 3:
+        raise ValidationError('Postal code must be at least 3 characters long.')
+    
+    if len(value.strip()) > 10:
+        raise ValidationError('Postal code cannot exceed 10 characters.')
+    
+    return value.strip()
+
+def validate_address(value):
+    """Validate address fields"""
+    if not value:
+        return value
+    
+    if len(value.strip()) < 5:
+        raise ValidationError('Address must be at least 5 characters long.')
+    
+    if len(value.strip()) > 255:
+        raise ValidationError('Address cannot exceed 255 characters.')
+    
+    # Check for potentially harmful content
+    harmful_patterns = [
+        r'<script|javascript:|vbscript:|onload=|onerror=',
+        r'\b(www\.|http://|https://)\b',
+    ]
+    
+    for pattern in harmful_patterns:
+        if re.search(pattern, value, re.IGNORECASE):
+            raise ValidationError('Address contains invalid content.')
+    
+    return value.strip()
+
 
 class UserProfile(models.Model):
     # User profile
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
     # Personal Information
-    phone_number = models.CharField(max_length=20, blank=True)
+    phone_number = models.CharField(
+        max_length=20, 
+        blank=True, 
+        validators=[validate_phone_number],
+        help_text="Phone number (10-15 digits)"
+    )
     date_of_birth = models.DateField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True, validators=[validate_file_size, validate_file_type])
     
     # Address Information
-    address_line1 = models.CharField(max_length=255, blank=True)
-    address_line2 = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    state = models.CharField(max_length=100, blank=True)
-    postal_code = models.CharField(max_length=20, blank=True)
-    country = models.CharField(max_length=100, blank=True)
+    address_line1 = models.CharField(
+        max_length=255, 
+        blank=True, 
+        validators=[validate_address],
+        help_text="Address line 1 (5-255 characters)"
+    )
+    address_line2 = models.CharField(
+        max_length=255, 
+        blank=True, 
+        validators=[validate_address],
+        help_text="Address line 2 (5-255 characters)"
+    )
+    city = models.CharField(
+        max_length=100, 
+        blank=True,
+        help_text="City name (max 100 characters)"
+    )
+    state = models.CharField(
+        max_length=100, 
+        blank=True,
+        help_text="State/province (max 100 characters)"
+    )
+    postal_code = models.CharField(
+        max_length=20, 
+        blank=True, 
+        validators=[validate_postal_code],
+        help_text="Postal code (3-10 characters)"
+    )
+    country = models.CharField(
+        max_length=100, 
+        blank=True,
+        help_text="Country name (max 100 characters)"
+    )
     
     # Vendor Information
     is_vendor = models.BooleanField(default=False, help_text="Is this user a vendor?")

@@ -1,11 +1,12 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.utils.text import slugify
 from django.urls import reverse
 from django.conf import settings
 from django.core.exceptions import ValidationError
 import os
 from decimal import Decimal
+import re
 
 
 def validate_file_size(value): #Validates the file size
@@ -20,6 +21,65 @@ def validate_file_type(value): #Validates the file type
     valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'] #Sets the valid extensions to JPG, JPEG, PNG, GIF and WebP
     if not ext.lower() in valid_extensions: #Checks if the extension is not in the valid extensions
         raise ValidationError('Only image files are allowed.') #Raises an error if the extension is not in the valid extensions
+
+def validate_product_name(value):
+    """Validate product name - no special characters except basic punctuation"""
+    if len(value.strip()) < 3:
+        raise ValidationError('Product name must be at least 3 characters long.')
+    
+    # Check for potentially harmful characters
+    harmful_pattern = r'[<>"\']'
+    if re.search(harmful_pattern, value):
+        raise ValidationError('Product name cannot contain <, >, ", or \' characters.')
+    
+    # Check for excessive spaces
+    if '  ' in value:
+        raise ValidationError('Product name cannot contain multiple consecutive spaces.')
+    
+    return value.strip()
+
+def validate_product_description(value):
+    """Validate product description"""
+    if len(value.strip()) < 10:
+        raise ValidationError('Product description must be at least 10 characters long.')
+    
+    # Check for potentially harmful characters
+    harmful_pattern = r'<script|javascript:|vbscript:|onload=|onerror='
+    if re.search(harmful_pattern, value, re.IGNORECASE):
+        raise ValidationError('Product description contains invalid content.')
+    
+    return value.strip()
+
+def validate_sku(value):
+    """Validate SKU format"""
+    if len(value.strip()) < 3:
+        raise ValidationError('SKU must be at least 3 characters long.')
+    
+    # Allow alphanumeric characters, hyphens, and underscores only
+    if not re.match(r'^[A-Za-z0-9_-]+$', value):
+        raise ValidationError('SKU can only contain letters, numbers, hyphens, and underscores.')
+    
+    return value.strip().upper()
+
+def validate_price(value):
+    """Validate price - must be positive and reasonable"""
+    if value <= 0:
+        raise ValidationError('Price must be greater than 0.')
+    
+    if value > 999999.99:
+        raise ValidationError('Price cannot exceed $999,999.99.')
+    
+    return value
+
+def validate_stock_quantity(value):
+    """Validate stock quantity"""
+    if value < 0:
+        raise ValidationError('Stock quantity cannot be negative.')
+    
+    if value > 999999:
+        raise ValidationError('Stock quantity cannot exceed 999,999.')
+    
+    return value
 
 
 class Category(models.Model):
@@ -106,9 +166,18 @@ class Brand(models.Model):
 class Product(models.Model):
     # Main product model
     # Basic Information
-    name = models.CharField(max_length=200) #Sets the name of the product
+    name = models.CharField(
+        max_length=40, 
+        # validators=[validate_product_name],  # Temporarily disabled for testing
+        help_text="Product name (max 40 characters)"
+    ) #Sets the name of the product
     slug = models.SlugField(max_length=200, blank=True) #Sets the slug of the product
-    sku = models.CharField(max_length=50, unique=True, help_text="Stock Keeping Unit") #Sets the SKU of the product
+    sku = models.CharField(
+        max_length=50, 
+        unique=True, 
+        validators=[validate_sku],
+        help_text="Stock Keeping Unit (letters, numbers, hyphens, underscores only)"
+    ) #Sets the SKU of the product
 
     # Categorization
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products') #Sets the category of the product
@@ -116,17 +185,32 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='products') #Sets the brand of the product
 
     # Pricing
-    price = models.DecimalField(max_digits=10, decimal_places=2) #Sets the price of the product
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        validators=[validate_price]
+    ) #Sets the price of the product
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Sets the sale price of the product
     discount_percentage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(100)], help_text="Discount percentage (0-100)") #Sets the discount percentage of the product
 
     # Inventory
-    stock_quantity = models.PositiveIntegerField(default=0)
-    min_stock_level = models.PositiveIntegerField(default=5)
+    stock_quantity = models.PositiveIntegerField(
+        default=0,
+        validators=[validate_stock_quantity]
+    )
+    min_stock_level = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
     # Product Details
-    description = models.TextField() #Sets the description of the product
-    features = models.TextField(blank=True, help_text="Key features and benefits") #Sets the features of the product
+    description = models.TextField(
+        max_length=1200, 
+        # validators=[validate_product_description],  # Temporarily disabled for testing
+        help_text="Product description (max 1200 characters)"
+    ) #Sets the description of the product
+    features = models.TextField(
+        blank=True, 
+        max_length=1000, 
+        help_text="Key features and benefits (max 1000 characters)"
+    ) #Sets the features of the product
 
     # Images
     main_image = models.ImageField(upload_to='products/main/', blank=True, null=True, validators=[validate_file_size, validate_file_type]) #Sets the main image of the product

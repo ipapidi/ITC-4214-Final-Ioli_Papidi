@@ -77,6 +77,37 @@
                             </div>
                         </div>
 
+                        <!-- Subcategory and Brand -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.subcategory.id_for_label }}" class="form-label text-light">
+                                    <i class="fas fa-layer-group me-2"></i>{{ form.subcategory.label }} *
+                                </label>
+                                {{ form.subcategory }}
+                                {% if form.subcategory.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.subcategory.errors %}
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-light">
+                                    <i class="fas fa-trademark me-2"></i>Brand *
+                                </label>
+                                <input type="text" 
+                                       value="{{ user.profile.vendor_team }}" 
+                                       class="form-control bg-dark text-light border-secondary" 
+                                       style="background-color: #2a2a2a !important; color: #6c757d !important;" 
+                                       readonly>
+                                <div class="form-text text-light">
+                                    <i class="fas fa-info-circle me-1"></i>Brand will be automatically set to your registered F1 team
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Description -->
                         <div class="mb-3">
                             <label for="{{ form.description.id_for_label }}" class="form-label text-light"> <!-- Label -->

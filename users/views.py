@@ -204,9 +204,13 @@ def vendor_product_create(request):
                 # Create the product with form data
                 product = form.save(commit=False)
                 product.vendor = request.user.profile
-                product.brand = brand
+                product.brand = brand  # Set the brand automatically
                 product.is_authentic_f1_part = True
-                product.subcategory = product.category.subcategories.first()
+                
+                # Handle subcategory - if not provided, use first subcategory of selected category
+                if not product.subcategory:
+                    product.subcategory = product.category.subcategories.first()
+                
                 product.sku = f"VENDOR-{request.user.id}-{timezone.now().strftime('%Y%m%d%H%M%S')}"
                 product.save()
                 
@@ -254,7 +258,22 @@ def vendor_product_edit(request, product_id):
                     if product.main_image:
                         product.main_image.delete(save=False)
                     product.main_image = None
-                form.save()
+                
+                # Save the form but ensure brand is set correctly
+                product = form.save(commit=False)
+                # Ensure brand is set to vendor's team
+                vendor_team = request.user.profile.vendor_team
+                brand, created = Brand.objects.get_or_create(
+                    name=vendor_team,
+                    defaults={
+                        'is_f1_team': True,
+                        'description': f'Authentic F1 parts from {vendor_team}',
+                        'is_active': True
+                    }
+                )
+                product.brand = brand
+                product.save()
+                
                 messages.success(request, f'Product "{product.name}" updated successfully!')
                 return redirect('users:vendor_dashboard')
             except Exception as e:

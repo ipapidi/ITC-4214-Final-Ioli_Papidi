@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
 from decimal import Decimal
+import re
 
 
 class Cart(models.Model):
@@ -92,12 +94,29 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2) #Total amount of the order
 
     # Shipping Information
-    shipping_address = models.TextField() #Shipping address of the order
-    shipping_city = models.CharField(max_length=100) #Shipping city of the order
-    shipping_state = models.CharField(max_length=100) #Shipping state of the order
-    shipping_postal_code = models.CharField(max_length=20) #Shipping postal code of the order
-    shipping_country = models.CharField(max_length=100) #Shipping country of the order
-    shipping_phone = models.CharField(max_length=20) #Shipping phone of the order
+    shipping_address = models.TextField(
+        help_text="Shipping address (max 1000 characters)"
+    ) #Shipping address of the order
+    shipping_city = models.CharField(
+        max_length=100,
+        help_text="Shipping city (max 100 characters)"
+    ) #Shipping city of the order
+    shipping_state = models.CharField(
+        max_length=100,
+        help_text="Shipping state/province (max 100 characters)"
+    ) #Shipping state of the order
+    shipping_postal_code = models.CharField(
+        max_length=20,
+        help_text="Shipping postal code (max 20 characters)"
+    ) #Shipping postal code of the order
+    shipping_country = models.CharField(
+        max_length=100,
+        help_text="Shipping country (max 100 characters)"
+    ) #Shipping country of the order
+    shipping_phone = models.CharField(
+        max_length=20,
+        help_text="Shipping phone number (max 20 characters)"
+    ) #Shipping phone of the order
 
     # Payment Information (simulated)
     payment_method = models.CharField(max_length=50, default='Credit Card') #Payment method of the order
