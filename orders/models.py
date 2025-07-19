@@ -27,11 +27,8 @@ class Cart(models.Model):
     def total_price_with_tax(self):
         # Calculate total price with tax
         tax_rate = Decimal('0.24')  # 24% tax rate to match Order model
-<<<<<<< HEAD
-        return self.total_price + (self.total_price * tax_rate)
-=======
         return self.total_price + (self.total_price * tax_rate) #Returns the total price of the items in the cart with tax
->>>>>>> a95348d (added comments and meta tags)
+
 
 
 class CartItem(models.Model):
@@ -80,37 +77,6 @@ class Order(models.Model):
     ]
 
     # Order Information
-<<<<<<< HEAD
-    order_number = models.CharField(max_length=20, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-
-    # Status
-    order_status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
-
-    # Pricing
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    # Shipping Information
-    shipping_address = models.TextField()
-    shipping_city = models.CharField(max_length=100)
-    shipping_state = models.CharField(max_length=100)
-    shipping_postal_code = models.CharField(max_length=20)
-    shipping_country = models.CharField(max_length=100)
-    shipping_phone = models.CharField(max_length=20)
-
-    # Payment Information (simulated)
-    payment_method = models.CharField(max_length=50, default='Credit Card')
-    payment_transaction_id = models.CharField(max_length=100, blank=True)
-
-    # Notes
-    customer_notes = models.TextField(blank=True)
-    admin_notes = models.TextField(blank=True)
-=======
     order_number = models.CharField(max_length=20, unique=True) #Unique order number
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders') #One to many relationship with the User model
 
@@ -140,7 +106,6 @@ class Order(models.Model):
     # Notes
     customer_notes = models.TextField(blank=True) #Customer notes of the order
     admin_notes = models.TextField(blank=True) #Admin notes of the order
->>>>>>> a95348d (added comments and meta tags)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True) #Automatically adds the current date and time when the object is created
@@ -157,33 +122,24 @@ class Order(models.Model):
     def save(self, *args, **kwargs): #Saves the object
         if not self.order_number:
             # Generate order number: RF-YYYYMMDD-XXXX
-<<<<<<< HEAD
-            from datetime import datetime
-            date_str = datetime.now().strftime('%Y%m%d')
-            last_order = Order.objects.filter(order_number__startswith=f'RF-{date_str}').order_by('-order_number').first()
-=======
             from datetime import datetime #Imports the datetime module
             date_str = datetime.now().strftime('%Y%m%d') #Formats the date as YYYYMMDD
             last_order = Order.objects.filter(order_number__startswith=f'RF-{date_str}').order_by('-order_number').first() #Filters the objects by the order number
->>>>>>> a95348d (added comments and meta tags)
+
 
             if last_order:
                 last_number = int(last_order.order_number.split('-')[-1]) #Splits the order number and gets the last number
                 new_number = last_number + 1 #Adds 1 to the last number
             else:
-<<<<<<< HEAD
                 new_number = 1
-
             self.order_number = f"RF-{date_str}-{new_number:04d}"
-
         super().save(*args, **kwargs)
-=======
+
                 new_number = 1 #Sets the new number to 1
 
             self.order_number = f"RF-{date_str}-{new_number:04d}" #Formats the order number as RF-YYYYMMDD-XXXX
 
         super().save(*args, **kwargs) #Saves the object
->>>>>>> a95348d (added comments and meta tags)
 
     @property
     def is_paid(self):
@@ -197,7 +153,6 @@ class Order(models.Model):
 
     def calculate_totals(self):
         # Calculate order totals
-<<<<<<< HEAD
         subtotal = sum(item.total_price for item in self.items.all())
         tax_amount = subtotal * Decimal('0.24')  # 24% tax - if the government changes this, change it here
         total = subtotal + tax_amount + self.shipping_cost - self.discount_amount
@@ -206,7 +161,7 @@ class Order(models.Model):
         self.tax_amount = tax_amount
         self.total_amount = total
         self.save()
-=======
+
         subtotal = sum(item.total_price for item in self.items.all()) #Calculates the subtotal
         tax_amount = subtotal * Decimal('0.24')  #Calculates the tax amount
         total = subtotal + tax_amount + self.shipping_cost - self.discount_amount #Calculates the total
@@ -215,7 +170,6 @@ class Order(models.Model):
         self.tax_amount = tax_amount #Sets the tax amount
         self.total_amount = total #Sets the total
         self.save() #Saves the object
->>>>>>> a95348d (added comments and meta tags)
 
 
 class OrderItem(models.Model):
@@ -224,15 +178,9 @@ class OrderItem(models.Model):
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE) #One to many relationship with the Product model
     product_name = models.CharField(max_length=200)  # Snapshot of product name
     product_sku = models.CharField(max_length=50)    # Snapshot of product SKU
-<<<<<<< HEAD
-    quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-=======
     quantity = models.PositiveIntegerField() #Quantity of the product
     unit_price = models.DecimalField(max_digits=10, decimal_places=2) #Unit price of the product
     total_price = models.DecimalField(max_digits=10, decimal_places=2) #Total price of the product
->>>>>>> a95348d (added comments and meta tags)
 
     def __str__(self):
         return f"{self.quantity}x {self.product_name} in Order {self.order.order_number}" #Returns the quantity of the product in the order
@@ -245,15 +193,10 @@ class OrderItem(models.Model):
         if not self.unit_price:
             self.unit_price = self.product.current_price #Sets the unit price
         if not self.total_price:
-<<<<<<< HEAD
-            self.total_price = self.unit_price * self.quantity
-
-        super().save(*args, **kwargs)
-=======
             self.total_price = self.unit_price * self.quantity #Sets the total price
 
         super().save(*args, **kwargs) #Saves the object
->>>>>>> a95348d (added comments and meta tags)
+
 
 
 class OrderStatusHistory(models.Model):
