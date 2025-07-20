@@ -1,77 +1,191 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}About RevForge{% endblock %} <!-- Title -->
+{% block title %}About RevForge{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}">
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
 {% endblock %}
 
-{% block content %} <!-- Content -->
-<!-- About Hero Section (no background image) -->
-<section class="py-5 bg-black"> <!-- Section -->
+{% block content %}
+<!-- Hero Section with Simple Background -->
+<section class="about-hero"> <!-- About hero -->
     <div class="container"> <!-- Container -->
-        <div class="row justify-content-center align-items-center min-vh-40"> <!-- Row -->
+        <div class="row justify-content-center align-items-center min-vh-100"> <!-- Row -->
             <div class="col-lg-10 text-center"> <!-- Column -->
-                <h1 class="display-3 fw-bold text-light mb-3 about-heading">About <span class="accent">RevForge</span></h1> <!-- Heading -->
-                <p class="lead text-light mb-4 about-lead"> <!-- Paragraph -->
-                    RevForge is a next-generation e-commerce platform dedicated to car performance enthusiasts. Inspired by the innovation and aesthetics of Formula 1, we deliver premium, precision-engineered parts to help you unlock your vehicle's true potential—on the road or the track. <!-- Paragraph -->
-                </p> <!-- Paragraph -->
-            </div>
+                <div class="hero-content"> <!-- Hero content -->
+                    <h1 class="hero-title"> <!-- Hero title -->
+                        <span class="title-line">About</span> <!-- About -->
+                        <span class="title-accent">RevForge</span> <!-- RevForge -->
+                    </h1>
+                    <p class="hero-subtitle">Where Performance Meets Innovation</p> <!-- Hero subtitle -->
+                    <p class="hero-description"> <!-- Hero description -->
+                        RevForge is a next-generation e-commerce platform dedicated to car performance enthusiasts. <!-- RevForge -->
+                        Inspired by the innovation and aesthetics of Formula 1, we deliver premium, precision-engineered 
+                        parts to help you unlock your vehicle's true potential—on the road or the track. <!-- Parts -->
+                    </p> <!-- Hero description -->
+                    <div class="hero-cta"> <!-- Hero CTA -->
+                        <a href="#mission" class="btn btn-primary btn-lg scroll-to">Discover Our Mission</a> <!-- Discover Our Mission -->
+                    </div>
+                </div> <!-- Hero content -->
+            </div> <!-- Column -->
         </div> <!-- Row -->
     </div> <!-- Container -->
-</section> <!-- Section -->
+</section> <!-- About hero -->
 
 <!-- Mission Section -->
-<section class="py-5 about-section"> <!-- Section -->
+<section id="mission" class="mission-section"> <!-- Mission section -->
     <div class="container"> <!-- Container -->
         <div class="row justify-content-center"> <!-- Row -->
             <div class="col-lg-8 text-center"> <!-- Column -->
-                <h2 class="section-title mb-4">Our Mission</h2> <!-- Heading -->
-                <p class="lead text-light about-text"> <!-- Paragraph -->
-                    At RevForge, our mission is to empower drivers and builders with the world's best performance parts, curated for quality, reliability, and style. We believe in the thrill of engineering, the beauty of speed, and the community that forms around automotive passion. Every product we offer is selected and tested to meet the highest standards—so you can drive, race, and dream without limits. <!-- Paragraph -->
-                </p> <!-- Paragraph -->
+                <h2 class="section-title">Our Mission</h2> <!-- Our Mission -->
+                <p class="mission-text"> <!-- Mission text -->
+                    At RevForge, our mission is to empower drivers and builders with the world's best performance parts, 
+                    curated for quality, reliability, and style. We believe in the thrill of engineering, the beauty of speed, 
+                    and the community that forms around automotive passion. <!-- Community -->
+                </p> <!-- Mission text -->
+                <p class="mission-text"> <!-- Mission text -->
+                    Every product we offer is selected and tested to meet the highest standards—so you can drive, 
+                    race, and dream without limits. <!-- Limits -->
+                </p> <!-- Mission text -->
             </div> <!-- Column -->
         </div> <!-- Row -->
     </div> <!-- Container -->
-</section> <!-- Section -->
+</section> <!-- Mission section -->
+
+<!-- Timeline Section -->
+<section class="timeline-section"> <!-- Timeline section -->
+    <div class="container"> <!-- Container -->
+        <div class="row"> <!-- Row -->
+            <div class="col-12 text-center"> <!-- Column -->
+                <h2 class="section-title">Our Journey</h2> <!-- Our Journey -->
+                <p class="section-subtitle">From garage startup to performance powerhouse</p> <!-- From garage startup to performance powerhouse -->
+            </div> <!-- Column -->
+        </div> <!-- Row -->
+        <div class="timeline"> <!-- Timeline -->
+            <div class="timeline-item"> <!-- Timeline item -->
+                <div class="timeline-marker"></div> <!-- Timeline marker -->
+                <div class="timeline-content"> <!-- Timeline content -->
+                    <h3>2020 - The Beginning</h3> <!-- The Beginning -->
+                    <p>Founded by passionate motorsport enthusiasts with a vision to revolutionize the performance parts industry.</p> <!-- Founded by passionate motorsport enthusiasts with a vision to revolutionize the performance parts industry. -->
+                </div> <!-- Timeline content -->
+            </div> <!-- Timeline item -->
+            <div class="timeline-item"> <!-- Timeline item -->
+                <div class="timeline-marker"></div> <!-- Timeline marker -->
+                <div class="timeline-content"> <!-- Timeline content -->
+                    <h3>2021 - First Milestone</h3> <!-- First Milestone -->
+                    <p>Reached 1,000 customers and launched our premium F1-inspired product line.</p> <!-- Reached 1,000 customers and launched our premium F1-inspired product line. -->
+                </div> <!-- Timeline content -->
+            </div> <!-- Timeline item -->
+            <div class="timeline-item"> <!-- Timeline item -->
+                <div class="timeline-marker"></div> <!-- Timeline marker -->
+                <div class="timeline-content">
+                    <h3>2022 - Expansion</h3>
+                    <p>Opened our state-of-the-art testing facility and partnered with leading manufacturers.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content"> <!-- Timeline content -->
+                    <h3>2023 - Innovation</h3> <!-- Innovation -->
+                    <p>Launched our AI-powered recommendation system and mobile app for enhanced customer experience.</p> <!-- Launched our AI-powered recommendation system and mobile app for enhanced customer experience. -->
+                </div> <!-- Timeline content -->
+            </div> <!-- Timeline item -->
+            <div class="timeline-item"> <!-- Timeline item -->
+                <div class="timeline-marker"></div> <!-- Timeline marker -->
+                <div class="timeline-content"> <!-- Timeline content -->
+                    <h3>2024 - Future</h3>
+                    <p>Continuing to push boundaries with cutting-edge technology and unparalleled customer service.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Team Section -->
-<section class="py-5 bg-black">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col text-center">
-                <h2 class="section-title mb-4">Meet the Team</h2> <!-- Heading -->
-                <p class="text-light about-description"> <!-- Paragraph -->
-                    RevForge is built by a diverse team of engineers, designers, and motorsport enthusiasts. We combine technical expertise with a love for racing to bring you an unmatched shopping experience. <!-- Paragraph -->
-                </p> <!-- Paragraph -->
+<section class="team-section"> <!-- Team section -->
+    <div class="container"> <!-- Container -->
+        <div class="row mb-5"> <!-- Row -->
+            <div class="col text-center"> <!-- Column -->
+                <h2 class="section-title">Meet the Team</h2> <!-- Meet the Team -->
+                <p class="section-subtitle"> <!-- Section subtitle -->
+                    RevForge is built by a diverse team of engineers, designers, and motorsport enthusiasts. 
+                    We combine technical expertise with a love for racing to bring you an unmatched shopping experience. <!-- Shopping experience -->
+                </p> <!-- Section subtitle -->
             </div> <!-- Column -->
         </div> <!-- Row -->
         <div class="row justify-content-center g-4"> <!-- Row -->
-            <!-- Team Member 1 -->
-            <div class="col-md-4 col-lg-3"> <!-- Column -->
-                <div class="team-card text-center p-4 bg-dark rounded-4 h-100"> <!-- Team card -->
-                    <div class="team-photo mb-3 mx-auto rounded-circle overflow-hidden d-flex align-items-center justify-content-center"> <!-- Team photo -->
-                        <img src="{% static 'images/person1.png' %}" alt="Alex Carter" class="team-photo-img"> <!-- Image -->
-                    </div> <!-- Team photo -->
-                    <h5 class="text-light mb-1">Alex Carter</h5> <!-- Name -->
-                    <p class="text-muted mb-2">Lead Engineer</p> <!-- Role -->
-                    <p class="small text-light">A lifelong motorsport innovator, Alex brings cutting-edge engineering to every RevForge project. Loves pushing boundaries—on the track and in the codebase.</p> <!-- Description -->
+            <div class="col-lg-4 col-md-6"> <!-- Column -->
+                <div class="team-card"> <!-- Team card -->
+                    <div class="team-photo-container"> <!-- Team photo container -->
+                        <div class="team-photo"> <!-- Team photo -->
+                            <img src="{% static 'images/person1.png' %}" alt="Alex Carter"> <!-- Member 1 -->
+                            <div class="team-overlay"> <!-- Team overlay -->
+                                <div class="social-links"> <!-- Social links -->
+                                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a> <!-- LinkedIn -->
+                                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a> <!-- Twitter -->
+                                </div> <!-- Social links -->
+                            </div> <!-- Team overlay -->
+                        </div> <!-- Team photo -->
+                    </div> <!-- Team photo container -->
+                    <div class="team-info"> <!-- Team info -->
+                        <h5>Alex Carter</h5> <!-- Name -->
+                        <p class="team-role">Lead Engineer</p> <!-- Role -->
+                        <p class="team-description">
+                            A lifelong motorsport innovator, Alex brings cutting-edge engineering to every RevForge project. 
+                            Loves pushing boundaries—on the track and in the codebase.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="team-card">
+                    <div class="team-photo-container"> <!-- Team photo container -->
+                        <div class="team-photo"> <!-- Team photo -->
+                            <img src="{% static 'images/person2.png' %}" alt="Riley Morgan"> <!-- Member 2 -->
+                            <div class="team-overlay"> <!-- Team overlay -->
+                                <div class="social-links"> <!-- Social links -->
+                                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a> <!-- LinkedIn -->
+                                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a> <!-- Twitter -->
+                                </div> <!-- Social links -->
+                            </div> <!-- Team overlay -->
+                        </div> <!-- Team photo -->
+                    </div> <!-- Team photo container -->
+                    <div class="team-info"> <!-- Team info -->
+                        <h5>Riley Morgan</h5> <!-- Name -->
+                        <p class="team-role">Product Designer</p> <!-- Role -->
+                        <p class="team-description"> <!-- Team description -->
+                            Fascinated by speed and style, Riley crafts user experiences as sleek as an F1 car. 
+                            Always chasing the perfect balance of form and function. <!-- Function -->
+                        </p> <!-- Team description -->
+                    </div> <!-- Team info -->
                 </div> <!-- Team card -->
-            </div> <!-- Column -->
-            <!-- Team Member 2 -->
-            <div class="col-md-4 col-lg-3">
-                <div class="team-card text-center p-4 bg-dark rounded-4 h-100">
-                    <div class="team-photo mb-3 mx-auto rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
-                        <img src="{% static 'images/person2.png' %}" alt="Riley Morgan" class="team-photo-img"> <!-- Image -->
-                    </div> <!-- Team photo -->
-                    <h5 class="text-light mb-1">Riley Morgan</h5> <!-- Name -->
-                    <p class="text-muted mb-2">Product Designer</p> <!-- Role -->
-                    <p class="small text-light">Fascinated by speed and style, Riley crafts user experiences as sleek as an F1 car. Always chasing the perfect balance of form and function.</p> <!-- Description -->
-                </div> <!-- Team card -->
-            </div> <!-- Column -->
-            <!-- Add more team members as needed -->
-        </div> <!-- Row -->
-    </div> <!-- Container -->
-</section> <!-- Section -->
-{% endblock %} <!-- End of content -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container"> <!-- Container -->
+        <div class="row justify-content-center"> <!-- Row -->
+            <div class="col-lg-8 text-center"> <!-- Column -->
+                <h2 class="cta-title">Ready to Upgrade Your Ride?</h2> <!-- Title -->
+                <p class="cta-description"> <!-- Description -->
+                    Join thousands of enthusiasts who trust RevForge for their performance needs. 
+                    Start your journey to automotive excellence today. 
+                </p> <!-- Description -->
+                <div class="cta-buttons"> <!-- CTA buttons -->
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">Shop Now</a> <!-- Shop Now -->
+                    <a href="{% url 'products:contact' %}" class="btn btn-outline-primary btn-lg">Contact Us</a> <!-- Contact Us -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/about.js' %}"></script>
+{% endblock %}

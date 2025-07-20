@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils import timezone
-from .models import UserProfile, Wishlist, RecentlyViewed, UserPreference
+from .models import UserProfile, Wishlist, RecentlyViewed, UserPreference, ContactMessage
 
 
 class UserProfileInline(admin.StackedInline):
@@ -149,3 +149,45 @@ class RecentlyViewedAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'product__name'] # Search fields
     readonly_fields = ['viewed_at'] # Readonly fields
     ordering = ['-viewed_at'] # Ordering
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin): # Contact message admin
+    """
+    Admin interface for contact messages.
+    """
+    list_display = ['name', 'email', 'created_at', 'is_read', 'message_preview'] # List display
+    list_filter = ['is_read', 'created_at'] # List filter
+    search_fields = ['name', 'email', 'message'] # Search fields
+    readonly_fields = ['created_at'] # Readonly fields
+    list_editable = ['is_read'] # List editable
+    
+    fieldsets = ( # Fieldsets
+        ('Message Details', { # Message details
+            'fields': ('name', 'email', 'message') # Fields
+        }),
+        ('Status', { # Status
+            'fields': ('is_read',) # Fields
+        }),
+        ('Timestamps', { # Timestamps
+            'fields': ('created_at',), # Fields
+            'classes': ('collapse',) # Classes
+        }),
+    )
+    
+    def message_preview(self, obj): # Message preview
+        """Show first 50 characters of message"""
+        return obj.message[:50] + '...' if len(obj.message) > 50 else obj.message # Return message preview
+    message_preview.short_description = 'Message Preview' # Short description
+    
+    actions = ['mark_as_read', 'mark_as_unread'] # Actions
+    
+    def mark_as_read(self, request, queryset): # Mark as read
+        updated = queryset.update(is_read=True) # Update is read
+        self.message_user(request, f'{updated} messages marked as read.') # Message user
+    mark_as_read.short_description = "Mark selected messages as read" # Short description
+    
+    def mark_as_unread(self, request, queryset): # Mark as unread
+        updated = queryset.update(is_read=False) # Update is read
+        self.message_user(request, f'{updated} messages marked as unread.') # Message user
+    mark_as_unread.short_description = "Mark selected messages as unread" # Short description

@@ -285,7 +285,33 @@ def about(request): #About view
 
 
 def contact(request): #Contact view
-    # Contact page
+    if request.method == 'POST':
+        # Handle contact form submission
+        name = request.POST.get('name', '').strip() 
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Basic validation
+        if not name:
+            messages.error(request, 'Please enter your name.')
+        elif not email:
+            messages.error(request, 'Please enter your email address.')
+        elif '@' not in email:
+            messages.error(request, 'Please enter a valid email address.')
+        elif not message:
+            messages.error(request, 'Please enter your message.')
+        elif len(message) < 10:
+            messages.error(request, 'Your message must be at least 10 characters long.')
+        else:
+            from users.models import ContactMessage
+            ContactMessage.objects.create(
+                name=name,
+                email=email,
+                message=message
+            )
+            messages.success(request, 'Thank you for your message! We will get back to you soon.')
+            return redirect('products:contact')
+    
     return render(request, 'products/contact.html')
 
 

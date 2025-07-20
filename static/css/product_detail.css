@@ -37,4 +37,78 @@
 
 .stock-badge.in-stock {
     background-color: #198754;
+}
+
+/* Product Info Card Styles */
+.product-info-card {
+    height: fit-content;
+    max-height: 100%;
+    overflow-y: auto;
+    background-color: #212529 !important;
+    color: #f8f9fa !important;
+}
+
+.product-info-card:hover {
+    transform: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Product Title Styles */
+.product-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    flex: 1;
+    min-width: 0;
+    color: #f8f9fa;
+}
+
+/* Product Description Styles */
+.product-description {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.product-description p {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+    margin-bottom: 0;
+    color: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .product-info-card {
+        margin-top: 1rem;
+    }
+    
+    .product-title {
+        font-size: 1.5rem;
+    }
+    
+    .wishlist-heart {
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-title {
+        font-size: 1.25rem;
+    }
+    
+    .star-rating {
+        font-size: 1.5rem;
+    }
+}
+
+/* Text wrapping utilities */
+.word-wrap {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.text-break {
+    word-break: break-word;
 } 

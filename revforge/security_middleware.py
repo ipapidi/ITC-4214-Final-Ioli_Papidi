@@ -51,19 +51,19 @@ class SecurityMiddleware:
         ]
         
         # Compile patterns for better performance
-        self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns]
+        self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns] #Compiles the patterns for better performance
     
     def __call__(self, request):
         # Check request parameters for malicious content
         if self._contains_malicious_content(request):
-            return HttpResponseForbidden("Request contains potentially malicious content.")
+            return HttpResponseForbidden("Request contains potentially malicious content.") #Returns a forbidden response if the request contains potentially malicious content
         
-        response = self.get_response(request)
+        response = self.get_response(request) #Gets the response from the get_response function
         
         # Add security headers
-        response = self._add_security_headers(response)
+        response = self._add_security_headers(response) #Adds security headers to the response
         
-        return response
+        return response #Returns the response
     
     def _contains_malicious_content(self, request):
         """Check if request contains malicious content"""
@@ -71,19 +71,19 @@ class SecurityMiddleware:
         # Check GET parameters
         for key, value in request.GET.items():
             if self._check_value_for_malicious_content(value):
-                return True
+                return True #Returns True if the value contains malicious content
         
         # Check POST parameters
         for key, value in request.POST.items():
             if self._check_value_for_malicious_content(value):
-                return True
+                return True #Returns True if the value contains malicious content
         
         # Check headers (basic check)
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         if self._check_value_for_malicious_content(user_agent):
-            return True
+            return True #Returns True if the user agent contains malicious content
         
-        return False
+        return False #Returns False if the request does not contain malicious content
     
     def _check_value_for_malicious_content(self, value):
         """Check if a value contains malicious content"""
@@ -95,7 +95,7 @@ class SecurityMiddleware:
         # Check against compiled patterns
         for pattern in self.compiled_patterns:
             if pattern.search(value_str):
-                return True
+                return True #Returns True if the value contains malicious content
         
         # Additional checks for excessive length
         if len(value_str) > 10000:  # 10KB limit
@@ -148,51 +148,51 @@ class InputSanitizationMiddleware:
     Middleware to sanitize user input
     """
     
-    def __init__(self, get_response):
-        self.get_response = get_response
+    def __init__(self, get_response): #Initializes the middleware
+        self.get_response = get_response #Gets the response from the get_response function
     
-    def __call__(self, request):
+    def __call__(self, request): #Calls the middleware
         # Sanitize GET parameters
-        request.GET = self._sanitize_querydict(request.GET)
+        request.GET = self._sanitize_querydict(request.GET) #Sanitizes the GET parameters
         
         # Sanitize POST parameters
-        request.POST = self._sanitize_querydict(request.POST)
+        request.POST = self._sanitize_querydict(request.POST) #Sanitizes the POST parameters
         
-        response = self.get_response(request)
-        return response
+        response = self.get_response(request) #Gets the response from the get_response function
+        return response #Returns the response
     
-    def _sanitize_querydict(self, querydict):
+    def _sanitize_querydict(self, querydict): #Sanitizes the QueryDict values
         """Sanitize QueryDict values"""
         from django.http import QueryDict
         
-        sanitized = QueryDict(mutable=True)
+        sanitized = QueryDict(mutable=True) #Creates a mutable QueryDict
         
-        for key, value in querydict.items():
-            if isinstance(value, list):
-                sanitized.setlist(key, [self._sanitize_value(v) for v in value])
-            else:
-                sanitized[key] = self._sanitize_value(value)
+        for key, value in querydict.items(): #Iterates over the items in the QueryDict
+            if isinstance(value, list): #Checks if the value is a list
+                sanitized.setlist(key, [self._sanitize_value(v) for v in value]) #Sanitizes the list
+            else: #If the value is not a list
+                sanitized[key] = self._sanitize_value(value) #Sanitizes the value
         
-        return sanitized
+        return sanitized #Returns the sanitized QueryDict
     
-    def _sanitize_value(self, value):
+    def _sanitize_value(self, value): #Sanitizes a single value
         """Sanitize a single value"""
         if not value:
             return value
         
-        value_str = str(value)
+        value_str = str(value) #Converts the value to a string
         
         # Remove null bytes
-        value_str = value_str.replace('\x00', '')
+        value_str = value_str.replace('\x00', '') #Removes null bytes
         
         # Remove control characters except newlines and tabs
-        value_str = ''.join(char for char in value_str if ord(char) >= 32 or char in '\n\t')
+        value_str = ''.join(char for char in value_str if ord(char) >= 32 or char in '\n\t') #Removes control characters except newlines and tabs
         
         # Limit length
-        if len(value_str) > 10000:
-            value_str = value_str[:10000]
+        if len(value_str) > 10000: #Checks if the value is greater than 10000
+            value_str = value_str[:10000] #Limits the value to 10000 characters
         
-        return value_str
+        return value_str #Returns the sanitized value
 
 
 class RateLimitingMiddleware:
@@ -200,34 +200,34 @@ class RateLimitingMiddleware:
     Basic rate limiting middleware
     """
     
-    def __init__(self, get_response):
-        self.get_response = get_response
-        self.request_counts = {}
+    def __init__(self, get_response): #Initializes the middleware
+        self.get_response = get_response #Gets the response from the get_response function
+        self.request_counts = {} #Initializes the request counts
     
-    def __call__(self, request):
+    def __call__(self, request): #Calls the middleware
         # Get client IP
-        client_ip = self._get_client_ip(request)
+        client_ip = self._get_client_ip(request) #Gets the client IP address from the request
         
         # Check rate limit
-        if self._is_rate_limited(client_ip):
-            return HttpResponseForbidden("Too many requests. Please try again later.")
+        if self._is_rate_limited(client_ip): #Checks if the client is rate limited
+            return HttpResponseForbidden("Too many requests. Please try again later.") #Returns a forbidden response if the client is rate limited
         
         # Increment request count
-        self._increment_request_count(client_ip)
+        self._increment_request_count(client_ip) #Increments the request count for the client
         
-        response = self.get_response(request)
-        return response
+        response = self.get_response(request) #Gets the response from the get_response function
+        return response #Returns the response
     
-    def _get_client_ip(self, request):
+    def _get_client_ip(self, request): #Gets the client IP address
         """Get client IP address"""
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR') #Gets the client IP address from the request
+        if x_forwarded_for: #If the client IP is in the request
             ip = x_forwarded_for.split(',')[0]
-        else:
+        else: #If the client IP is not in the request
             ip = request.META.get('REMOTE_ADDR')
-        return ip
+        return ip #Returns the client IP address
     
-    def _is_rate_limited(self, client_ip):
+    def _is_rate_limited(self, client_ip): #Checks if the client is rate limited
         """Check if client is rate limited"""
         import time
         
@@ -247,16 +247,16 @@ class RateLimitingMiddleware:
         
         return False
     
-    def _increment_request_count(self, client_ip):
+    def _increment_request_count(self, client_ip): #Increments the request count for the client
         """Increment request count for client"""
         import time
         
-        current_time = time.time()
+        current_time = time.time() #Gets the current time
         
-        if client_ip in self.request_counts:
-            self.request_counts[client_ip]['count'] += 1
-        else:
-            self.request_counts[client_ip] = {
-                'count': 1,
-                'timestamp': current_time
+        if client_ip in self.request_counts: #Checks if the client IP is in the request counts
+            self.request_counts[client_ip]['count'] += 1 #Increments the request count for the client
+        else: #If the client IP is not in the request counts
+            self.request_counts[client_ip] = { #Sets the request counts for the client
+                'count': 1, #Sets the request count to 1
+                'timestamp': current_time #Sets the timestamp to the current time
             } 

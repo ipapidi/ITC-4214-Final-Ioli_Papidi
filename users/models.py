@@ -60,10 +60,10 @@ def validate_address(value):
     if not value:
         return value
     
-    if len(value.strip()) < 5:
+    if len(value.strip()) < 5: # If the address is less than 5 characters
         raise ValidationError('Address must be at least 5 characters long.')
     
-    if len(value.strip()) > 255:
+    if len(value.strip()) > 255: # If the address is more than 255 characters
         raise ValidationError('Address cannot exceed 255 characters.')
     
     # Check for potentially harmful content
@@ -72,19 +72,19 @@ def validate_address(value):
         r'\b(www\.|http://|https://)\b',
     ]
     
-    for pattern in harmful_patterns:
-        if re.search(pattern, value, re.IGNORECASE):
-            raise ValidationError('Address contains invalid content.')
+    for pattern in harmful_patterns: # For each pattern in the harmful patterns
+        if re.search(pattern, value, re.IGNORECASE): # If the pattern is found in the value
+            raise ValidationError('Address contains invalid content.') # Raise validation error
     
     return value.strip()
 
 
-class UserProfile(models.Model):
+class UserProfile(models.Model): # User profile
     # User profile
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile') # User
     
     # Personal Information
-    phone_number = models.CharField(
+    phone_number = models.CharField( 
         max_length=20, 
         blank=True, 
         validators=[validate_phone_number],
@@ -203,14 +203,14 @@ class Wishlist(models.Model):
 
 class RecentlyViewed(models.Model):
     # Recently viewed products
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recently_viewed')
-    product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='viewed_by')
-    viewed_at = models.DateTimeField(auto_now_add=True)
-    view_count = models.PositiveIntegerField(default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recently_viewed') # User
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='viewed_by') # Product
+    viewed_at = models.DateTimeField(auto_now_add=True) # Viewed at
+    view_count = models.PositiveIntegerField(default=1) # View count
 
     class Meta:
-        unique_together = ['user', 'product']
-        ordering = ['-viewed_at']
+        unique_together = ['user', 'product'] # Unique together
+        ordering = ['-viewed_at'] # Ordering
 
     def __str__(self):
         return f"{self.user.username} viewed {self.product.name}"
@@ -218,7 +218,7 @@ class RecentlyViewed(models.Model):
 
 class UserPreference(models.Model):
     # User preferences
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences') # User
     
     # Display Preferences
     theme = models.CharField(
@@ -232,10 +232,10 @@ class UserPreference(models.Model):
     )
     
     # Product Preferences
-    preferred_categories = models.ManyToManyField('products.Category', blank=True)
-    preferred_brands = models.ManyToManyField('products.Brand', blank=True)
-    price_range_min = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    price_range_max = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    preferred_categories = models.ManyToManyField('products.Category', blank=True) # Preferred categories
+    preferred_brands = models.ManyToManyField('products.Brand', blank=True) # Preferred brands
+    price_range_min = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # Price range min
+    price_range_max = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # Price range max
     
     # Privacy Settings
     profile_visibility = models.CharField(
@@ -248,24 +248,40 @@ class UserPreference(models.Model):
         default='public'
     )
     
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True) # Created at
+    updated_at = models.DateTimeField(auto_now=True) # Updated at
 
     def __str__(self):
         return f"Preferences for {self.user.username}"
 
 
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100) # Name
+    email = models.EmailField() # Email
+    message = models.TextField() # Message
+    created_at = models.DateTimeField(auto_now_add=True) # Created at
+    is_read = models.BooleanField(default=False) # Is read
+    
+    class Meta:
+        ordering = ['-created_at'] # Ordering
+        verbose_name = 'Contact Message' # Verbose name
+        verbose_name_plural = 'Contact Messages' # Verbose name plural
+    
+    def __str__(self):
+        return f"Message from {self.name} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+
+
 # Signal to create profile when user is created
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+@receiver(post_save, sender=User) # Signal to create profile when user is created
+def create_user_profile(sender, instance, created, **kwargs): # Create user profile
+    if created: # If the user is created
         # make user profile
-        UserProfile.objects.create(user=instance)
-        UserPreference.objects.create(user=instance)
+        UserProfile.objects.create(user=instance) # Create user profile
+        UserPreference.objects.create(user=instance) # Create user preference
 
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
+@receiver(post_save, sender=User) # Signal to save user profile when user is saved
+def save_user_profile(sender, instance, **kwargs): # Save user profile
     # save profile and prefs
-    instance.profile.save()
-    instance.preferences.save()
+    instance.profile.save() # Save user profile
+    instance.preferences.save() # Save user preference

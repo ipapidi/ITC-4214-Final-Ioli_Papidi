@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     
     <!-- SEO Meta Tags -->
     <title>{% block title %}RevForge - Premium Car Performance Parts & F1 Authentic Parts{% endblock %}</title>
@@ -41,66 +42,74 @@
 <body class="bg-dark text-light">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-danger navbar-sticky">
-        <div class="container"> <!-- Container for the navigation bar -->
+        <div class="container">
             <a class="navbar-brand" href="{% url 'products:home' %}">
-                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="navbar-logo"> <!-- Logo -->
+                <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="navbar-logo">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> <!-- Button to toggle the navigation bar -->
-                <span class="navbar-toggler-icon"></span> <!-- Icon for the button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav"> <!-- Collapse the navigation bar -->
-                <ul class="navbar-nav me-auto"> <!-- Navigation bar items -->
-                    <li class="nav-item"> <!-- Navigation bar item -->
-                        <a class="nav-link" href="{% url 'products:home' %}">Home</a> <!-- Link to the home page -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:home' %}">Home</a>
                     </li>
-                    <li class="nav-item"> <!-- Navigation bar item -->
-                        <a class="nav-link" href="{% url 'products:product_list' %}">Products</a> <!-- Link to the products page -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:product_list' %}">Products</a>
                     </li>
-                    <li class="nav-item"> <!-- Navigation bar item -->
-                        <a class="nav-link" href="{% url 'products:about' %}">About</a> <!-- Link to the about page -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:about' %}">About</a>
                     </li>
-                    <li class="nav-item"> <!-- Navigation bar item -->
-                        <a class="nav-link" href="{% url 'products:contact' %}">Contact</a> <!-- Link to the contact page -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:contact' %}">Contact</a>
                     </li>
                 </ul>
                 <!-- Search Form -->
-                <form class="d-flex me-3" method="GET" action="{% url 'products:search' %}"> <!-- Search form -->
-                    <input class="form-control me-2 bg-dark text-light border-danger" type="search" name="q" placeholder="Search parts..."> <!-- Search input -->
-                    <button class="btn btn-outline-danger" type="submit"> <!-- Search button -->
-                        <i class="fas fa-search"></i> <!-- Search icon -->
+                <form class="d-flex me-3" method="GET" action="{% url 'products:search' %}">
+                    <input class="form-control me-2 bg-dark text-light border-danger" type="search" name="q" placeholder="Search parts...">
+                    <button class="btn btn-outline-danger" type="submit">
+                        <i class="fas fa-search"></i>
                     </button>
                 </form>
                 <!-- User Menu -->
-                <ul class="navbar-nav"> <!-- User menu -->
-                    {% if user.is_authenticated %} <!-- If the user is authenticated -->
-                    <li class="nav-item dropdown"> <!-- User menu item -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user me-1"></i>{{ user.username }}
+                            {% if user.profile.is_verified_vendor %}
+                                <span class="badge bg-success ms-1">Vendor</span>
+                            {% endif %}
                         </a>
-                        <ul class="dropdown-menu bg-dark border border-danger"> <!-- Dropdown menu -->
-                            <li><a class="dropdown-item text-light" href="{% url 'users:profile' %}">Profile</a></li> <!-- Profile link -->
-                            <li><a class="dropdown-item text-light" href="{% url 'users:wishlist' %}">Wishlist</a></li> <!-- Wishlist link -->
-                            <li><a class="dropdown-item text-light" href="{% url 'orders:order_history' %}">Orders</a></li> <!-- Orders link -->
-                            <li><hr class="dropdown-divider border-danger"></li> <!-- Divider -->
-                            <li> <!-- Logout link -->
-                              <form method="post" action="{% url 'users:logout' %}" class="logout-form"> <!-- Logout form -->
+                        <ul class="dropdown-menu custom-dropdown">
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:wishlist' %}">Wishlist</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:order_history' %}">Orders</a></li>
+                            {% if user.profile.is_verified_vendor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'users:vendor_dashboard' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:vendor_product_create' %}">Add Product</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <form method="post" action="{% url 'users:logout' %}" class="logout-form">
                                 {% csrf_token %}
-                                <button type="submit" class="dropdown-item text-light logout-button">Logout</button>
+                                <button type="submit" class="dropdown-item logout-button">Logout</button>
                               </form>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item"> <!-- Cart link -->
-                        <a class="nav-link" href="{% url 'orders:cart' %}"> <!-- Cart link -->
-                            <i class="fas fa-shopping-cart me-1"></i> <!-- Cart icon -->
-                            <span class="badge bg-danger">{{ request.user.cart.total_items|default:0 }}</span> <!-- Cart badge -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders:cart' %}">
+                            <i class="fas fa-shopping-cart me-1"></i>
+                            <span class="badge bg-danger">{{ request.user.cart.total_items|default:0 }}</span>
                         </a>
                     </li>
                     {% else %}
-                    <li class="nav-item"> <!-- Login link -->
-                        <a class="nav-link" href="{% url 'users:login' %}">Login</a> <!-- Login link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">Login</a>
                     </li>
-                    <li class="nav-item"> <!-- Register link -->
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'users:register' %}">Register</a>
                     </li>
                     {% endif %}
@@ -108,61 +117,61 @@
             </div>
         </div>
     </nav>
-    <div class="navbar-spacer"></div> <!-- Spacer for the navigation bar -->
+    <div class="navbar-spacer"></div>
     <!-- Messages -->
     {% if messages %}
-    <div class="container mt-3"> <!-- Container for the messages -->
+    <div class="container mt-3">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert"> <!-- Alert message -->
-            {{ message }} <!-- Message -->
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button> <!-- Close button -->
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
     <!-- Main Content -->
-    <main class="container-fluid py-4"> <!-- Main content -->
-        {% block content %}{% endblock %} <!-- Block for the main content -->
+    <main class="container-fluid py-4">
+        {% block content %}{% endblock %}
     </main>
     <!-- Footer -->
     <footer class="footer mt-auto py-5">
-        <div class="container"> <!-- Container for the footer -->
-            <div class="row"> <!-- Row for the footer -->
-                <div class="col-lg-4 mb-4 mb-lg-0"> <!-- Column for the footer -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
                     <a class="navbar-brand" href="{% url 'products:home' %}">
-                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="footer-logo"> <!-- Logo -->
+                        <img src="{% static 'images/logo.png' %}" alt="RevForge Logo" class="footer-logo">
                     </a>
-                    <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p> <!-- Description -->
+                    <p class="text-light mt-3">Premium car performance parts for the ultimate driving experience.</p>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0"> <!-- Column for the footer -->
-                    <h5 class="text-uppercase text-light mb-4">Links</h5> <!-- Links -->
-                    <ul class="list-unstyled"> <!-- List of links -->
-                        <li><a href="{% url 'products:home' %}" class="footer-link">Home</a></li> <!-- Home link -->
-                        <li><a href="{% url 'products:product_list' %}" class="footer-link">Products</a></li> <!-- Products link -->
-                        <li><a href="{% url 'products:about' %}" class="footer-link">About</a></li> <!-- About link -->
-                        <li><a href="{% url 'products:contact' %}" class="footer-link">Contact</a></li> <!-- Contact link -->
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase text-light mb-4">Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'products:home' %}" class="footer-link">Home</a></li>
+                        <li><a href="{% url 'products:product_list' %}" class="footer-link">Products</a></li>
+                        <li><a href="{% url 'products:about' %}" class="footer-link">About</a></li>
+                        <li><a href="{% url 'products:contact' %}" class="footer-link">Contact</a></li>
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0"> <!-- Column for the footer -->
-                    <h5 class="text-uppercase text-light mb-4">Contact</h5> <!-- Contact -->
-                    <ul class="list-unstyled"> <!-- List of contact -->
-                        <li><p class="text-light"><i class="fas fa-envelope me-2 text-danger"></i> info@revforge.com</p></li> <!-- Email -->
-                        <li><p class="text-light"><i class="fas fa-phone me-2 text-danger"></i> +1 (555) 123-4567</p></li> <!-- Phone -->
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase text-light mb-4">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><p class="text-light"><i class="fas fa-envelope me-2 text-danger"></i> info@revforge.com</p></li>
+                        <li><p class="text-light"><i class="fas fa-phone me-2 text-danger"></i> +1 (555) 123-4567</p></li>
                     </ul>
                 </div>
-                <div class="col-lg-3"> <!-- Column for the footer -->
-                    <h5 class="text-uppercase text-light mb-4">Follow Us</h5> <!-- Follow Us -->
-                    <div class="d-flex"> <!-- Social icons -->
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a> <!-- Twitter -->
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a> <!-- Facebook -->
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a> <!-- Instagram -->
-                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a> <!-- YouTube -->
+                <div class="col-lg-3">
+                    <h5 class="text-uppercase text-light mb-4">Follow Us</h5>
+                    <div class="d-flex">
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>
-            <hr class="my-4 footer-divider"> <!-- Divider -->
-            <div class="text-center text-light"> <!-- Copyright -->
-                <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small> <!-- Copyright -->
+            <hr class="my-4 footer-divider">
+            <div class="text-center text-light">
+                <small>&copy; {% now "Y" %} RevForge. All Rights Reserved.</small>
             </div>
         </div>
     </footer>
@@ -172,6 +181,6 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <!-- Custom JS -->
     <script src="{% static 'js/main.js' %}"></script>
-    {% block extra_js %}{% endblock %} <!-- Block for the extra JavaScript --> 
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

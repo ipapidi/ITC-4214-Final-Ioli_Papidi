@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 import os
 from decimal import Decimal
 import re
+import random
+import string
 
 
 def validate_file_size(value): #Validates the file size
@@ -24,60 +26,63 @@ def validate_file_type(value): #Validates the file type
 
 def validate_product_name(value):
     """Validate product name - no special characters except basic punctuation"""
-    if len(value.strip()) < 3:
-        raise ValidationError('Product name must be at least 3 characters long.')
+    if len(value.strip()) < 3: #Checks if the product name is less than 3 characters
+        raise ValidationError('Product name must be at least 3 characters long.') #Raises an error if the product name is less than 3 characters
     
     # Check for potentially harmful characters
-    harmful_pattern = r'[<>"\']'
-    if re.search(harmful_pattern, value):
-        raise ValidationError('Product name cannot contain <, >, ", or \' characters.')
+    harmful_pattern = r'[<>"\']' #Sets the harmful pattern to <, >, ", or '
+    if re.search(harmful_pattern, value): #Checks if the product name contains the harmful pattern
+        raise ValidationError('Product name cannot contain <, >, ", or \' characters.') #Raises an error if the product name contains the harmful pattern
     
     # Check for excessive spaces
-    if '  ' in value:
-        raise ValidationError('Product name cannot contain multiple consecutive spaces.')
+    if '  ' in value: #Checks if the product name contains multiple consecutive spaces
+        raise ValidationError('Product name cannot contain multiple consecutive spaces.') #Raises an error if the product name contains multiple consecutive spaces
     
     return value.strip()
 
 def validate_product_description(value):
     """Validate product description"""
-    if len(value.strip()) < 10:
-        raise ValidationError('Product description must be at least 10 characters long.')
+    if len(value.strip()) < 10: #Checks if the product description is less than 10 characters
+        raise ValidationError('Product description must be at least 10 characters long.') #Raises an error if the product description is less than 10 characters
     
     # Check for potentially harmful characters
-    harmful_pattern = r'<script|javascript:|vbscript:|onload=|onerror='
-    if re.search(harmful_pattern, value, re.IGNORECASE):
-        raise ValidationError('Product description contains invalid content.')
+    harmful_pattern = r'<script|javascript:|vbscript:|onload=|onerror=' #Sets the harmful pattern to <script, javascript:, vbscript:, onload=, or onerror=
+    if re.search(harmful_pattern, value, re.IGNORECASE): #Checks if the product description contains the harmful pattern
+        raise ValidationError('Product description contains invalid content.') #Raises an error if the product description contains the harmful pattern
     
     return value.strip()
 
 def validate_sku(value):
     """Validate SKU format"""
-    if len(value.strip()) < 3:
-        raise ValidationError('SKU must be at least 3 characters long.')
+    if not value:  # Allow empty values for auto-generation
+        return value
+    
+    if len(value.strip()) < 3: #Checks if the SKU is less than 3 characters
+        raise ValidationError('SKU must be at least 3 characters long.') #Raises an error if the SKU is less than 3 characters
     
     # Allow alphanumeric characters, hyphens, and underscores only
-    if not re.match(r'^[A-Za-z0-9_-]+$', value):
-        raise ValidationError('SKU can only contain letters, numbers, hyphens, and underscores.')
+    if not re.match(r'^[A-Za-z0-9_-]+$', value): #Checks if the SKU contains only alphanumeric characters, hyphens, and underscores
+        raise ValidationError('SKU can only contain letters, numbers, hyphens, and underscores.') #Raises an error if the SKU contains only alphanumeric characters, hyphens, and underscores
     
     return value.strip().upper()
 
 def validate_price(value):
     """Validate price - must be positive and reasonable"""
-    if value <= 0:
-        raise ValidationError('Price must be greater than 0.')
+    if value <= 0: #Checks if the price is less than or equal to 0
+        raise ValidationError('Price must be greater than 0.') #Raises an error if the price is less than or equal to 0
     
-    if value > 999999.99:
-        raise ValidationError('Price cannot exceed $999,999.99.')
+    if value > 999999.99: #Checks if the price is greater than 999999.99
+        raise ValidationError('Price cannot exceed $999,999.99.') #Raises an error if the price is greater than 999999.99
     
     return value
 
 def validate_stock_quantity(value):
     """Validate stock quantity"""
-    if value < 0:
-        raise ValidationError('Stock quantity cannot be negative.')
+    if value < 0: #Checks if the stock quantity is less than 0
+        raise ValidationError('Stock quantity cannot be negative.') #Raises an error if the stock quantity is less than 0
     
-    if value > 999999:
-        raise ValidationError('Stock quantity cannot exceed 999,999.')
+    if value > 999999: #Checks if the stock quantity is greater than 999999
+        raise ValidationError('Stock quantity cannot exceed 999,999.') #Raises an error if the stock quantity is greater than 999999
     
     return value
 
@@ -175,8 +180,9 @@ class Product(models.Model):
     sku = models.CharField(
         max_length=50, 
         unique=True, 
+        blank=True,
         validators=[validate_sku],
-        help_text="Stock Keeping Unit (letters, numbers, hyphens, underscores only)"
+        help_text="Stock Keeping Unit (auto-generated if not provided)"
     ) #Sets the SKU of the product
 
     # Categorization
@@ -195,10 +201,10 @@ class Product(models.Model):
 
     # Inventory
     stock_quantity = models.PositiveIntegerField(
-        default=0,
-        validators=[validate_stock_quantity]
-    )
-    min_stock_level = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(1000)])
+        default=0, #Sets the default stock quantity to 0
+        validators=[validate_stock_quantity] #Validates the stock quantity
+    ) #Sets the stock quantity of the product
+    min_stock_level = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(1000)]) #Sets the minimum stock level of the product
 
     # Product Details
     description = models.TextField(
@@ -249,7 +255,40 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.brand.name} - {self.name}" #Returns the name of the product
 
+    def generate_sku(self):
+        """Generate SKU based on brand, category, and random numbers"""
+        # Get first 3 letters of brand name (uppercase)
+        brand_prefix = self.brand.name[:3].upper()
+        
+        # Get first 3 letters of category name (uppercase)
+        category_prefix = self.category.name[:3].upper()
+        
+        # Generate 4 random digits
+        random_digits = ''.join(random.choices(string.digits, k=4))
+        
+        # Check if product is created by a vendor
+        if self.vendor:
+            sku = f"VENDOR-{brand_prefix}-{category_prefix}-{random_digits}"
+        else:
+            sku = f"{brand_prefix}-{category_prefix}-{random_digits}"
+        
+        return sku
+
     def save(self, *args, **kwargs):
+        # Auto-generate SKU if not provided
+        if not self.sku:
+            # Generate SKU and ensure it's unique
+            max_attempts = 10
+            for attempt in range(max_attempts):
+                generated_sku = self.generate_sku()
+                if not Product.objects.filter(sku=generated_sku).exists():
+                    self.sku = generated_sku
+                    break
+                if attempt == max_attempts - 1:
+                    # If we can't generate a unique SKU, add a random suffix
+                    random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=2))
+                    self.sku = f"{generated_sku}-{random_suffix}"
+        
         # Auto-calculate sale_price from price and discount_percentage
         if self.discount_percentage: #Checks if the discount percentage is set
             self.sale_price = self.price * (Decimal('1') - Decimal(self.discount_percentage) / Decimal('100')) #Calculates the sale price
@@ -304,3 +343,6 @@ class ProductRating(models.Model):
 
     def __str__(self):
         return f"{self.user.username} rated {self.product.name} {self.rating}/5" #Returns the rating of the product
+
+
+

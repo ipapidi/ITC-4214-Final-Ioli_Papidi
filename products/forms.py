@@ -113,88 +113,88 @@ class VendorProductForm(forms.ModelForm): #Form for vendors to create and edit p
     
     def clean_name(self):
         """Custom validation for product name"""
-        name = self.cleaned_data.get('name', '').strip()
+        name = self.cleaned_data.get('name', '').strip() #Gets the name
         
-        if len(name) < 3:
-            raise ValidationError('Product name must be at least 3 characters long.')
+        if len(name) < 3: #Checks if the name is less than 3 characters
+            raise ValidationError('Product name must be at least 3 characters long.') #Raises an error if the name is less than 3 characters
         
-        if len(name) > 40:
-            raise ValidationError('Product name cannot exceed 40 characters.')
+        if len(name) > 40: #Checks if the name is greater than 40 characters
+            raise ValidationError('Product name cannot exceed 40 characters.') #Raises an error if the name is greater than 40 characters
         
         # Check for potentially harmful characters
-        harmful_pattern = r'[<>"\']'
-        if re.search(harmful_pattern, name):
-            raise ValidationError('Product name cannot contain <, >, ", or \' characters.')
+        harmful_pattern = r'[<>"\']' #Sets the harmful pattern to <, >, ", or '
+        if re.search(harmful_pattern, name): #Checks if the name contains the harmful pattern
+            raise ValidationError('Product name cannot contain <, >, ", or \' characters.') #Raises an error if the name contains the harmful pattern
         
         # Check for excessive spaces
-        if '  ' in name:
-            raise ValidationError('Product name cannot contain multiple consecutive spaces.')
+        if '  ' in name: #Checks if the name contains multiple consecutive spaces
+            raise ValidationError('Product name cannot contain multiple consecutive spaces.') #Raises an error if the name contains multiple consecutive spaces
         
         # Check for common spam patterns - only flag obvious spam
         spam_patterns = [
-            r'\b(click here|buy now|free|discount|sale|offer|limited time)\b',
-            r'\b(www\.|http://|https://)\b',
+            r'\b(click here|buy now|free|discount|sale|offer|limited time)\b', #Sets the spam patterns to click here, buy now, free, discount, sale, offer, limited time
+            r'\b(www\.|http://|https://)\b', #Sets the spam patterns to www., http://, https://
             # Only flag if entire field is all caps (not just individual words)
             r'^[A-Z\s]{10,}$',  # Entire field in caps with 10+ chars
         ]
         
-        for pattern in spam_patterns:
-            if re.search(pattern, name, re.IGNORECASE):
-                raise ValidationError('Product name contains invalid content.')
+        for pattern in spam_patterns: #Checks if the name contains the spam patterns
+            if re.search(pattern, name, re.IGNORECASE): #Checks if the name contains the spam patterns
+                raise ValidationError('Product name contains invalid content.') #Raises an error if the name contains the spam patterns
         
         return name
     
     def clean_description(self):
         """Custom validation for product description"""
-        description = self.cleaned_data.get('description', '').strip()
+        description = self.cleaned_data.get('description', '').strip() #Gets the description
         
-        if len(description) < 10:
-            raise ValidationError('Product description must be at least 10 characters long.')
+        if len(description) < 10: #Checks if the description is less than 10 characters
+            raise ValidationError('Product description must be at least 10 characters long.') #Raises an error if the description is less than 10 characters
         
-        if len(description) > 1200:
-            raise ValidationError('Product description cannot exceed 1200 characters.')
+        if len(description) > 1200: #Checks if the description is greater than 1200 characters
+            raise ValidationError('Product description cannot exceed 1200 characters.') #Raises an error if the description is greater than 1200 characters
         
         # Check for potentially harmful content - more specific
         harmful_patterns = [
-            r'<script|javascript:|vbscript:|onload=|onerror=',
+            r'<script|javascript:|vbscript:|onload=|onerror=', #Sets the harmful patterns to <script, javascript:, vbscript:, onload=, onerror=
             # Only flag obvious spam, not legitimate product descriptions
-            r'\b(click here to buy|buy now|free shipping|limited time offer)\b',
-            r'\b(www\.|http://|https://)\b',
+            r'\b(click here to buy|buy now|free shipping|limited time offer)\b', #Sets the spam patterns to click here to buy, buy now, free shipping, limited time offer
+            r'\b(www\.|http://|https://)\b', #Sets the spam patterns to www., http://, https://
         ]
         
-        for pattern in harmful_patterns:
-            if re.search(pattern, description, re.IGNORECASE):
-                raise ValidationError('Product description contains invalid content.')
+        for pattern in harmful_patterns: #Checks if the description contains the harmful patterns
+            if re.search(pattern, description, re.IGNORECASE): #Checks if the description contains the harmful patterns
+                raise ValidationError('Product description contains invalid content.') #Raises an error if the description contains the harmful patterns
         
         return description
     
     def clean_price(self):
         """Custom validation for price"""
-        price = self.cleaned_data.get('price')
+        price = self.cleaned_data.get('price') #Gets the price
         
-        if price is None:
-            raise ValidationError('Price is required.')
+        if price is None: #Checks if the price is None
+            raise ValidationError('Price is required.') #Raises an error if the price is None
         
-        if price <= 0:
-            raise ValidationError('Price must be greater than 0.')
+        if price <= 0: #Checks if the price is less than or equal to 0
+            raise ValidationError('Price must be greater than 0.') #Raises an error if the price is less than or equal to 0
         
-        if price > 999999.99:
-            raise ValidationError('Price cannot exceed $999,999.99.')
+        if price > 999999.99: #Checks if the price is greater than 999999.99
+            raise ValidationError('Price cannot exceed $999,999.99.') #Raises an error if the price is greater than 999999.99
         
         return price
     
     def clean_stock_quantity(self):
         """Custom validation for stock quantity"""
-        stock_quantity = self.cleaned_data.get('stock_quantity')
+        stock_quantity = self.cleaned_data.get('stock_quantity') #Gets the stock quantity
         
-        if stock_quantity is None:
-            raise ValidationError('Stock quantity is required.')
+        if stock_quantity is None: #Checks if the stock quantity is None
+            raise ValidationError('Stock quantity is required.') #Raises an error if the stock quantity is None
         
-        if stock_quantity < 0:
-            raise ValidationError('Stock quantity cannot be negative.')
+        if stock_quantity < 0: #Checks if the stock quantity is less than 0
+            raise ValidationError('Stock quantity cannot be negative.') #Raises an error if the stock quantity is less than 0
         
-        if stock_quantity > 999999:
-            raise ValidationError('Stock quantity cannot exceed 999,999.')
+        if stock_quantity > 999999: #Checks if the stock quantity is greater than 999999
+            raise ValidationError('Stock quantity cannot exceed 999,999.') #Raises an error if the stock quantity is greater than 999999
         
         return stock_quantity
     
@@ -221,23 +221,23 @@ class VendorProductForm(forms.ModelForm): #Form for vendors to create and edit p
                 r'vbscript:',  # VBScript protocol
             ]
             
-            for pattern in harmful_filename_patterns:
-                if re.search(pattern, image.name, re.IGNORECASE):
-                    raise ValidationError('Invalid file name detected.')
+            for pattern in harmful_filename_patterns: #Checks if the image name contains the harmful filename patterns
+                if re.search(pattern, image.name, re.IGNORECASE): #Checks if the image name contains the harmful filename patterns
+                    raise ValidationError('Invalid file name detected.') #Raises an error if the image name contains the harmful filename patterns
         
         return image
     
     def clean(self):
         """Overall form validation"""
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() #Cleans the data
         
         # Additional cross-field validation if needed
-        name = cleaned_data.get('name')
-        description = cleaned_data.get('description')
+        name = cleaned_data.get('name') #Gets the name
+        description = cleaned_data.get('description') #Gets the description
         
-        if name and description:
+        if name and description: #Checks if the name and description are not None
             # Check if description is too similar to name
-            if name.lower() in description.lower() and len(description) < 50:
-                raise ValidationError('Description should be more detailed and different from the product name.')
+            if name.lower() in description.lower() and len(description) < 50: #Checks if the description is too similar to the name
+                raise ValidationError('Description should be more detailed and different from the product name.') #Raises an error if the description is too similar to the name
         
         return cleaned_data 

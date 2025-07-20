@@ -7,10 +7,142 @@
     width: 100%;
     z-index: 9999;
     background: #222 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-logo {
     height: 40px;
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover .navbar-logo {
+    transform: scale(1.05);
+}
+
+/* Simple hover effects for nav links */
+.navbar-nav .nav-link {
+    transition: color 0.2s ease;
+    border-radius: 4px;
+    margin: 0 2px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #dc3545 !important;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+/* Dropdown Design */
+.custom-dropdown {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 6px 0;
+    min-width: 180px;
+    margin-top: 6px;
+}
+
+.custom-dropdown .dropdown-item {
+    color: #ffffff;
+    padding: 8px 16px;
+    margin: 0;
+    border-radius: 0;
+    transition: all 0.2s ease;
+    font-weight: 400;
+}
+
+.custom-dropdown .dropdown-item:hover {
+    color: #dc3545;
+    background: #2a2a2a;
+}
+
+.custom-dropdown .dropdown-divider {
+    border-color: #333;
+    margin: 4px 0;
+}
+
+.custom-dropdown .logout-button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: #ffffff;
+    border-radius: 0;
+    transition: all 0.2s ease;
+    font-weight: 400;
+}
+
+.custom-dropdown .logout-button:hover {
+    color: #dc3545;
+    background: #2a2a2a;
+}
+
+/* Vendor Dashboard Button Styling - Only for vendor dashboard */
+.vendor-dashboard .btn.btn-danger,
+.vendor-product-form .btn.btn-danger {
+    background: transparent;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    transition: all 0.3s ease;
+}
+
+.vendor-dashboard .btn.btn-danger:hover,
+.vendor-product-form .btn.btn-danger:hover {
+    background: transparent;
+    border-color: #dc3545;
+    color: #dc3545;
+    font-size: 1.1em;
+    transform: scale(1.05);
+}
+
+/* Regular button hover - just color change */
+.btn.btn-danger:hover {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #ffffff;
+}
+
+/* Vendor badge styling */
+.badge.bg-success {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(45deg, #28a745, #20c997) !important;
+}
+
+/* Cart badge animation */
+.badge.bg-danger {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Mobile menu improvements */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 8px;
+        margin-top: 10px;
+        padding: 15px;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 5px 0;
+        padding: 10px 15px !important;
+    }
+    
+    .custom-dropdown {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        margin-top: 5px;
+    }
 }
 
 .footer-logo {
@@ -19,16 +151,6 @@
 
 .logout-form {
     display: inline;
-}
-
-.logout-button {
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
 }
 
 .footer-divider {

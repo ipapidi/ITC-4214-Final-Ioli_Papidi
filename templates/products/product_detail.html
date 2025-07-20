@@ -11,12 +11,12 @@
 {% block content %} <!-- Content -->
 <section class="product-detail-section py-5"> <!-- Product detail section -->
     <div class="container"> <!-- Container -->
-        <div class="row"> <!-- Row -->
-            <div class="col-md-6 position-relative"> <!-- Column -->
+        <div class="row g-4"> <!-- Row with gap -->
+            <div class="col-lg-6 col-md-12 position-relative"> <!-- Column -->
                 {% if product.main_image %} <!-- If the product has a main image -->
-                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow"> <!-- Main image -->
+                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow w-100"> <!-- Main image -->
                 {% else %} <!-- If the product does not have a main image -->
-                <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded"> <!-- Placeholder image -->
+                <div class="placeholder-image d-flex align-items-center justify-content-center bg-light rounded w-100"> <!-- Placeholder image -->
                     <i class="fas fa-image fa-4x text-muted"></i> <!-- Image icon -->
                 </div> <!-- Placeholder image -->
                 {% endif %} <!-- End if the product does not have a main image -->
@@ -30,103 +30,107 @@
                 </div> <!-- Position absolute -->
                 {% endif %} <!-- End if the product is an authentic F1 part -->
             </div> <!-- Column -->
-            <div class="col-md-6"> <!-- Column -->
-                <h2 class="mb-3 d-flex align-items-center justify-content-between"> <!-- Heading -->
-                    {{ product.name }}
-                    <span class="ms-3 wishlist-heart"> <!-- Wishlist heart -->
-                        {% if user.is_authenticated %} <!-- If the user is authenticated -->
-                            <button type="button"
-                                class="btn {% if is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
-                                title="{% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
-                                onclick="toggleWishlist({{ product.id|escapejs }}, {{ is_in_wishlist|yesno:'true,false' }}, this)"> <!-- Onclick -->
-                                {% if is_in_wishlist %} <!-- If the product is in the wishlist -->
-                                    <i class="fas fa-heart"></i> <!-- Heart icon -->
-                                {% else %} <!-- If the product is not in the wishlist -->
+            <div class="col-lg-6 col-md-12"> <!-- Column -->
+                <div class="product-info-card p-4 rounded"> <!-- Product info card -->
+                    <h2 class="mb-3 d-flex align-items-center justify-content-between flex-wrap"> <!-- Heading -->
+                        <span class="product-title me-3">{{ product.name }}</span>
+                        <span class="wishlist-heart"> <!-- Wishlist heart -->
+                            {% if user.is_authenticated %} <!-- If the user is authenticated -->
+                                <button type="button"
+                                    class="btn {% if is_in_wishlist %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-circle"
+                                    title="{% if is_in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}"
+                                    onclick="toggleWishlist({{ product.id|escapejs }}, {{ is_in_wishlist|yesno:'true,false' }}, this)"> <!-- Onclick -->
+                                    {% if is_in_wishlist %} <!-- If the product is in the wishlist -->
+                                        <i class="fas fa-heart"></i> <!-- Heart icon -->
+                                    {% else %} <!-- If the product is not in the wishlist -->
+                                        <i class="far fa-heart"></i> <!-- Heart icon -->
+                                    {% endif %} <!-- End if the product is in the wishlist -->
+                                </button> <!-- Button -->
+                            {% else %} <!-- If the user is not authenticated -->
+                                <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-danger rounded-circle" title="Login to add to Wishlist"> <!-- Login to add to Wishlist -->
                                     <i class="far fa-heart"></i> <!-- Heart icon -->
-                                {% endif %} <!-- End if the product is in the wishlist -->
-                            </button> <!-- Button -->
-                        {% else %} <!-- If the user is not authenticated -->
-                            <a href="{% url 'users:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-outline-danger rounded-circle" title="Login to add to Wishlist"> <!-- Login to add to Wishlist -->
-                                <i class="far fa-heart"></i> <!-- Heart icon -->
-                            </a> <!-- Button -->
-                        {% endif %} <!-- End if the user is not authenticated -->
-                    </span> <!-- Wishlist heart -->
-                </h2> <!-- Heading -->
-                
-                <!-- Authentic F1 Part Badge -->
-                {% if product.is_authentic_f1_part %} <!-- If the product is an authentic F1 part -->
-                <div class="mb-3"> <!-- Margin bottom -->
-                    <span class="badge f1-part-badge fs-6"> <!-- Badge -->
-                        <i class="fas fa-star me-1"></i>Authentic F1 Part <!-- Authentic F1 Part -->
-                    </span>
-                    {% if product.vendor %} <!-- If the product has a vendor -->
-                    <small class="f1-vendor-team ms-2">by {{ product.vendor.vendor_team }}</small> <!-- Vendor team -->
-                    {% endif %} <!-- End if the product has a vendor -->
-                </div>
-                {% endif %}
-                
-                <div class="mb-2 #ffffff">Brand: <strong>{{ product.brand.name }}</strong></div> <!-- Brand -->
-                <div class="mb-3"> <!-- Margin bottom -->
-                    {% if product.is_on_sale %} <!-- If the product is on sale -->
-                    <span class="original-price h5 text-decoration-line-through me-2">${{ product.price }}</span> <!-- Original price -->
-                    <span class="current-price h4 text-danger fw-bold">${{ product.sale_price }}</span> <!-- Current price -->
-                    {% else %} <!-- If the product is not on sale -->
-                    <span class="current-price h4">${{ product.price }}</span> <!-- Current price -->
-                    {% endif %} <!-- End if the product is on sale -->
-                </div> <!-- Margin bottom -->
-                <div class="mb-3"> <!-- Margin bottom -->
-                    {% if product.stock_status == 'out_of_stock' %} <!-- If the product is out of stock -->
-                        <span class="badge bg-danger stock-badge out-of-stock">Out of Stock</span> 
-                    {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
-                        <span class="badge bg-warning text-dark stock-badge low-stock">Low Stock ({{ product.stock_quantity }})</span> 
-                    {% else %} <!-- If the product is in stock -->
-                        <span class="badge bg-success stock-badge in-stock">In Stock ({{ product.stock_quantity }})</span> 
-                    {% endif %} <!-- End if the product is out of stock -->
-                </div> <!-- Margin bottom -->
-                {% if user.is_authenticated %} <!-- If the user is authenticated -->
-                    <div class="user-rating-form mb-4"> <!-- User rating form -->
-                        <h5>{% if user_rating %}Update Your Rating{% else %}Rate this Product{% endif %}</h5> <!-- User rating -->
-                        <form method="post" id="rating-form"> <!-- Form -->
-                            {% csrf_token %} <!-- CSRF token -->
-                            <div class="star-rating" id="star-rating"> <!-- Star rating -->
-                                {% for i in "12345" %} <!-- For each star -->
-                                    <span class="star{% if user_rating and user_rating.rating >= forloop.counter %} filled{% endif %}" data-value="{{ forloop.counter }}">&#9733;</span> <!-- Star -->
-                                {% endfor %} <!-- End for each star -->
-                            </div> <!-- Star rating -->
-                            {{ form.rating }} <!-- Form rating -->
-                            <button type="submit" class="btn btn-primary mt-2">Submit Rating</button> <!-- Submit rating -->
-                        </form> <!-- Form -->
-                    </div> <!-- User rating form -->
-                {% else %} <!-- If the user is not authenticated -->
-                    <div class="alert alert-info">Log in to rate this product.</div> <!-- Log in to rate this product -->
-                {% endif %} <!-- End if the user is authenticated -->
-                <div class="mb-4"> <!-- Margin bottom -->
-                    <h5>Description</h5> <!-- Description -->
-                    <p>{{ product.description }}</p> <!-- Description -->
-                </div>
-                {% if product.features %} <!-- If the product has features -->
-                <div class="mb-4"> <!-- Margin bottom -->
-                    <h5>Features</h5> <!-- Features -->
-                    <ul> <!-- List -->
-                        {% for feature in product.features.splitlines %} <!-- For each feature -->
-                        <li>{{ feature }}</li> <!-- Feature -->
-                        {% endfor %} <!-- End for each feature -->
-                    </ul> <!-- List -->
-                </div> <!-- Margin bottom -->
-                {% endif %} <!-- End if the product has features -->
-                {% if user.is_authenticated %} <!-- If the user is authenticated -->
-                <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mb-3"> <!-- Form -->
-                    {% csrf_token %} <!-- CSRF token -->
-                    <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}> <!-- Button -->
-                        {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %} <!-- Out of stock -->
-                    </button> <!-- Button -->
-                </form>
-                {% else %}
-                <a href="{% url 'users:login' %}?next={% url 'products:product_detail' product.slug %}" class="btn btn-danger w-100 mb-3 {% if product.stock_quantity == 0 %}disabled{% endif %}"> <!-- Button -->
-                    {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %} 
-                </a>
-                {% endif %}
-                <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary mt-3">&larr; Back to Products</a> 
+                                </a> <!-- Button -->
+                            {% endif %} <!-- End if the user is not authenticated -->
+                        </span> <!-- Wishlist heart -->
+                    </h2> <!-- Heading -->
+                    
+                    <!-- Authentic F1 Part Badge -->
+                    {% if product.is_authentic_f1_part %} <!-- If the product is an authentic F1 part -->
+                    <div class="mb-3"> <!-- Margin bottom -->
+                        <span class="badge f1-part-badge fs-6"> <!-- Badge -->
+                            <i class="fas fa-star me-1"></i>Authentic F1 Part <!-- Authentic F1 Part -->
+                        </span>
+                        {% if product.vendor %} <!-- If the product has a vendor -->
+                        <small class="f1-vendor-team ms-2">by {{ product.vendor.vendor_team }}</small> <!-- Vendor team -->
+                        {% endif %} <!-- End if the product has a vendor -->
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">Brand: <strong>{{ product.brand.name }}</strong></div> <!-- Brand -->
+                    <div class="mb-3"> <!-- Margin bottom -->
+                        {% if product.is_on_sale %} <!-- If the product is on sale -->
+                        <span class="original-price h5 text-decoration-line-through me-2">${{ product.price }}</span> <!-- Original price -->
+                        <span class="current-price h4 text-danger fw-bold">${{ product.sale_price }}</span> <!-- Current price -->
+                        {% else %} <!-- If the product is not on sale -->
+                        <span class="current-price h4">${{ product.price }}</span> <!-- Current price -->
+                        {% endif %} <!-- End if the product is on sale -->
+                    </div> <!-- Margin bottom -->
+                    <div class="mb-3"> <!-- Margin bottom -->
+                        {% if product.stock_status == 'out_of_stock' %} <!-- If the product is out of stock -->
+                            <span class="badge bg-danger stock-badge out-of-stock">Out of Stock</span> 
+                        {% elif product.stock_status == 'low_stock' %} <!-- If the product is low stock -->
+                            <span class="badge bg-warning text-dark stock-badge low-stock">Low Stock ({{ product.stock_quantity }})</span> 
+                        {% else %} <!-- If the product is in stock -->
+                            <span class="badge bg-success stock-badge in-stock">In Stock ({{ product.stock_quantity }})</span> 
+                        {% endif %} <!-- End if the product is out of stock -->
+                    </div> <!-- Margin bottom -->
+                    {% if user.is_authenticated %} <!-- If the user is authenticated -->
+                        <div class="user-rating-form mb-4"> <!-- User rating form -->
+                            <h5>{% if user_rating %}Update Your Rating{% else %}Rate this Product{% endif %}</h5> <!-- User rating -->
+                            <form method="post" id="rating-form"> <!-- Form -->
+                                {% csrf_token %} <!-- CSRF token -->
+                                <div class="star-rating" id="star-rating"> <!-- Star rating -->
+                                    {% for i in "12345" %} <!-- For each star -->
+                                        <span class="star{% if user_rating and user_rating.rating >= forloop.counter %} filled{% endif %}" data-value="{{ forloop.counter }}">&#9733;</span> <!-- Star -->
+                                    {% endfor %} <!-- End for each star -->
+                                </div> <!-- Star rating -->
+                                {{ form.rating }} <!-- Form rating -->
+                                <button type="submit" class="btn btn-primary mt-2">Submit Rating</button> <!-- Submit rating -->
+                            </form> <!-- Form -->
+                        </div> <!-- User rating form -->
+                    {% else %} <!-- If the user is not authenticated -->
+                        <div class="alert alert-info">Log in to rate this product.</div> <!-- Log in to rate this product -->
+                    {% endif %} <!-- End if the user is authenticated -->
+                    <div class="mb-4"> <!-- Margin bottom -->
+                        <h5>Description</h5> <!-- Description -->
+                        <div class="product-description">
+                            <p class="text-break word-wrap">{{ product.description }}</p> <!-- Description -->
+                        </div>
+                    </div>
+                    {% if product.features %} <!-- If the product has features -->
+                    <div class="mb-4"> <!-- Margin bottom -->
+                        <h5>Features</h5> <!-- Features -->
+                        <ul class="list-unstyled"> <!-- List -->
+                            {% for feature in product.features.splitlines %} <!-- For each feature -->
+                            <li class="mb-1"><i class="fas fa-check text-success me-2"></i>{{ feature }}</li> <!-- Feature -->
+                            {% endfor %} <!-- End for each feature -->
+                        </ul> <!-- List -->
+                    </div> <!-- Margin bottom -->
+                    {% endif %} <!-- End if the product has features -->
+                    {% if user.is_authenticated %} <!-- If the user is authenticated -->
+                    <form method="post" action="{% url 'orders:add_to_cart' product.id %}" class="mb-3"> <!-- Form -->
+                        {% csrf_token %} <!-- CSRF token -->
+                        <button type="submit" class="btn btn-danger w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}> <!-- Button -->
+                            {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %} <!-- Out of stock -->
+                        </button> <!-- Button -->
+                    </form>
+                    {% else %}
+                    <a href="{% url 'users:login' %}?next={% url 'products:product_detail' product.slug %}" class="btn btn-danger w-100 mb-3 {% if product.stock_quantity == 0 %}disabled{% endif %}"> <!-- Button -->
+                        {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %} 
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary w-100">&larr; Back to Products</a> 
+                </div> <!-- Product info card -->
             </div>
         </div>
     </div>

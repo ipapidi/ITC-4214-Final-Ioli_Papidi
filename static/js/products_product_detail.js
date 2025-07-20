@@ -38,7 +38,7 @@ function toggleWishlist(productId, isInWishlist, btn) {
     fetch(url, {
         method: 'POST', //Send a POST request
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'), //Get the CSRF token
+            'X-CSRFToken': getCSRFToken(), //Get the CSRF token
             'X-Requested-With': 'XMLHttpRequest' //Set the X-Requested-With header to XMLHttpRequest
         }
     })
@@ -73,6 +73,17 @@ function getCookie(name) { //Get the cookie
         }
     }
     return cookieValue;
+}
+
+function getCSRFToken() {
+    // First try to get from meta tag
+    const metaToken = document.querySelector('meta[name="csrf-token"]'); 
+    if (metaToken) {
+        return metaToken.getAttribute('content');
+    }
+    
+    // Fallback to cookie
+    return getCookie('csrftoken');
 }
 
 function setRecentlyViewed(productId) { //Set the recently viewed items

@@ -5,109 +5,207 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}">
-{% endblock %} <!-- Title -->
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+{% endblock %}
 
-{% block content %} <!-- Content -->
+{% block content %}
 <!-- Contact Hero Section -->
-<section class="py-5 bg-black"> <!-- Section -->
+<section class="contact-hero"> <!-- Contact hero -->
     <div class="container"> <!-- Container -->
-        <div class="row justify-content-center align-items-center min-vh-40"> <!-- Row -->
+        <div class="row justify-content-center align-items-center min-vh-100"> <!-- Row -->
             <div class="col-lg-10 text-center"> <!-- Column -->
-                <h1 class="display-3 fw-bold text-light mb-3 contact-heading">Contact <span class="accent">RevForge</span></h1> <!-- Heading -->
-                <p class="lead text-light mb-4 contact-lead"> <!-- Paragraph -->
-                    Have a question, need support, or want to connect? Use the form below, find us on the map, or check our FAQ for quick answers. <!-- Paragraph -->
-                </p> <!-- Paragraph -->
+                <div class="hero-content"> <!-- Hero content -->
+                    <h1 class="hero-title"> <!-- Hero title -->
+                        <span class="title-line">Contact</span> <!-- Contact -->
+                        <span class="title-accent">RevForge</span> <!-- RevForge -->
+                    </h1> <!-- Hero title -->
+                    <p class="hero-subtitle">Get in Touch with Our Team</p> <!-- Subtitle -->
+                    <p class="hero-description"> <!-- Description -->
+                        Have a question, need support, or want to connect? Use the form below, find us on the map, 
+                        or check our FAQ for quick answers. We're here to help you get the most out of your performance parts.
+                    </p> <!-- Description -->
+                    <div class="hero-cta"> <!-- Hero CTA -->
+                        <a href="#contact-form" class="btn btn-primary btn-lg scroll-to">Send Us a Message</a> <!-- Send Us a Message -->
+                    </div>
+                </div> <!-- Hero content -->
             </div> <!-- Column -->
         </div> <!-- Row -->
-    </div> <!-- Container -->
-</section> <!-- Section -->
+    </div>
+</section>
 
 <!-- Contact Form & Map Section -->
-<section class="py-5 contact-section">
-    <div class="container">
-        <div class="row g-5">
+<section id="contact-form" class="contact-section">
+    <div class="container"> <!-- Container -->
+        <div class="row g-5"> <!-- Row -->
             <!-- Contact Form -->
             <div class="col-lg-6"> <!-- Column -->
-                <form method="post" action="" class="contact-form p-4 rounded-4 shadow"> <!-- Contact form -->
-                    {% csrf_token %} <!-- CSRF token -->
-                    <div class="mb-3"> <!-- Form group -->
-                        <label for="name" class="form-label">Name</label> <!-- Label -->
-                        <input type="text" class="form-control" id="name" name="name" required placeholder="Enter your name"> <!-- Input -->
-                    </div> <!-- Form group -->
-                    <div class="mb-3"> <!-- Form group -->
-                        <label for="email" class="form-label">Email</label> <!-- Label -->
-                        <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email address"> <!-- Input -->
-                    </div> <!-- Form group -->
-                    <div class="mb-3"> <!-- Form group -->
-                        <label for="message" class="form-label">Message</label> <!-- Label -->
-                        <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Type your message here..."></textarea> <!-- Textarea -->
-                    </div> <!-- Form group -->
-                    <button type="submit" class="btn btn-danger w-100">Send Message</button> <!-- Button -->
-                </form> <!-- Contact form -->
-            </div> <!-- Column -->
+                <div class="form-container"> <!-- Form container -->
+                    <h2 class="section-title">Send Us a Message</h2> <!-- Title -->
+                    <p class="section-subtitle">We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.</p> <!-- Subtitle -->
+                    <form method="post" action="{% url 'products:contact' %}" class="contact-form"> <!-- Contact form -->
+                        {% csrf_token %} <!-- CSRF token -->
+                        <div class="form-group"> <!-- Form group -->
+                            <label for="name" class="form-label">Name</label> <!-- Name -->
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="Enter your name"> <!-- Name input -->
+                        </div>
+                        <div class="form-group"> <!-- Form group -->
+                            <label for="email" class="form-label">Email</label> <!-- Email -->
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email address"> <!-- Email input -->
+                        </div>
+                        <div class="form-group"> <!-- Form group -->
+                            <label for="message" class="form-label">Message</label> <!-- Message -->
+                            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Type your message here..."></textarea> <!-- Message input -->
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100"> <!-- Submit button -->
+                            <i class="fas fa-paper-plane me-2"></i>Send Message <!-- Send Message -->
+                        </button> <!-- Submit button -->
+                    </form> <!-- Contact form -->
+                </div>
+            </div>
             <!-- Google Maps Widget -->
-            <div class="col-lg-6"> <!-- Column -->
-                <div class="ratio ratio-16x9 rounded-4 shadow mb-4"> <!-- Ratio -->
-                    <iframe src="https://www.google.com/maps?q=American+College+of+Greece&output=embed" width="100%" height="100%" class="contact-map" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> <!-- Iframe -->
-                </div> <!-- Ratio -->
-                <div class="contact-location p-3 rounded-4 mt-2"> <!-- Contact location -->
-                    <h5 class="mb-2">Our Location</h5> <!-- Heading -->
-                    <p class="mb-0">American College of Greece<br>Gravias 6, Ag. Paraskevi 153 42, Athens, Greece</p> <!-- Paragraph -->
-                </div> <!-- Contact location -->
-            </div> <!-- Column -->
-        </div> <!-- Row -->
-    </div> <!-- Container -->
-</section> <!-- Section -->
-
-<!-- FAQ Section -->
-<section class="py-5 bg-black contact-faq"> <!-- Section -->
-    <div class="container"> <!-- Container -->
-        <div class="row"> <!-- Row -->
-            <div class="col-lg-8 mx-auto"> <!-- Column -->
-                <h2 class="display-6 fw-bold text-light text-center mb-4">Frequently Asked Questions</h2> <!-- Heading -->
-                <div class="accordion" id="faqAccordion"> <!-- Accordion -->
-                    <!-- FAQ 1 -->
-                    <div class="accordion-item"> <!-- Accordion item -->
-                        <h2 class="accordion-header" id="faq1-heading"> <!-- Accordion header -->
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1"> <!-- Button -->
-                                How can I track my order? <!-- Question -->
-                            </button> <!-- Button -->
-                        </h2> <!-- Accordion header -->
-                        <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-heading" data-bs-parent="#faqAccordion"> <!-- Accordion collapse -->
-                            <div class="accordion-body"> <!-- Accordion body -->
-                                You can track your order status from your user dashboard under "Orders" after logging in. <!-- Answer -->
-                            </div> 
+            <div class="col-lg-6">
+                <div class="map-container"> <!-- Map container -->
+                    <h2 class="section-title">Find Us</h2> <!-- Title -->
+                    <p class="section-subtitle">Visit our location or get in touch with our team.</p> <!-- Subtitle -->
+                    <div class="map-wrapper"> <!-- Map wrapper -->
+                        <iframe src="https://www.google.com/maps?q=American+College+of+Greece&output=embed" 
+                                width="100%" height="100%" class="contact-map" 
+                                allowfullscreen="" loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade"> <!-- Map iframe -->
+                        </iframe> <!-- Map iframe -->
+                    </div> <!-- Map wrapper -->
+                    <div class="contact-location"> <!-- Contact location -->
+                        <div class="location-icon"> <!-- Location icon -->
+                            <i class="fas fa-map-marker-alt"></i> <!-- Map marker icon -->
+                        </div>
+                        <div class="location-info"> <!-- Location info -->
+                            <h5>Our Location</h5> <!-- Our Location -->
+                            <p>American College of Greece<br>Gravias 6, Ag. Paraskevi 153 42, Athens, Greece</p> <!-- Location -->
                         </div>
                     </div>
-                    <!-- FAQ 2 -->
-                    <div class="accordion-item"> <!-- Accordion item -->
-                        <h2 class="accordion-header" id="faq2-heading"> <!-- Accordion header -->
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2"> <!-- Button -->
-                                Can I return a product? <!-- Question -->
-                            </button> <!-- Button -->
-                        </h2> <!-- Accordion header -->
-                        <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading" data-bs-parent="#faqAccordion"> <!-- Accordion collapse -->
-                            <div class="accordion-body"> <!-- Accordion body -->
-                                Yes, you can return products within 14 days of delivery. Please see our return policy for details. <!-- Answer -->
-                            </div> <!-- Accordion body -->
-                        </div> <!-- Accordion collapse -->
-                    </div>
-                    <!-- FAQ 3 -->
-                    <div class="accordion-item"> <!-- Accordion item -->
-                        <h2 class="accordion-header" id="faq3-heading"> <!-- Accordion header -->
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3"> <!-- Button -->
-                                How do I contact customer support? <!-- Question -->
-                            </button> <!-- Button -->
-                        </h2> <!-- Accordion header -->
-                        <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-heading" data-bs-parent="#faqAccordion"> <!-- Accordion collapse -->
-                            <div class="accordion-body"> <!-- Accordion body -->
-                                You can use the contact form above or email us at info@revforge.com. We aim to respond within 24 hours. <!-- Answer -->
-                            </div> <!-- Accordion body -->
-                        </div> <!-- Accordion collapse -->
-                    </div> <!-- Accordion item -->
-                </div> <!-- Accordion -->
+                    <div class="directions-button"> <!-- Directions button -->
+                        <a href="https://www.google.com/maps/dir//American+College+of+Greece,+Gravias+6,+Ag.+Paraskevi+153+42,+Athens,+Greece" 
+                           target="_blank" 
+                           class="btn btn-outline-primary btn-lg w-100"> <!-- Button -->
+                            <i class="fas fa-directions me-2"></i>Get Directions <!-- Get Directions -->
+                        </a> <!-- Button -->
+                    </div> <!-- Directions button -->
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- FAQ Section -->
+<section class="faq-section"> <!-- FAQ section -->
+    <div class="container"> <!-- Container -->
+        <div class="row"> <!-- Row -->
+            <div class="col-lg-8 mx-auto"> <!-- Column -->
+                <div class="faq-header text-center"> <!-- FAQ header -->
+                    <h2 class="section-title">Frequently Asked Questions</h2> <!-- Title -->
+                    <p class="section-subtitle">Quick answers to common questions about our products and services.</p> <!-- Subtitle -->
+                </div>
+                <div class="accordion" id="faqAccordion"> <!-- Accordion -->
+                    <!-- FAQ 1 -->
+                    <div class="accordion-item"> <!-- Accordion item -->
+                        <h2 class="accordion-header" id="faq1-heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+                                <i class="fas fa-shipping-fast me-2"></i>
+                                How can I track my order?
+                            </button>
+                        </h2> <!-- Accordion header -->
+                        <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-heading" data-bs-parent="#faqAccordion"> <!-- Accordion collapse -->
+                            <div class="accordion-body"> <!-- Accordion body -->
+                                You can track your order status from your user dashboard under "Orders" after logging in. We'll also send you email updates with tracking information. <!-- Tracking information -->
+                            </div> <!-- Accordion body -->
+                        </div> <!-- Accordion collapse -->
+                    </div> <!-- Accordion item -->
+                    <!-- FAQ 2 -->
+                    <div class="accordion-item"> <!-- Accordion item -->
+                        <h2 class="accordion-header" id="faq2-heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                                <i class="fas fa-undo me-2"></i>
+                                Can I return a product?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, you can return products within 14 days of delivery. Please see our return policy for details. All returns must be in original condition and packaging.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FAQ 3 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq3-heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                                <i class="fas fa-headset me-2"></i>
+                                How do I contact customer support?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-heading" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can use the contact form above or email us at info@revforge.com. We aim to respond within 24 hours during business days.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FAQ 4 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq4-heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+                                <i class="fas fa-tools me-2"></i>
+                                Do you offer installation services?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faq4-heading" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We partner with certified mechanics and performance shops. Contact us for recommendations in your area or for installation guidance.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="contact-info-section"> <!-- Contact info section -->
+    <div class="container"> <!-- Container -->
+        <div class="row justify-content-center"> <!-- Row -->
+            <div class="col-lg-8 text-center"> <!-- Column -->
+                <h2 class="cta-title">Need Immediate Assistance?</h2> <!-- Title -->
+                <p class="cta-description"> <!-- Description -->
+                    Our support team is available to help you with any questions about our products or services. <!-- Description -->
+                </p> <!-- Description -->
+                <div class="contact-methods"> <!-- Contact methods -->
+                    <div class="contact-method"> <!-- Contact method -->
+                        <div class="method-icon"> <!-- Method icon -->
+                            <i class="fas fa-envelope"></i> <!-- Envelope icon -->
+                        </div>
+                        <h5>Email Us</h5> <!-- Email Us -->
+                        <p>info@revforge.com</p> <!-- Email -->
+                    </div> <!-- Contact method -->
+                    <div class="contact-method"> <!-- Contact method -->
+                        <div class="method-icon"> <!-- Method icon -->
+                            <i class="fas fa-phone"></i> <!-- Phone icon -->
+                        </div> <!-- Method icon -->
+                        <h5>Call Us</h5> <!-- Call Us -->
+                        <p>+1 (555) 123-4567</p> <!-- Phone -->
+                    </div>
+                    <div class="contact-method"> <!-- Contact method -->
+                        <div class="method-icon"> <!-- Method icon -->
+                            <i class="fas fa-clock"></i> <!-- Clock icon -->
+                        </div>
+                        <h5>Business Hours</h5>
+                        <p>Mon-Fri: 9AM-6PM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/contact.js' %}"></script>
 {% endblock %} 

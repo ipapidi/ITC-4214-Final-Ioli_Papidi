@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() { //Add a DOMContentLoa
     paymentSelect.addEventListener('change', function() { //Add a change event listener to the payment method select element
         const selected = paymentSelect.options[paymentSelect.selectedIndex]; //Get the selected option
         if (selected && selected.getAttribute('data-requires-card') === 'true') { //If the selected option requires a card
-            cardFields.style.display = ''; //Show the card fields
+            cardFields.style.display = 'block'; //Show the card fields
             cardFields.querySelectorAll('input').forEach(input => input.required = true); //Set the required attribute to true for all input elements in the card fields
         } else {
             cardFields.style.display = 'none'; //Hide the card fields
@@ -117,6 +117,40 @@ document.addEventListener('DOMContentLoaded', function() { //Add a DOMContentLoa
     if (cardCvcInput) { //If the card cvc input element is not empty
         cardCvcInput.addEventListener('input', function(e) { //Add an input event listener to the card cvc input element
             cardCvcInput.value = cardCvcInput.value.replace(/\D/g, '').slice(0, 3); //Remove all non-digits and keep the first 3 digits
+        });
+    }
+
+    // Phone and postal code number-only validation
+    const phoneInput = document.getElementById('shipping_phone'); //Get the phone input element
+    const postalCodeInput = document.getElementById('shipping_postal_code'); //Get the postal code input element
+    
+    // Phone number validation
+    if (phoneInput) { //If the phone input element is not empty
+        phoneInput.addEventListener('input', function(e) { //Add an input event listener to the phone input element
+            // Remove any non-numeric characters
+            this.value = this.value.replace(/[^0-9]/g, ''); //Remove all non-numeric characters
+        });
+        
+        phoneInput.addEventListener('keypress', function(e) { //Add a keypress event listener to the phone input element
+            // Allow only numeric keys
+            if (!/[0-9]/.test(e.key)) { //If the key is not a number
+                e.preventDefault(); //Prevent the default behavior
+            }
+        });
+    }
+    
+    // Postal code validation
+    if (postalCodeInput) { //If the postal code input element is not empty
+        postalCodeInput.addEventListener('input', function(e) { //Add an input event listener to the postal code input element
+            // Remove any non-numeric characters
+            this.value = this.value.replace(/[^0-9]/g, ''); //Remove all non-numeric characters
+        });
+        
+        postalCodeInput.addEventListener('keypress', function(e) { //Add a keypress event listener to the postal code input element
+            // Allow only numeric keys
+            if (!/[0-9]/.test(e.key)) { //If the key is not a number
+                e.preventDefault(); //Prevent the default behavior
+            }
         });
     }
 });

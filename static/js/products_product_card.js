@@ -2,10 +2,15 @@ function toggleWishlist(productId, isInWishlist, btn) {
     const url = isInWishlist //If the product is in the wishlist, remove it, otherwise add it
         ? `/users/wishlist/remove/${productId}/` //If the product is in the wishlist, remove it
         : `/users/wishlist/add/${productId}/`; //If the product is not in the wishlist, add it
+    
+    const csrfToken = getCSRFToken();
+    console.log('Making request to:', url);
+    console.log('CSRF Token:', csrfToken);
+    
     fetch(url, {
         method: 'POST', //Send a POST request
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'), //Get the CSRF token
+            'X-CSRFToken': csrfToken, //Get the CSRF token
             'X-Requested-With': 'XMLHttpRequest' //Set the X-Requested-With header to XMLHttpRequest
         }
     })
@@ -26,6 +31,7 @@ function toggleWishlist(productId, isInWishlist, btn) {
         }
     });
 }
+
 function getCookie(name) { //Get the cookie
     let cookieValue = null; //Set the cookie value to null
     if (document.cookie && document.cookie !== '') { //If the cookie is not empty
@@ -39,4 +45,19 @@ function getCookie(name) { //Get the cookie
         }
     }
     return cookieValue;
+}
+
+function getCSRFToken() {
+    // First try to get from meta tag
+    const metaToken = document.querySelector('meta[name="csrf-token"]');
+    if (metaToken) {
+        const token = metaToken.getAttribute('content');
+        console.log('CSRF token from meta tag:', token);
+        return token;
+    }
+    
+    // Fallback to cookie
+    const cookieToken = getCookie('csrftoken');
+    console.log('CSRF token from cookie:', cookieToken);
+    return cookieToken;
 } 

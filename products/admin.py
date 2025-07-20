@@ -105,11 +105,11 @@ class ProductAdmin(admin.ModelAdmin):
     ] #Filter the fields in the admin interface
     search_fields = ['name', 'sku', 'description', 'brand__name', 'category__name'] #Search the fields in the admin interface
     prepopulated_fields = {'slug': ('name',)} #Pre-populate the slug field with the name field
-    readonly_fields = ['created_at', 'updated_at', 'discount_percentage_display', 'sale_price'] #Exclude the fields from the admin interface
+    readonly_fields = ['created_at', 'updated_at', 'discount_percentage_display', 'sale_price', 'sku_display'] #Exclude the fields from the admin interface
     
     fieldsets = ( #Organize the fields in the admin interface
         ('Basic Information', { #Organize the fields in the admin interface
-            'fields': ('name', 'slug', 'sku', 'description', 'features') #Include the fields in the admin interface
+            'fields': ('name', 'slug', 'sku_display', 'sku', 'description', 'features') #Include the fields in the admin interface
         }),
         ('Categorization', { #Organize the fields in the admin interface
             'fields': ('category', 'subcategory', 'brand') #Include the fields in the admin interface
@@ -169,6 +169,27 @@ class ProductAdmin(admin.ModelAdmin):
         return "No discount" #Display the discount percentage
     discount_percentage_display.short_description = 'Discount' #Set the short description for the discount percentage field
 
+    def sku_display(self, obj):
+        """Display SKU with generation status"""
+        if obj.sku: #Checks if the product has a SKU
+            if obj.vendor: #Checks if the product has a vendor
+                return format_html(
+                    '<span style="color: #27ae60; font-weight: bold;">{}</span><br>' #Display the SKU
+                    '<small style="color: #666;">(Auto-generated for vendor)</small>', #Display the auto-generated for vendor
+                    obj.sku #Display the SKU
+                )
+            else:
+                return format_html(
+                    '<span style="color: #27ae60; font-weight: bold;">{}</span><br>' #Display the SKU
+                    '<small style="color: #666;">(Auto-generated)</small>', #Display the auto-generated
+                    obj.sku #Display the SKU
+                )
+        else:
+            return format_html(
+                '<span style="color: #f39c12; font-style: italic;">Will be auto-generated on save</span>' #Display the will be auto-generated on save
+            )
+    sku_display.short_description = 'SKU Status' #Set the short description for the SKU status field
+
     def get_queryset(self, request):
         """Optimize queryset with related fields"""
         return super().get_queryset(request).select_related('brand', 'category', 'subcategory') #Select the related fields
@@ -198,3 +219,6 @@ class ProductAdmin(admin.ModelAdmin):
         updated = queryset.update(is_active=False) #Update the products
         self.message_user(request, f'{updated} products deactivated.') #Display the message
     deactivate_products.short_description = "Deactivate selected products" #Set the short description for the deactivate products field
+
+
+

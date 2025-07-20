@@ -10,15 +10,7 @@
 {% block content %} <!-- Content -->
 <section class="cart-section py-5"> <!-- Cart section -->
     <div class="container"> <!-- Container -->
-        {% if messages %} <!-- If there are messages -->
-        <div class="mb-3"> <!-- Message container -->
-            {% for message in messages %} <!-- For each message -->
-            <div class="alert alert-{{ message.tags }} alert-dark"> <!-- Message -->
-                {{ message }} <!-- Message -->
-            </div>
-            {% endfor %} <!-- End for each message -->
-        </div> <!-- Message container -->
-        {% endif %} <!-- End if there are messages -->
+
         <h2 class="mb-4">Your Shopping Cart</h2> <!-- Shopping cart title -->
         {% if cart_items %}
         <div class="table-responsive"> <!-- Table container -->
